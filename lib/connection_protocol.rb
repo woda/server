@@ -39,11 +39,11 @@ module Protocol
     end
     
     def send_error slug
-      send_object status: "ko", type: slug, message: MESSAGES[slug]
+      send_object status: "ko", type: slug, message: messages[slug]
     end
     
     def send_message slug
-      send_object status: "ok", type: slug, message: MESSAGES[slug]
+      send_object status: "ok", type: slug, message: messages[slug]
     end
   end
 end

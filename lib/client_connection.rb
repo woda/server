@@ -11,6 +11,10 @@ class ClientConnection < EventMachine::Connection
     connection_ok: "Connected successfully"
   }
 
+  def messages
+    MESSAGES
+  end
+
   def initialize
     super
     @parser_name = ""

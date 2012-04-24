@@ -20,7 +20,7 @@ module MessagePack
       end
 
       def << chunk
-        encoder.on_chunk chunk
+        @encoder.on_chunk chunk
       end
     end
   end
