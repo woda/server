@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 # Server framework
 gem 'eventmachine'
@@ -12,4 +12,6 @@ gem 'shoulda'
 gem 'rspec'
 
 # Database
-gem 'cassandra'
+# The git is temporary
+gem 'cassandra', :git => 'git://github.com/twitter/cassandra.git'
+gem 'cassandra_object', :git => 'git://github.com/NZKoz/cassandra_object.git'

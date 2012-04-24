@@ -20,6 +20,10 @@ class ClientConnection < EventMachine::Connection
     @parser_name = ""
   end
 
+  def post_init
+    start_tls
+  end
+
   def on_login login
     if login['login'] == "hello" && login['password'] == 'world'
       send_message :good_login
