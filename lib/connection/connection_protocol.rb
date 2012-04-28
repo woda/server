@@ -4,12 +4,13 @@ module Protocol
       @parser_name << data
       endline = @parser_name.index "\n"
       return unless endline
+
       data = @parser_name[endline+1..-1]
       @parser_name = @parser_name[0..endline-1].downcase
       # Note: we don't use symbols here because they aren't garbage collected
       begin
         @parser = Protocol::Serializer.new @parser_name
-        @parser.unpack.on_parse_complete = method(:on_login)
+        @parser.unpack.on_parse_complete = method(:on_request)
         send_message :connection_ok
       rescue ArgumentError
         send_data "Error: Protocol '#{@parser_name}' not recognized\n"
@@ -22,10 +23,9 @@ module Protocol
       if @parser
         begin
           @parser.unpack << data
-          # Need to do more specific exception handling afterwards
         rescue Exception => e
-          # Refactor this so it doesn't appear three times in the code
-          send_object status: "ko", type: "invalid_data", message: "Invalid data: #{e.message}"
+          puts e.backtrace
+          send_exception e, type: "invalid_data"
         end
       else
         choose_parser data
@@ -36,14 +36,19 @@ module Protocol
       @parser.pack.encode(obj) do |chunk|
         send_data chunk
       end
+      send_data "\n" if @parser_name == "json"
+    end
+
+    def send_exception e, options={}
+      send_object status: "ko", type: (options[:type].to_s || "exception"), message: e.message
     end
     
     def send_error slug
-      send_object status: "ko", type: slug, message: messages[slug]
+      send_object status: "ko", type: slug.to_s, message: messages[slug]
     end
     
     def send_message slug
-      send_object status: "ok", type: slug, message: messages[slug]
+      send_object status: "ok", type: slug.to_s, message: messages[slug]
     end
   end
 end

@@ -1,7 +1,7 @@
 require 'yajl'
 require 'msgpack'
-require 'parser/msgpack/event_unpacker'
-require 'parser/msgpack/chunked_encoder'
+require 'connection/parser/msgpack/event_unpacker'
+require 'connection/parser/msgpack/chunked_encoder'
 
 module Protocol
 # This class guarantees that the unpack member will accept the method

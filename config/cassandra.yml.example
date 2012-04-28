@@ -1,0 +1,13 @@
+test:
+  servers: "127.0.0.1:9160"
+  keyspace: "woda_test"
+  thrift:
+    timeout: 3
+    retries: 2
+
+development:
+  servers: "127.0.0.1:9160"
+  keyspace: "woda_dev"
+  thrift:
+    timeout: 3
+    retries: 2

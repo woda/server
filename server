@@ -2,13 +2,26 @@
 
 $: << "#{File.dirname(__FILE__)}/lib"
 
-require 'client_connection'
+require 'environment'
+require 'connection/client_connection'
+require 'optparse'
 
-# TODO: Specify this on the command line
-WODA_PORT = 4242
+woda_port = 4242
+use_tls = true
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{opts.program_name}"
+
+  opts.on("-p", "--port PORT", "Listen to the following PORT") do |port|
+    woda_port = port.to_i
+  end
+
+  opts.on("-s", "--[no-]ssl", "--[no-]tls", "Use a TLS connection (default)") do |b|
+    use_tls = b
+  end
+end.parse!
 
 EventMachine::run do
   host = '0.0.0.0'
-  port = WODA_PORT
-  EventMachine::start_server host, port, ClientConnection
+  port = woda_port
+  EventMachine::start_server host, port, (use_tls ? ClientSslConnection : ClientConnection)
 end
