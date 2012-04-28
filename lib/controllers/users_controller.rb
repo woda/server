@@ -26,6 +26,16 @@ class UsersController < Controller::Base
   end
 
   def login
+    return send_error(:missing_params) unless param['login'] && param['password']
+    user = User.find :login => param['login']
+    user = user[param['login']]
+    digest = Digest::SHA2.new(256)
+    if user && user.pass_hash == (digest << param['password']).to_s
+      connection.data[:current_user] = user
+      connection.send_message :login_successful
+    else
+      connection.send_error :login_failed
+    end
   end
 
   def logout
