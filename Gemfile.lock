@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/AdrienLE/active_column.git
-  revision: 4210170aaa427ed98c11f62068d5df9419f4bfbf
+  revision: 1c2fa3fb778e5d1e4de9044783c3f0acaeceede8
   specs:
     active_column (0.2)
       rake

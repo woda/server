@@ -22,7 +22,7 @@ class UsersController < Controller::Base
   def show
     return send_error(:missing_params) unless param['login']
     user = User.find :login => param['login']
-    p user
+    connection.send_object status: "ok", type: "user_infos", data: user[param['login']]
   end
 
   def login
