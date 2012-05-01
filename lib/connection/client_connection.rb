@@ -41,29 +41,27 @@ class ClientConnection < EventMachine::Connection
     end
   end
 
-  # def on_login login
-  #   if login['login'] == "hello" && login['password'] == 'world'
-  #     send_message :good_login
-  #     @parser.unpack.on_parse_complete = method(:on_request)
-  #   else
-  #     send_error :invalid_login
-  #   end
-  # end
-
   def on_request request
-    controller = @state_machine.last[request['route']]
-    return send_error(:invalid_route) unless controller && controller.actions.member?(request['action'])
+    error_invalid_route unless request['action']
+    route, action = request['action'].split '/'
+    action, route = route, action unless action
+
+    error_invalid_route unless route || @state_machine.last.length == 1
+    controller = route ? @state_machine.last[route] : @state_machine.last[0]
+
+    error_invalid_route unless controller && controller.actions.member?(action)
     controller.param = request
-    before = controller.before[request['action'].to_sym] || []
-    before.each do |action|
-      return unless controller.send(action)
+    before = controller.before[action.to_sym] || []
+    before.each do |a|
+      controller.send(a)
     end
-    controller.send(request['action'].to_sym)
+    controller.send(action)
   end
 end
 
 class ClientSslConnection < ClientConnection
   def post_init
+    super
     start_tls
   end
 end

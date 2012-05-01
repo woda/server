@@ -12,12 +12,12 @@ describe MessagePack::ChunkedEncoder do
     @encoder << "hello"
   end
 
-  HASH = { "hello" => 3, "3.0" => "lol", "4" => -10.0, "pokemon" => [102, "a", { "a" => 10}, 1.0] }
+  HASH_T = { "hello" => 3, "3.0" => "lol", "4" => -10.0, "pokemon" => [102, "a", { "a" => 10}, 1.0] }
 
   it "should encode to msgpack" do
     res = ""
-    @encoder.encode(HASH) { |msgpack| res << msgpack }
-    res.should be == HASH.to_msgpack
+    @encoder.encode(HASH_T) { |msgpack| res << msgpack }
+    res.should be == HASH_T.to_msgpack
   end
 
   class CheckInfiniteRecursion
@@ -38,6 +38,12 @@ describe MessagePack::ChunkedEncoder do
   end
 
   it "should not enter infinite recursion" do
+    # First we check is CheckInfiniteRecursion is correct
+    checker = CheckInfiniteRecursion.new @encoder
+    checker.recv_msgpack ""
+    checker.recv_msgpack ""
+    checker.failed.should be
+
     checker = CheckInfiniteRecursion.new @encoder
     @encoder.encode({}, &checker.method(:recv_msgpack))
     checker.failed.should_not be

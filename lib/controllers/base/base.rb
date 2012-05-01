@@ -45,7 +45,7 @@ module Controller
 
     def check_authenticate
       if connection.data[:current_user].nil?
-        send_error :need_login
+        error_need_login
         return false
       end
       true

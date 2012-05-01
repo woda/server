@@ -10,6 +10,8 @@ gem 'rspec'
 gem 'autotest'
 gem 'simplecov'
 gem 'simplecov-rcov'
+gem 'em-rspec'
+gem 'mocha'
 
 # Static code analysis
 gem 'metric_abc'

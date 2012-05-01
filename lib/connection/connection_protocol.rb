@@ -1,5 +1,10 @@
 module Protocol
+  class RequestShortCut < Exception
+  end
+
   module ConnectionProtocol
+    attr_reader :parser
+
     def choose_parser data
       @parser_name << data
       endline = @parser_name.index "\n"
@@ -23,6 +28,7 @@ module Protocol
       if @parser
         begin
           @parser.unpack << data
+        rescue RequestShortCut
         rescue Exception => e
           puts e.backtrace
           send_exception e, type: "invalid_data"
@@ -49,6 +55,15 @@ module Protocol
     
     def send_message slug
       send_object({status: "ok", type: slug.to_s, message: messages[slug]})
+    end
+
+    def method_missing name, *args, &block
+      if name.to_s =~ /^error_(.*)/ && messages[$1.to_sym]
+        send_error $1.to_sym
+        raise RequestShortCut.new
+      else
+        super
+      end
     end
   end
 end

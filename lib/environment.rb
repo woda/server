@@ -1,11 +1,11 @@
 require 'active_support/all'
 require 'controllers/base/base.rb'
-require 'active_column'
+#require 'active_column'
 
 # TODO: Need to use the configuration file
-$cassandra = Cassandra.new 'woda_dev'
+#$cassandra = Cassandra.new 'woda_dev'
 
-ActiveColumn.connection = $cassandra
+#ActiveColumn.connection = $cassandra
 
 class Server
   def self.root

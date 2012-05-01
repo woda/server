@@ -5,10 +5,10 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'simplecov'
-
 SimpleCov.start
 
 require 'pathname'
+require_relative '../lib/environment'
 
 def require_corresponding file
   path = Pathname(file).relative_path_from(Pathname.new(File.expand_path("..", __FILE__))).to_s

@@ -5,7 +5,7 @@ class UsersController < Controller::Base
   before :check_authenticate, :delete, :update
 
   def create
-    return send_error(:missing_params) unless param['login'] && param['password']
+    error_missing_params unless param['login'] && param['password']
     digest = Digest::SHA2.new(256)
     user = User.new :login => param['login'], :pass_hash => (digest << param['password']).to_s
     user.save
@@ -20,7 +20,7 @@ class UsersController < Controller::Base
   end
 
   def show
-    return send_error(:missing_params) unless param['login']
+    error_missing_params unless param['login']
     user = User.find :login => param['login']
     connection.send_object status: "ok", type: "user_infos", data: user[param['login']]
   end
@@ -34,7 +34,7 @@ class UsersController < Controller::Base
       connection.data[:current_user] = user
       connection.send_message :login_successful
     else
-      connection.send_error :login_failed
+      error_login_failed
     end
   end
 
