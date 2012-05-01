@@ -6,6 +6,10 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'simplecov'
 SimpleCov.start
+SimpleCov.at_exit do
+  SimpleCov.result.format!
+  exit 2 if SimpleCov.result.covered_percent < 88
+end
 
 require 'pathname'
 require_relative '../lib/environment'
@@ -20,7 +24,5 @@ def require_corresponding file
 end
 
 RSpec.configure do |config|
-  config.treat_symbols_as_metadata_keys_with_true_values = true
-  config.run_all_when_everything_filtered = true
-  config.filter_run :focus
+  config.failure_exit_code = 20
 end

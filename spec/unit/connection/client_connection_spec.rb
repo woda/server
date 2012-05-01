@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-require 'em-rspec'
-
 require_corresponding __FILE__
 
 describe ClientConnection do
