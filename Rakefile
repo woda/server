@@ -1,6 +1,19 @@
-require 'active_column'
-#require 'active_record'
+require 'active_record'
+require 'yaml'
 require 'fileutils'
+require 'active_column'
+
+desc "migrates database destructively"
+task :migrate do
+  require_relative 'lib/environment'
+  DataMapper.auto_migrate!
+end
+
+desc "migrates database non destructively"
+task :upgrade do
+  require_relative 'lib/environment'
+  DataMapper.auto_upgrade!
+end
 
 SRC = File.expand_path('..', __FILE__)
 
@@ -25,3 +38,5 @@ task :convert do
     end
   end
 end
+
+

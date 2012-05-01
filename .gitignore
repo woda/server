@@ -2,4 +2,6 @@
 *.sublime-project
 *.sublime-workspace
 cassandra.yml
+database.yml
 coverage
+flog_temp

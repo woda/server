@@ -11,6 +11,8 @@ SimpleCov.at_exit do
   exit 2 if SimpleCov.result.covered_percent < 88
 end
 
+ENV['WODA_ENV'] = 'test'
+
 require 'pathname'
 require_relative '../lib/environment'
 
@@ -23,6 +25,19 @@ def require_corresponding file
   require path
 end
 
+require 'dm-transactions'
+
 RSpec.configure do |config|
   config.failure_exit_code = 20
+
+  config.before(:each) do
+    DataMapper.auto_migrate!
+  end
+
+  config.around(:each) do |example|
+    User.transaction do |t|
+      example.run
+      t.rollback
+    end
+  end
 end

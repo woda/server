@@ -1,0 +1,2 @@
+test: "sqlite::memory:"
+dev: "postgres://postgres:password@localhost/dev"
