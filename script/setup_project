@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # This generates a custom hook script
-
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd "$DIR"
 

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd "$(dirname $(readlink -f $0) )"
+
+if [ -x $0.local ]; then
+    $0.local "$@" || exit $?
+fi
+if [ -x tracked/$(basename $0) ]; then
+    tracked/$(basename $0) "$@" || exit $?
+fi
