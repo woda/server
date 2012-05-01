@@ -21,6 +21,7 @@ module Protocol
     }
 
     def initialize name
+      name = name.to_s.downcase
       @pack = PACKERS[name].new if PACKERS[name]
       @unpack = UNPACKERS[name].new if UNPACKERS[name]
       raise ArgumentError unless @pack && @unpack

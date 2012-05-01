@@ -29,14 +29,14 @@ class ClientConnection < EventMachine::Connection
     super
     @parser_name = ""
     @state_machine = []
-    push_controller_set [UsersController]
     @data = {}
+    push_controller_set [UsersController]
   end
 
   def push_controller_set controllers
     @state_machine << {}
-    controllers.each do |c|
-      controller = c.new self
+    controllers.each do |controller_class|
+      controller = controller_class.new self
       @state_machine.last[controller.route] = controller
     end
   end

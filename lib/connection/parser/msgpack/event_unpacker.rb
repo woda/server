@@ -1,3 +1,5 @@
+require 'msgpack'
+
 module MessagePack
   class EventUnpacker
     attr_accessor :on_parse_complete
