@@ -7,6 +7,7 @@ module Controller
 
     def initialize connection
       @connection = connection
+      @param = {}
     end
 
     def self.get_actions
@@ -45,7 +46,7 @@ module Controller
 
     def check_authenticate
       if connection.data[:current_user].nil?
-        error_need_login
+        connection.error_need_login
         return false
       end
       true

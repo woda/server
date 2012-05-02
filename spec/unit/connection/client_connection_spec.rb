@@ -66,6 +66,57 @@ describe ClientConnection do
     @connection.push_controller_set [klass]
     @connection.on_request(request)
   end
+
+  it "should handle bad JSON" do
+    @connection.receive_data "json\n"
+    @connection.should_receive(:send_object) { |obj|
+      obj[:status].should be == "ko"
+      obj[:type].should be == "invalid_data"
+    }
+    @connection.receive_data "{ ht }\n"
+  end
+
+  it "should handle bad msgpack" do
+    @connection.receive_data "msgpack\n"
+    @connection.should_receive(:send_object) { |obj|
+      obj[:status].should be == "ko"
+      obj[:type].should be == "invalid_data"
+    }
+    @connection.receive_data "uhethut"
+  end
+
+  it "should handle route errors" do
+    @connection.should_receive(:send_object) { |obj|
+      obj[:status].should be == "ko"
+      obj[:type].should be == "invalid_route"
+    }.exactly(3).times
+
+    obj = mock()
+    obj.should_receive(:route).twice.and_return("dummy")
+    klass = mock()
+    klass.should_receive(:new).with(@connection).any_number_of_times.and_return(obj)
+
+    obj.should_receive(:before).and_return({})
+    obj.should_receive(:actions).and_return(Set.new ['action_1'])
+    obj.should_receive(:param=)
+    obj.should_receive(:action_1)
+
+    @connection.push_controller_set [klass, klass]
+
+    lambda { @connection.on_request({}) }.should raise_error(Protocol::RequestShortCut)
+
+    lambda { @connection.on_request({ 'action' => 'lol'}) }.should raise_error(Protocol::RequestShortCut)
+
+    lambda { @connection.on_request({ 'action' => 'lol/lol' }) }.should raise_error(Protocol::RequestShortCut)
+
+    lambda { @connection.on_request({ 'action' => 'dummy/action_1'}) }.should_not raise_error
+  end
+
+  it "should use method_missing as a convinient way to raise errors" do
+    @connection.should_receive(:send_error).with(:invalid_route)
+    lambda { @connection.error_invalid_route }.should raise_error(Protocol::RequestShortCut)
+    lambda { @connection.error_hutehtuhotuhtohtuohet }.should raise_error(NoMethodError)
+  end
 end
 
 describe ClientSslConnection do

@@ -1,4 +1,4 @@
-require 'active_record'
+require 'active_support'
 require 'yaml'
 require 'fileutils'
 require 'active_column'

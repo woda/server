@@ -41,7 +41,7 @@ end
 
 config = YAML::load File.read("#{Server.root}/config/database.yml")
 
-DataMapper::Logger.new($stdout, :info)
+DataMapper::Logger.new($stdout, ENVIRONMENT == :test ? :fatal : :info)
 DataMapper.setup(:default, config[ENVIRONMENT.to_s]['addr'])
 
 models_dir = File.expand_path "../models", __FILE__

@@ -1,13 +1,25 @@
 require 'data_mapper'
+require 'helpers/hash_digest'
 
 class User
   include DataMapper::Resource
 
-  property :id, Serial
-  property :login, String
-  property :pass_hash, String
+  storage_names[:default] = "User"
 
-  validates_uniqueness_of :login
+  property :id,        Serial, :key => true
+  property :login,     String, :required => true,
+    :unique => true, :index => true
+  property :pass_hash, String, :required => true,
+    :length => HashDigest.new.to_s.length,
+    :format => /^[a-fA-F0-9]{64}$/
 
-  validates_presence_of :login, :pass_hash
+  def has_password? pass
+    digest = HashDigest.new
+    (digest << pass).to_s.downcase == pass_hash.downcase
+  end
+
+  def set_password pass
+    digest = HashDigest.new
+    self.pass_hash = (digest << pass).to_s
+  end
 end

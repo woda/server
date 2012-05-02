@@ -18,7 +18,11 @@ class ClientConnection < EventMachine::Connection
     missing_params: "Missing parameters",
     signup_successful: "Successfully created user",
     login_successful: "Successfully logged in",
-    login_failed: "Login failed: login or password invalid"
+    login_failed: "Login failed: login or password invalid",
+    login_taken: "Login already taken",
+    could_not_create_user: "Could not create user: failed",
+    user_not_found: "User not found",
+    bad_password: "Bad password"
   }
 
   def messages

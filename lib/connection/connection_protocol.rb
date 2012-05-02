@@ -30,7 +30,6 @@ module Protocol
           @parser.unpack << data
         rescue RequestShortCut
         rescue Exception => e
-          puts e.backtrace
           send_exception e, type: "invalid_data"
         end
       else
