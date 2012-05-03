@@ -14,6 +14,11 @@ gem 'shoulda-matchers'
 
 # Static code analysis
 gem 'metric_abc'
+gem 'metrical'
+# Dependencies of metrical
+gem 'fattr'
+gem 'arrayfields'
+gem 'map'
 
 # Server framework
 gem 'eventmachine'

@@ -5,3 +5,4 @@ cassandra.yml
 database.yml
 coverage
 flog_temp
+.rvmrc
