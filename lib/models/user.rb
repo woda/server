@@ -10,7 +10,7 @@ class User
   property :login,     String, :required => true,
     :unique => true, :index => true
   property :pass_hash, String, :required => true,
-    :length => HashDigest.new.to_s.length,
+    :length => HashDigest.new.hexdigest.length,
     :format => /^[a-fA-F0-9]{64}$/
 
   def has_password? pass

@@ -1,3 +1,3 @@
 require 'digest'
 
-HashDigest = Digest::SHA2
+HashDigest = Digest::SHA256
