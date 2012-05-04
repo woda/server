@@ -1,6 +1,7 @@
 Check your redmine account !
 And change your password !
 
+Go check the wiki on redmine !
 
 About ruby projects:
 The 'main' file(s) are in the base directory. The modules they use are in the lib/
