@@ -1,2 +1,4 @@
-test: "sqlite::memory:"
-dev: "postgres://postgres:password@localhost/dev"
+test:
+  addr: "sqlite::memory:"
+dev:
+  addr: "postgres://postgres:password@localhost/dev"
