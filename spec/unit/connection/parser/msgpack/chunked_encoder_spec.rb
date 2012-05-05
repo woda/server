@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require_corresponding __FILE__
 
-describe MessagePack::ChunkedEncoder do
+describe MessagePack::ChunkedEncoder, :unit do
   before do
     @encoder = MessagePack::ChunkedEncoder.new
   end

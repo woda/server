@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require_corresponding __FILE__
 
-describe Protocol::Serializer do
+describe Protocol::Serializer, :unit do
   it "should handle JSON" do
     Protocol::Serializer.new :json
     Protocol::Serializer.new :JSON
@@ -83,5 +83,13 @@ describe Protocol::Serializer do
     serializer = Protocol::Serializer.new 'msgpack'
     times = test_serializer_parse_what_it_produces(serializer, generate_huge_hash)
     (times / NB_SERIALIZE).should be >= 2
+  end
+
+  it "should handle several successive JSON objects" do
+    serializer = Protocol::Serializer.new 'JSON'
+  end
+
+  it "should handle several successive msgpack objects" do
+    serializer = Protocol::Serializer.new 'msgpack'
   end
 end

@@ -2,4 +2,4 @@
 
 cd "$(dirname $(readlink -f $0) )"/../..
 
-bundle exec rspec -f p
+bundle exec rspec -f p -t unit

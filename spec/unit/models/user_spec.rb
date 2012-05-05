@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require_corresponding __FILE__
 
-describe User do
+describe User, :unit do
   before do
     DataMapper::Model.raise_on_save_failure = true
   end

@@ -15,7 +15,7 @@ module Protocol
       # Note: we don't use symbols here because they aren't garbage collected
       begin
         @parser = Protocol::Serializer.new @parser_name
-        @parser.unpack.on_parse_complete = method(:on_request)
+        @parser.unpack.on_parse_complete = method(:on_parsed)
         send_message :connection_ok
       rescue ArgumentError
         send_data "Error: Protocol '#{@parser_name}' not recognized\n"
@@ -24,17 +24,33 @@ module Protocol
       receive_data data if @parser
     end
     
+    def on_parsed request
+      begin
+        error_not_a_hash unless request.class == Hash
+        on_request request
+      rescue RequestShortCut
+      rescue Exception => e
+        # puts e.message
+        # puts e.backtrace
+        send_exception e, type: "exception"
+      end
+    end
+
     def receive_data data
       if @parser
         begin
           @parser.unpack << data
-        rescue RequestShortCut
         rescue Exception => e
+          # We MUST destroy the connection if the data is incorrect, unfortunately
+
+          # puts e.message
+          # puts e.backtrace
           send_exception e, type: "invalid_data"
+          close_connection_after_writing
         end
       else
         choose_parser data
-      end
+      end      
     end
     
     def send_object obj

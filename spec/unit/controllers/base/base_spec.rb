@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require_corresponding __FILE__
 
-describe Controller::Base do
+describe Controller::Base, :unit do
   class TestController < Controller::Base
     actions :hello
     # Warning: before is kind of confusing

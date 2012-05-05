@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require_corresponding __FILE__
 
-describe UsersController do
+describe UsersController, :unit do
   before do
     @connection = ClientConnection.new host: '0.0.0.0', part: 12345
     @controller = UsersController.new @connection

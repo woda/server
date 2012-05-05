@@ -22,7 +22,8 @@ class ClientConnection < EventMachine::Connection
     login_taken: "Login already taken",
     could_not_create_user: "Could not create user: failed",
     user_not_found: "User not found",
-    bad_password: "Bad password"
+    bad_password: "Bad password",
+    not_a_hash: "The data is not a hash"
   }
 
   def messages

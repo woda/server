@@ -1,6 +1,7 @@
 require 'active_support'
 require 'yaml'
 require 'fileutils'
+require 'rspec'
 
 desc "migrates database destructively"
 task :migrate do

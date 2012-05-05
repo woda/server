@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require_corresponding __FILE__
 
-describe MessagePack::EventUnpacker do
+describe MessagePack::EventUnpacker, :unit do
   before do
     @unpacker = MessagePack::EventUnpacker.new
   end
