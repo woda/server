@@ -15,14 +15,14 @@ describe UsersController, :unit do
     @connection.data[:current_user].should be_nil
     @controller.create
     @connection.data[:current_user].should_not be_nil
-    User.first(:login => 'test').should_not be_nil
+    User.first(login: 'test').should_not be_nil
   end
 
   it "should fail with the right errors in the right cases when creating" do
     @connection.should_receive(:send_error).with(:missing_params)
     lambda { @controller.create }.should raise_error
 
-    u = User.new :login => "test"
+    u = User.new login: "test"
     u.set_password "lol"
     u.save.should be
     @connection.should_receive(:send_error).with(:login_taken)
@@ -37,7 +37,7 @@ describe UsersController, :unit do
   end
 
   def create_user
-    @u = User.new :login => "test"
+    @u = User.new login: "test"
     @u.set_password "lol"
     @u.save
   end

@@ -5,10 +5,12 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start do
+  add_filter '/spec/'
+end
 SimpleCov.at_exit do
   SimpleCov.result.format!
-  #exit 2 if SimpleCov.result.covered_percent < 95
+  exit 2 if SimpleCov.result.covered_percent < 95
 end
 
 ENV['WODA_ENV'] = 'test'

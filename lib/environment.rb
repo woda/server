@@ -25,6 +25,7 @@ require 'active_support/all'
 require 'controllers/base/base.rb'
 require 'data_mapper'
 require 'dm-migrations'
+require 'helpers/data_mapper_ext.rb'
 require 'yaml'
 #require 'active_column'
 
@@ -40,6 +41,8 @@ class Server
 end
 
 config = YAML::load File.read("#{Server.root}/config/database.yml")
+
+DataMapper::Property.required(true)
 
 DataMapper::Logger.new($stdout, ENVIRONMENT == :test ? :fatal : :info)
 DataMapper.setup(:default, config[ENVIRONMENT.to_s]['addr'])

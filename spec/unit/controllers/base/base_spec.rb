@@ -10,7 +10,7 @@ describe Controller::Base, :unit do
   end
 
   before do
-    @connection = mock(:data => {})
+    @connection = mock(data: {})
     @controller = TestController.new @connection
     @raw_controller = Controller::Base.new @connection
   end
@@ -19,7 +19,7 @@ describe Controller::Base, :unit do
     @raw_controller.actions.should be_nil
     @raw_controller.before.should be_nil
     @controller.actions.should be == Set.new(['hello'])
-    @controller.before.should be == {:hello => [:world]}
+    @controller.before.should be == {hello: [:world]}
   end
 
   it "should check authentication" do
