@@ -8,8 +8,8 @@ class UsersController < Controller::Base
 
   def create
     @connection.error_missing_params unless param['login'] && param['password']
-    @connection.error_login_taken if User.first :login => param['login']
-    user = User.new :login => param['login']
+    @connection.error_login_taken if User.first login: param['login']
+    user = User.new login: param['login']
     user.set_password param['password']
     @connection.error_could_not_create_user unless user.save
     connection.data[:current_user] = user
@@ -34,14 +34,14 @@ class UsersController < Controller::Base
 
   def show
     @connection.error_missing_params unless param['login']
-    user = User.first :login => param['login']
+    user = User.first login: param['login']
     @connection.error_user_not_found unless user
     @connection.send_object status: "ok", type: "user_infos", data: user.attributes
   end
   
   def login
     @connection.error_missing_params unless param['login'] && param['password']
-    user = User.first :login => param['login']
+    user = User.first login: param['login']
     @connection.error_user_not_found unless user
     @connection.error_bad_password unless user.has_password? param['password']
     @connection.data[:current_user] = user
