@@ -17,9 +17,19 @@ class UsersController < Controller::Base
   end
 
   def delete
+    user = @connection.data[:current_user]
+    @connection.error_delete_failed unless user.destroy
+    @connection.send_message :signout_successful
+    @connection.data[:current_user] = nil
   end
 
   def update
+    @connection.error_missing_params unless param['login'] || param['password']
+    user = @connection.data[:current_user]
+    user.login param['login'] if param['login']
+    user.set_password param['password'] if param['password']
+    @connection.error_could_not_update unless user.save
+    @connection.send_message :update_sucessful
   end
 
   def show
@@ -28,7 +38,7 @@ class UsersController < Controller::Base
     @connection.error_user_not_found unless user
     @connection.send_object status: "ok", type: "user_infos", data: user.attributes
   end
-
+  
   def login
     @connection.error_missing_params unless param['login'] && param['password']
     user = User.first :login => param['login']
@@ -39,5 +49,7 @@ class UsersController < Controller::Base
   end
 
   def logout
+    @connection.data[:current_user] = nil
+    @connection.send_message :logout_successful
   end
 end
