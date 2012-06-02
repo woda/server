@@ -43,6 +43,7 @@ end
 config = YAML::load File.read("#{Server.root}/config/database.yml")
 
 DataMapper::Property.required(true)
+DataMapper::Model.raise_on_save_failure = true
 
 DataMapper::Logger.new($stdout, ENVIRONMENT == :test ? :fatal : :info)
 DataMapper.setup(:default, config[ENVIRONMENT.to_s]['addr'])

@@ -121,6 +121,19 @@ describe ClientConnection, :unit do
     lambda { @connection.error_invalid_route }.should raise_error(Protocol::RequestShortCut)
     lambda { @connection.error_hutehtuhotuhtohtuohet }.should raise_error(NoMethodError)
   end
+
+  it "should fail gracefully if not sent a hash and handle shortcuts correctly" do
+    @connection.should_receive(:error_not_a_hash).and_raise(Protocol::RequestShortCut)
+    @connection.should_not_receive(:send_object)
+    @connection.on_parsed(1)
+  end
+
+  it "should handle exceptions correctly" do
+    expt = Exception.new
+    @connection.should_receive(:on_request).with({}).and_raise(expt)
+    @connection.should_receive(:send_exception).with(expt, {type: "exception"})
+    @connection.on_parsed({})
+  end
 end
 
 describe ClientSslConnection, :unit do

@@ -9,7 +9,7 @@ module WodaResource
   
   private
   module ClassMethods
-    def is_updatable property
+    def updatable? property
       @updatable && @updatable.include?(property)
     end
     
