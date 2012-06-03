@@ -19,8 +19,8 @@ class UsersController < Controller::Base
   def delete
     user = @connection.data[:current_user]
     @connection.error_delete_failed unless user.destroy
-    @connection.send_message :signout_successful
     @connection.data[:current_user] = nil
+    @connection.send_message :signout_successful
   end
 
   def update
@@ -48,6 +48,7 @@ class UsersController < Controller::Base
     @connection.send_message :login_successful
   end
 
+  # Devrait peut-etre renvoyer une erreur si l'user est pas logge
   def logout
     @connection.data[:current_user] = nil
     @connection.send_message :logout_successful
