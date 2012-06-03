@@ -3,7 +3,7 @@ require 'helpers/hash_digest'
 require 'connection/client_connection'
 
 class UsersController < Controller::Base
-  actions :create, :delete, :update, :show, :login
+  actions :create, :delete, :update, :show, :login, :logout
   before :check_authenticate, :delete, :update
 
   def create

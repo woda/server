@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+puts 'json'
+STDOUT.flush
+STDIN.each_line do |l|
+  begin
+    JSON.parse(l)
+  rescue
+    STDERR.puts "Invalid JSON"
+    next
+  end
+  print l
+  STDOUT.flush
+end

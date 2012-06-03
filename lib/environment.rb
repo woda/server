@@ -54,3 +54,5 @@ Dir.glob("#{models_dir}/**/*.rb").each do |file|
 end
 
 DataMapper.finalize
+
+DataMapper.auto_upgrade!
