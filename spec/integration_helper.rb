@@ -1,5 +1,7 @@
 TEST_PORT = 12345
 
+require 'eventmachine'
+
 module IntegrationHelperImplementation
   def around_connection_timeout
     proc = Proc.new { raise 'timeout' }
