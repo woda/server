@@ -30,6 +30,12 @@ GEM
       ZenTest (>= 4.4.1)
     awesome_print (1.0.2)
     bcrypt-ruby (3.0.1)
+    capistrano (2.12.0)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
     chronic (0.3.0)
     churn (0.0.13)
       chronic (>= 0.2.3)
@@ -103,6 +109,7 @@ GEM
     flog (2.5.3)
       ruby_parser (~> 2.0)
       sexp_processor (~> 3.0)
+    highline (1.6.11)
     hirb (0.6.2)
     i18n (0.6.0)
     json (1.6.7)
@@ -127,6 +134,13 @@ GEM
       rcov (~> 0.9)
     msgpack (0.4.6)
     multi_json (1.0.4)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.1.4)
+    net-ssh-gateway (1.1.0)
+      net-ssh (>= 1.99.1)
     progressbar (0.11.0)
     rails_best_practices (1.9.1)
       activesupport
@@ -136,6 +150,7 @@ GEM
       i18n
       progressbar
       sexp_processor
+    railsless-deploy (1.0.2)
     rake (0.9.2.2)
     rcov (0.9.11)
     reek (1.2.8)
@@ -183,6 +198,7 @@ DEPENDENCIES
   activesupport
   arrayfields
   autotest
+  capistrano
   cassandra!
   datamapper (~> 1.2)
   dm-postgres-adapter
@@ -195,6 +211,7 @@ DEPENDENCIES
   metric_abc
   metrical
   msgpack
+  railsless-deploy
   rake
   rspec
   shoulda-matchers

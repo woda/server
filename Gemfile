@@ -38,3 +38,7 @@ gem 'datamapper', '~> 1.2'
 gem 'dm-transactions'
 gem 'dm-postgres-adapter'
 gem 'dm-sqlite-adapter'
+
+#Deployment
+gem 'capistrano', :require => nil
+gem 'railsless-deploy', :require => nil

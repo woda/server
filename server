@@ -6,7 +6,7 @@ require 'environment'
 require 'connection/client_connection'
 require 'optparse'
 
-woda_port = 4242
+woda_port = 8850
 use_tls = true
 OptionParser.new do |opts|
   opts.banner = "Usage: #{opts.program_name}"
