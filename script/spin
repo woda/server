@@ -1,1 +1,2 @@
-WODA_ENV=prod ./server
+touch ok.lol
+WODA_ENV=prod bundle exec ./server
