@@ -35,7 +35,7 @@ set :runner, nil
 DIST_PATH = '/var/serv/current'
 
 namespace :deploy do
-  task :migrate do run "cd #{DIST_PATH}; bundle exec rake upgrade" end
+  task :migrate do run "cd #{DIST_PATH}; WODA_ENV=prod bundle exec rake upgrade" end
   task :start do run "cd #{DIST_PATH}; script/start_server" end
   task :stop do run "cd #{DIST_PATH}; script/stop_server" end
   task :restart do run "cd #{DIST_PATH}; script/stop_server; script/start_server" end
