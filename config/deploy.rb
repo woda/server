@@ -18,6 +18,8 @@ set :port, 5220
 
 set :deploy_to, "/var/serv"
 
+set :deploy_group, "deploy"
+
 server "woda-server.tango-mango.net", :app, :db, :primary => true
 
 set :use_sudo, false
@@ -30,11 +32,13 @@ set :runner, nil
 # if you're still using the script/reaper helper you will need
 # these http://github.com/rails/irs_process_scripts
 
+DIST_PATH = '/var/serv/current'
+
 namespace :deploy do
-  task :migrate do Kernel.system "bundle exec rake upgrade" end
-  task :start do Kernel.system "script/start_server" end
-  task :stop do Kernel.system "script/stop_server" end
-  task :restart do Kernel.system "script/stop_server; script/start_server" end
+  task :migrate do run "cd #{DIST_PATH}; bundle exec rake upgrade" end
+  task :start do run "cd #{DIST_PATH}; script/start_server" end
+  task :stop do run "cd #{DIST_PATH}; script/stop_server" end
+  task :restart do run "cd #{DIST_PATH}; script/stop_server; script/start_server" end
 end
 
 # If you are using Passenger mod_rails uncomment this:

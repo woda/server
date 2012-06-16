@@ -1,6 +1,6 @@
 #!/bin/bash
-touch /var/serv/ok.lol
-rvm use 1.9.3
-WODA_ENV=prod nohup bundle exec /var/serv/current/server&
+touch aaaa
+pwd >&2
+WODA_ENV=prod nohup rvm 1.9.3 do bundle exec /var/serv/current/server&
 echo $! > last_pid
 
