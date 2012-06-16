@@ -40,7 +40,7 @@ namespace :deploy do
   task :stop do run "cd #{DIST_PATH}; script/stop_server" end
   task :restart do run "cd #{DIST_PATH}; script/stop_server; script/start_server" end
 end
-namespace :db
+namespace :db do
   # TODO: find a clean way not to expose the credentials to the developpers, for instance
   # by storing the database.yml file on the server and only creating the link
   task :setup do

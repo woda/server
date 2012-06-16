@@ -1,5 +1,4 @@
 #!/bin/bash
-pwd >&2
 if [ -e last_pid ]
 then
     kill -USR1 `cat last_pid`
