@@ -7,3 +7,5 @@ coverage
 flog_temp
 .rvmrc
 \#*\#
+last_pid
+nohup.out

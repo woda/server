@@ -41,4 +41,5 @@ gem 'dm-sqlite-adapter'
 
 #Deployment
 gem 'capistrano', :require => nil
-gem 'railsless-deploy', :require => nil
+gem 'capistrano-offroad', :require => nil
+gem 'rvm-capistrano', :require => nil
