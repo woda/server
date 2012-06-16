@@ -20,6 +20,8 @@ OptionParser.new do |opts|
   end
 end.parse!
 
+puts "Starting server"
+
 EventMachine::run do
   host = '0.0.0.0'
   port = woda_port
