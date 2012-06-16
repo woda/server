@@ -40,6 +40,24 @@ namespace :deploy do
   task :stop do run "cd #{DIST_PATH}; script/stop_server" end
   task :restart do run "cd #{DIST_PATH}; script/stop_server; script/start_server" end
 end
+namespace :db
+  # TODO: find a clean way not to expose the credentials to the developpers, for instance
+  # by storing the database.yml file on the server and only creating the link
+  task :setup do
+    run "mkdir -p #{shared_path}/config"
+    yaml = <<-EOF
+    prod:
+        addr: postgres://postgres:klWEbbVX49$Z@localhost/prod
+    EOF
+    put yaml, "#{shared_path}/config/database.yml"
+  end
+  task :symlink, :except => { :no_release => true } do
+    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+  end
+end
+
+after "deploy:setup",           "db:setup"   unless fetch(:skip_db_setup, false)
+after "deploy:finalize_update", "db:symlink"
 
 # If you are using Passenger mod_rails uncomment this:
 # namespace :deploy do
