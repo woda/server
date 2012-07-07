@@ -1,21 +1,3 @@
-GIT
-  remote: git://github.com/AdrienLE/active_column.git
-  revision: 3c8e809c926e733bfc9eafd00dcd03e3f7549af7
-  specs:
-    active_column (0.2)
-      rake
-      simple_uuid (>= 0.1.0)
-
-GIT
-  remote: git://github.com/twitter/cassandra.git
-  revision: 4bca4c8f0dc7392306197b47ad5163fc16439540
-  specs:
-    cassandra (0.12.2)
-      json
-      rake
-      simple_uuid (~> 0.2.0)
-      thrift_client (>= 0.7.0, < 0.9)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -178,7 +160,6 @@ GEM
     sexp_processor (3.0.10)
     shoulda-matchers (1.1.0)
       activesupport (>= 3.0.0)
-    simple_uuid (0.2.0)
     simplecov (0.6.1)
       multi_json (~> 1.0)
       simplecov-html (~> 0.5.3)
@@ -187,9 +168,6 @@ GEM
       simplecov (>= 0.4.1)
     stringex (1.3.3)
     syntax (1.0.0)
-    thrift (0.8.0)
-    thrift_client (0.8.1)
-      thrift (~> 0.8.0)
     uuidtools (2.1.2)
     yajl-ruby (1.1.0)
 
@@ -197,13 +175,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_column!
   activesupport
   arrayfields
   autotest
   capistrano
   capistrano-offroad
-  cassandra!
   datamapper (~> 1.2)
   dm-postgres-adapter
   dm-sqlite-adapter
