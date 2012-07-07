@@ -28,11 +28,6 @@ gem 'msgpack'
 gem 'yajl-ruby'
 
 # Database
-# The git is temporary
-gem 'cassandra', :git => 'git://github.com/twitter/cassandra.git'
-# The git is NOT temporary
-gem 'active_column', :git => 'git://github.com/AdrienLE/active_column.git'
-
 gem 'datamapper', '~> 1.2'
 # Datamapper plugins
 gem 'dm-transactions'
