@@ -51,5 +51,38 @@ module Controller
       end
       true
     end
+
+    def check_create_params
+      check_params(*(model.properties.find_all { |p| model.updatable?(p.name) && p.required? }.map(&:name)))
+    end
+
+    def check_update_params
+      check_any_param(*(model.properties.find_all { |p| model.updatable?(p.name) }.map(&:name)))
+    end
+
+    def has_param? p
+      param.has_key? p.to_s
+    end
+    
+    def check_params *params
+      p params
+      @connection.error_missing_params unless params.all? { |p| has_param? p }
+    end
+
+    def check_any_params *params
+      @connection.error_missing_params unless params.any? { |p| has_param? p }
+    end
+
+    def set_properties inst
+      model.properties.find_all { |p| model.updatable?(p.name) }.each do |p|
+        inst.send("#{p.name}=".to_sym, param[p.name.to_s]) if param.has_key?(p.name.to_s)
+      end
+      inst
+    end
+
+    # Returns the model for the controller. Override to use check_create_params or check_update_params
+    def model
+      nil
+    end
   end
 end

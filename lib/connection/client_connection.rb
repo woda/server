@@ -23,6 +23,7 @@ class ClientConnection < EventMachine::Connection
     logout_successful: "Successfully logged out",
     login_failed: "Login failed: login or password invalid",
     login_taken: "Login already taken",
+    email_taken: "Email already taken",
     could_not_create_user: "Could not create user: failed",
     could_not_delete_user: "Could not delete user: failed",
     could_not_update_user: "Could not update user: failed",
@@ -51,6 +52,18 @@ class ClientConnection < EventMachine::Connection
     end
   end
 
+  def call_request action, controller
+    before = controller.before[action.to_sym] || []
+    before.each do |a|
+      if a.class == Array
+        controller.send(*a)
+      else
+        controller.send(a)
+      end
+    end
+    controller.send(action)
+  end
+  
   def on_request request
     error_invalid_route unless request['action']
     route, action = request['action'].split '/'
@@ -61,11 +74,7 @@ class ClientConnection < EventMachine::Connection
 
     error_invalid_route unless controller && controller.actions.member?(action)
     controller.param = request
-    before = controller.before[action.to_sym] || []
-    before.each do |a|
-      controller.send(a)
-    end
-    controller.send(action)
+    call_request action, controller
   end
 end
 

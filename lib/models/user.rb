@@ -12,7 +12,9 @@ class User
   property :id, Serial, key: true
   updatable_property :login, String, unique: true, unique_index: true
   updatable_property :email, String, unique: true, unique_index: true,
-    format: :email_address, required: false
+    format: :email_address
+  updatable_property :first_name, String
+  updatable_property :last_name, String
   property :pass_hash, SHA256Hash
 
   has n, :files

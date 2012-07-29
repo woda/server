@@ -45,11 +45,25 @@ namespace :db do
   # by storing the database.yml file on the server and only creating the link
   task :setup do
     run "mkdir -p #{shared_path}/config"
+
+    # configuring database
     yaml = <<-EOF
     prod:
         addr: postgres://postgres:klWEbbVX49$Z@localhost/prod
     EOF
     put yaml, "#{shared_path}/config/database.yml"
+
+    # configuring emails
+    yaml = <<-EOF
+    dev:
+      tls: true
+      address: "smtp.gmail.com"
+      port: 587
+      domain: "smtp.gmail.com" # 'your.domain.com' for GoogleApps
+      user_name: "redmine.woda@gmail.com"
+      password: "RedmineWodaMail"
+    EOF
+    put yaml, "#{shared-path}/config/mail.yml"
   end
   task :symlink, :except => { :no_release => true } do
     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"

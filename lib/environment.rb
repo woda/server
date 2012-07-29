@@ -30,7 +30,7 @@ require 'yaml'
 #require 'active_column'
 
 # TODO: Need to use the configuration file
-#$cassandra = Cassandra.new 'woda_dev'
+# $cassandra = Cassandra.new 'woda_dev'
 
 #ActiveColumn.connection = $cassandra
 
@@ -39,6 +39,9 @@ class Server
     File.expand_path "../..", __FILE__
   end
 end
+
+EMAIL_SETTINGS = YAML::load(File.read("#{Server.root}/config/mail.yml"))[ENVIRONMENT.to_s]
+raise "Error: no email settings, create file config/mail.yml" unless EMAIL_SETTINGS
 
 config = YAML::load File.read("#{Server.root}/config/database.yml")
 

@@ -8,7 +8,7 @@ describe User, :unit do
   end
 
   def build_user
-    @user = User.new login: "hello"
+    @user = User.new login: "hello", email: 'a@b.com', first_name: 'a', last_name: 'b'
     @user.set_password "world"
     @user.save
   end
@@ -21,7 +21,7 @@ describe User, :unit do
   end
 
   it "should be insertable" do
-    @user = User.new login: "hello"
+    @user = User.new login: "hello", email: 'a@b.com', first_name: 'a', last_name: 'b'
     @user.set_password "world"
     @user.id.should be_nil
     @user.save
@@ -33,11 +33,22 @@ describe User, :unit do
     lambda { build_user }.should raise_error
   end
 
-  it "should force presence of login and pass_hash" do
-    u = User.new pass_hash: "lol"
-    lambda { u.save }.should raise_error
-    u2 = User.new login: "lol"
+  it "should force presence of login, pass_hash, email, first name and last name" do
+    u = User.new
+    u.set_password "pass"
+    hash = u.pass_hash
+    u2 = User.new pass_hash: hash, email: 'a@b.com', first_name: 'a', last_name: 'b'
     lambda { u2.save }.should raise_error
+    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', last_name: 'b'
+    lambda { u2.save }.should raise_error
+    u2 = User.new login: "lol", pass_hash: hash, first_name: 'a', last_name: 'b'
+    lambda { u2.save }.should raise_error
+    u2 = User.new login: "lol", pass_hash: hash, email: 'a@b.com', last_name: 'b'
+    lambda { u2.save }.should raise_error
+    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', pass_hash: hash
+    lambda { u2.save }.should raise_error
+    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', pass_hash: hash, last_name: 'b'
+    u2.save
   end
 
   it "should support queries" do
@@ -47,9 +58,9 @@ describe User, :unit do
   end
 
   it "should force having a password hash" do
-    u = User.new login: "hello", pass_hash: "world"
+    u = User.new login: "hello", pass_hash: "world", email: 'a@b.com', first_name: 'a', last_name: 'b'
     lambda { u.save }.should raise_error
-    u = User.new login: "hello"
+    u = User.new login: "hello", email: 'a@b.com', first_name: 'a', last_name: 'b'
     u.set_password "world"
     u.save
   end

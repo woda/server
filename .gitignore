@@ -3,6 +3,7 @@
 *.sublime-workspace
 cassandra.yml
 database.yml
+mail.yml
 coverage
 flog_temp
 .rvmrc
