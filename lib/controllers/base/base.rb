@@ -65,7 +65,6 @@ module Controller
     end
     
     def check_params *params
-      p params
       @connection.error_missing_params unless params.all? { |p| has_param? p }
     end
 
