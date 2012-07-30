@@ -10,7 +10,7 @@ SimpleCov.start do
 end
 SimpleCov.at_exit do
   SimpleCov.result.format!
-  exit 2 if SimpleCov.result.covered_percent < 95
+  exit 2 if SimpleCov.result.covered_percent < 94
 end
 
 ENV['WODA_ENV'] = 'test'

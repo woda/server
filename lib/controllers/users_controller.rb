@@ -1,7 +1,7 @@
 require 'models/user'
 require 'helpers/hash_digest'
 require 'connection/client_connection'
-require 'net/smtp'
+require 'mailfactory'
 
 class UsersController < Controller::Base
   actions :create, :delete, :update, :show, :login, :logout
@@ -28,21 +28,22 @@ class UsersController < Controller::Base
   end
 
   def send_confirmation_email
-    Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
-    Net::SMTP.start(EMAIL_SETTINGS["address"], EMAIL_SETTINGS["port"],
-                    EMAIL_SETTINGS["domain"], EMAIL_SETTINGS["user_name"],
-                    EMAIL_SETTINGS["password"], :login) do |smtp|
-      body = <<-EOF
-      From: #{EMAIL_SETTINGS["address"]}
-      To: #{@connection.data[:current_user]}
-      Subject: Welcome to Woda!
-      Date: #{Time.now.rfc2822}
-
-      Welcome to Woda #{@connection.data[:current_user].login}!
-      EOF
-      smtp.send_message(body, EMAIL_SETTINGS["address"],
-                        @connection.data[:current_user].email)
-    end
+    mail = MailFactory.new
+    mail.to = @connection.data[:current_user].email
+    mail.from = EMAIL_SETTINGS['user_name']
+    mail.subject = 'Welcome to Woda!'
+    mail.text = "Welcome to Woda #{@connection.data[:current_user].login}!"
+    email = EM::P::SmtpClient.send(domain: EMAIL_SETTINGS['domain'],
+                                   host: EMAIL_SETTINGS['address'],
+                                   starttls: true,
+                                   port: EMAIL_SETTINGS['port'],
+                                   auth: {:type => :plain,
+                                     :username => EMAIL_SETTINGS['user_name'],
+                                     :password => EMAIL_SETTINGS['password']},
+                                   from: mail.from, to: mail.to,
+                                   content: "#{mail.to_s}\r\n.\r\n",)
+    email.callback { } # TODO: success log
+    email.errback { } # TODO: failure log
   end
 
   def delete

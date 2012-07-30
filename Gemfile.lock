@@ -98,6 +98,8 @@ GEM
     i18n (0.6.0)
     json (1.6.7)
     json_pure (1.6.7)
+    mailfactory (1.4.0)
+      mime-types (>= 1.13.1)
     main (4.7.1)
     map (5.5.0)
     metric_abc (0.0.3)
@@ -116,6 +118,7 @@ GEM
     metrical (0.1.0)
       metric_fu (~> 2.1.1)
       rcov (~> 0.9)
+    mime-types (1.19)
     msgpack (0.4.6)
     multi_json (1.0.4)
     net-scp (1.0.4)
@@ -187,6 +190,7 @@ DEPENDENCIES
   eventmachine
   fattr
   i18n
+  mailfactory
   map
   metric_abc
   metrical

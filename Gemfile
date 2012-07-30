@@ -4,6 +4,7 @@ source 'http://rubygems.org'
 gem 'rake'
 gem 'activesupport'
 gem 'i18n'
+gem 'mailfactory'
 
 # Testing
 gem 'rspec'
@@ -34,7 +35,7 @@ gem 'dm-transactions'
 gem 'dm-postgres-adapter'
 gem 'dm-sqlite-adapter'
 
-#Deployment
+# Deployment
 gem 'capistrano', :require => nil
 gem 'capistrano-offroad', :require => nil
 gem 'rvm-capistrano', :require => nil
