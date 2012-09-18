@@ -64,7 +64,6 @@ describe "Connection integration", :integration do
             @connection.send_data(to.({}))
             data = ""
             if hash['status'] == 'ko' && hash['type'] == 'invalid_data'
-              puts hash['message']
               raise 'invalid data'
             end
           elsif hash

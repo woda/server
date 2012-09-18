@@ -1,3 +1,4 @@
+require 'helpers/log'
 require 'set'
 require 'bundler'
 Bundler.setup
@@ -14,7 +15,7 @@ ENVIRONMENT = determine_environment
 
 def assert_good_environment env
   unless Set.new([:dev, :prod, :test]).include? env
-    puts "Error: unknown environment: #{env}"
+    LOG.fatal "Unknown environment: #{env}"
     exit 1
   end
 end
@@ -27,12 +28,6 @@ require 'data_mapper'
 require 'dm-migrations'
 require 'helpers/data_mapper_ext.rb'
 require 'yaml'
-#require 'active_column'
-
-# TODO: Need to use the configuration file
-# $cassandra = Cassandra.new 'woda_dev'
-
-#ActiveColumn.connection = $cassandra
 
 class Server
   def self.root
