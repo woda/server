@@ -2,4 +2,8 @@
 
 cd "$(dirname $(readlink -f $0) )"/../..
 
-bundle exec rspec -f p -t unit
+if [ `git branch | grep '*'` = '* master' ]
+then
+    bundle exec rspec -f p -t unit
+fi
+
