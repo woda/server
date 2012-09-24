@@ -9,6 +9,7 @@ class ClientConnection < EventMachine::Connection
   attr_accessor :data
 
   MESSAGES = {
+    file_add_successful: "File added successfully"
     invalid_login: "Login is invalid",
     good_login: "Login succeeded",
     connection_ok: "Connected successfully",

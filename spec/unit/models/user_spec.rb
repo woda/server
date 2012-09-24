@@ -41,13 +41,17 @@ describe User, :unit do
     lambda { u2.save }.should raise_error
     u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', last_name: 'b'
     lambda { u2.save }.should raise_error
-    u2 = User.new login: "lol", pass_hash: hash, first_name: 'a', last_name: 'b'
+    u2 = User.new login: "lol", first_name: 'a', last_name: 'b'
+    u2.set_password "pass"
     lambda { u2.save }.should raise_error
-    u2 = User.new login: "lol", pass_hash: hash, email: 'a@b.com', last_name: 'b'
+    u2 = User.new login: "lol", email: 'a@b.com', last_name: 'b'
+    u2.set_password "pass"
     lambda { u2.save }.should raise_error
-    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', pass_hash: hash
+    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a'
+    u2.set_password "pass"
     lambda { u2.save }.should raise_error
-    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', pass_hash: hash, last_name: 'b'
+    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', last_name: 'b'
+    u2.set_password "pass"
     u2.save
   end
 

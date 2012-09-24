@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 # General
 gem 'rake'
-gem 'activesupport'
+gem 'activesupport', '< 3.2.0'
 gem 'i18n'
 gem 'mailfactory'
 
@@ -12,6 +12,7 @@ gem 'autotest'
 gem 'simplecov'
 gem 'simplecov-rcov'
 gem 'shoulda-matchers'
+gem 'colorize'
 
 # Static code analysis
 gem 'metric_abc'

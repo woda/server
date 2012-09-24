@@ -1,6 +1,6 @@
 require 'dm-core'
 require 'helpers/hash_digest'
-require 'active_support/secure_random'
+require 'securerandom'
 
 module DataMapper
   class Property
@@ -9,7 +9,7 @@ module DataMapper
       format WodaHash::DIGEST_REGEXP
 
       def self.generate_random
-        SHA256Hash.new ActiveSupport::SecureRandom.hex(256 / 8)
+        SecureRandom.hex(256 / 8)
       end
     end
     SHA256Salt = SHA256Hash

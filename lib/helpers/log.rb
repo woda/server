@@ -31,13 +31,14 @@ class Log < Logger
 #      return old_formatter.call severity, time, progname, msg unless severity == Logger::INFO
       msg_str = msg.class == Proc ? msg.call.to_s : msg.to_s
       time_str = time.strftime "%x %X"
-      type_str = Thread.current[:current_type]
+#      type_str = Thread.current[:current_type]
       if @logdev.dev.tty?
-        type_str = type_str.blue.bold
+#        type_str = type_str.blue.bold
         time_str = time_str.light_yellow
         severity = severity.to_s.magenta
       end
-      "#{severity} [#{time_str}] #{type_str}: #{msg_str}\n"
+#      "#{severity} [#{time_str}] #{type_str}: #{msg_str}\n"
+      "#{severity} [#{time_str}]: #{msg_str}\n"
     }
   end
 

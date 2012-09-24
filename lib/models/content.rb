@@ -1,13 +1,15 @@
 require 'data_mapper'
 require 'helpers/hash_digest.rb'
 require 'helpers/crypt_helper.rb'
+require 'models/base/woda_resource'
 require 'models/properties/sha256_hash'
 require 'models/properties/aes256_key'
 require 'models/properties/aes256_iv'
 
 class Content
   include DataMapper::Resource
-
+  include WodaResource
+  
   storage_names[:default] = "Content"
 
   updatable_property :content_hash, SHA256Hash, key: true

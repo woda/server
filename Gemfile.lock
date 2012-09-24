@@ -3,9 +3,8 @@ GEM
   specs:
     Saikuro (1.1.0)
     ZenTest (4.8.0)
-    activesupport (3.2.3)
-      i18n (~> 0.6)
-      multi_json (~> 1.0)
+    activesupport (3.1.8)
+      multi_json (>= 1.0, < 1.3)
     addressable (2.2.8)
     arrayfields (4.7.4)
     autotest (4.4.6)
@@ -29,6 +28,7 @@ GEM
       ruby_parser (~> 2.0.4)
       sexp_processor (~> 3.0.3)
     colored (1.2)
+    colorize (0.5.8)
     data_objects (0.10.8)
       addressable (~> 2.1)
     datamapper (1.2.0)
@@ -95,7 +95,7 @@ GEM
       sexp_processor (~> 3.0)
     highline (1.6.11)
     hirb (0.6.2)
-    i18n (0.6.0)
+    i18n (0.6.1)
     json (1.6.7)
     json_pure (1.6.7)
     mailfactory (1.4.0)
@@ -178,11 +178,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport
+  activesupport (< 3.2.0)
   arrayfields
   autotest
   capistrano
   capistrano-offroad
+  colorize
   datamapper (~> 1.2)
   dm-postgres-adapter
   dm-sqlite-adapter

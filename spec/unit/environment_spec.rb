@@ -13,7 +13,6 @@ describe Server, :unit do
   end
 
   it "should exit if the environment is bad" do
-    should_receive(:puts)
     should_receive(:exit).with(1)
     assert_good_environment :lol
   end

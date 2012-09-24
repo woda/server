@@ -11,6 +11,6 @@ class File
   updatable_property :last_modification_time, DateTime
 
   has n, :access_rights
-  belongs_to :user
+  belongs_to :user, :child_key => :user_id
   has 1, :content
 end

@@ -6,7 +6,7 @@ class Device
 
   storage_names[:default] = "Device"
 
-  updatable_property :uuid, DataMapper::Types::UUID, key: true
+  updatable_property :uuid, DataMapper::Property::UUID, key: true
   updatable_property :total_space, Integer
   updatable_property :free_space, Integer
   property :time_connected_last_month, Integer
