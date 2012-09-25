@@ -1,0 +1,23 @@
+dev:
+  tls: true
+  address: "smtp.gmail.com"
+  port: 587
+  domain: "smtp.gmail.com" # 'your.domain.com' for GoogleApps
+  user_name: "redmine.woda@gmail.com"
+  password: "RedmineWodaMail"
+
+test:
+  tls: true
+  address: "smtp.gmail.com"
+  port: 587
+  domain: "smtp.gmail.com" # 'your.domain.com' for GoogleApps
+  user_name: "redmine.woda@gmail.com"
+  password: "RedmineWodaMail"
+
+prod:
+  tls: true
+  address: "smtp.gmail.com"
+  port: 587
+  domain: "smtp.gmail.com" # 'your.domain.com' for GoogleApps
+  user_name: "redmine.woda@gmail.com"
+  password: "RedmineWodaMail"
