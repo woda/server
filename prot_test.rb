@@ -4,7 +4,7 @@
 
 require "highline/import"
 require 'socket'      # Sockets are in standard library
-
+require 'openssl'
 
 if !ARGV.any?
     puts 'Usage: ruby client.rb host port'
@@ -14,7 +14,11 @@ end
 host=ARGV[0]
 port=ARGV[1]
 
-serverSocket = TCPSocket.open(host, port)
+socket = TCPSocket.new(host, port)
+sslContext = OpenSSL::SSL::SSLContext.new
+serverSocket = OpenSSL::SSL::SSLSocket.new(socket, sslContext)
+serverSocket.sync_close = true
+serverSocket.connect
 
 serverSocket.puts("json");
 
