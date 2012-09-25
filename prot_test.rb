@@ -39,8 +39,8 @@ def help()
   puts "(C)2012-2013"
   puts "send {filename}: Send the file {filename} to the connected host"
   puts "exit || quit: Close the program"
-  puts "create user {login} {password}: To create a new user on the Database"
-  puts "update user {login} {password}: To update a existing user's password"
+  puts "create user {login} {password} {firstname} {lastname} {email}: To create a new user on the Database"
+  puts "update user {login} {password} {firstname} {lastname} {email}: To update a existing user's password"
   puts "delete user {login}: To delete an user from the Database"
   puts "show user {login}: Show the user login and his details"
   puts ""
@@ -62,7 +62,7 @@ def createUser(command, s)
   lastname = command[5]
   email = command[6]
 
-  s.puts("{\"action\":\"users/create\",\"login\":\"#{login}\",\"password\":\"#{password}\",\"first_name\":\"#{firstname}\",\"last_name\":\"#{lastname}\",\"email_name\":\"#{email}\"}")
+  s.puts("{\"action\":\"users/create\",\"login\":\"#{login}\",\"password\":\"#{password}\",\"first_name\":\"#{firstname}\",\"last_name\":\"#{lastname}\",\"email\":\"#{email}\"}")
 
   res = s.gets
   if (res != "{\"status\":\"ok\",\"type\":\"signup_successful\",\"message\":\"Successfully created user\"}\n")
@@ -80,7 +80,7 @@ def updateUser(command, s)
   lastname = command[5]
   email = command[6]
   
-  s.puts("{\"action\":\"users/update\",\"login\":\"#{login}\",\"password\":\"#{password}\",\"first_name\":\"#{firstname}\",\"last_name\":\"#{lastname}\",\"email_name\":\"#{email}\"}")
+  s.puts("{\"action\":\"users/update\",\"login\":\"#{login}\",\"password\":\"#{password}\",\"first_name\":\"#{firstname}\",\"last_name\":\"#{lastname}\",\"email\":\"#{email}\"}")
 
   res = s.gets
   if (res != "{\"status\":\"ok\",\"type\":\"update_successful\",\"message\":\"Successfully updated user\"}\n")

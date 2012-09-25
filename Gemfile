@@ -40,3 +40,6 @@ gem 'dm-sqlite-adapter'
 gem 'capistrano', :require => nil
 gem 'capistrano-offroad', :require => nil
 gem 'rvm-capistrano', :require => nil
+
+# Prompt
+gem 'highline'
