@@ -190,6 +190,7 @@ DEPENDENCIES
   dm-transactions
   eventmachine
   fattr
+  highline
   i18n
   mailfactory
   map
