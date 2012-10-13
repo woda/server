@@ -2,4 +2,8 @@
 
 cd "$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0` )"/../..
 
-rvm 1.9.3 do bundle exec rspec -f p -t unit
+if [ `git branch | grep '*' | cut -d' ' -f2` = master]
+then
+    rvm 1.9.3 do bundle exec rspec -f p -t unit
+fi
+

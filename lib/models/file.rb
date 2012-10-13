@@ -1,6 +1,6 @@
 require 'data_mapper'
 
-class File
+class WFile
   include DataMapper::Resource
   include WodaResource
   

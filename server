@@ -26,4 +26,5 @@ EventMachine::run do
   host = '0.0.0.0'
   port = woda_port
   EventMachine::start_server host, port, (use_tls ? ClientSslConnection : ClientConnection)
+  EventMachine::start_server host, port, (use_tls ? FileSslConnection : FileConnection)
 end

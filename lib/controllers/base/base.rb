@@ -83,5 +83,8 @@ module Controller
     def model
       nil
     end
+
+    def destroy
+    end
   end
 end

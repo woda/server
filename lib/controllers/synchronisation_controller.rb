@@ -1,21 +1,43 @@
 require 'models/file'
 require 'helpers/hash_digest'
 require 'connection/client_connection'
+require 'securerandom'
 
 class SyncController < Controller::Base
-  actions :put, :get, :delete, :change
+  actions :put, :get, :delete, :change, :upload
   before :check_authenticate, :put, :get, :delete, :change
   before [:check_param, :content_hash, :filename], :put, :change
   before [:check_param, :filename], :get, :delete
-  
+  before [:check_param, :size], :upload
+
+  @@controllers = {}
+
+  def self.[] uuid
+    @@controllers[uuid]
+  end
+
+  def initialize connection
+    super
+    @uuid = SecureRandom.uuid
+    @@controllers[@uuid] = self
+  end
+
+  def destroy
+    @@controllers.delete uuid
+  end
+
   def model
-    File
+    WFile
   end
   
+  def upload
+    @connection
+  end
+
   def put
     current_content = Content.first content_hash: param['content_hash']
-    f = File.new(filename: param['filename'],
-                 last_modification_time: DateTime.now)
+    f = WFile.new(filename: param['filename'],
+                  last_modification_time: DateTime.now)
     if current_content
       add_existing_file f, current_content
     else
@@ -29,9 +51,9 @@ class SyncController < Controller::Base
   end
 
   def delete
-    f = File.first filename: param['filename'], user_id: connection.data[:current_user]
+    f = WFile.first filename: param['filename'], user_id: connection.data[:current_user]
     destroy_content = nil
-    if File.count(content_id: f.content.id) == 1 then
+    if WFile.count(content_id: f.content.id) == 1 then
       destroy_content = f.content
     end
     file.destroy
@@ -61,6 +83,12 @@ class SyncController < Controller::Base
   end
 
   def add_new_file f
-    
+    @current_file = f
+    connection.send_message :file_need_upload
+  end
+
+  def file_received fileco
+    # TODO: send some indication that we received the file
+    # TODO: write this
   end
 end

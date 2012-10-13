@@ -19,7 +19,7 @@ class User
   property :pass_hash, SHA256Hash
   property :pass_salt, SHA256Salt
 
-  has n, :files
+  has n, :w_files
   has n, :devices
 
   def has_password? pass

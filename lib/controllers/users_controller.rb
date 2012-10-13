@@ -2,6 +2,7 @@ require 'models/user'
 require 'helpers/hash_digest'
 require 'connection/client_connection'
 require 'mailfactory'
+require 'securerandom'
 
 class UsersController < Controller::Base
   actions :create, :delete, :update, :show, :login, :logout
@@ -22,9 +23,19 @@ class UsersController < Controller::Base
     user = set_properties User.new
     user.set_password param['password']
     @connection.error_could_not_create_user unless user.save
-    connection.data[:current_user] = user
+    self.set_current_user user
     connection.send_message :signup_successful
     send_confirmation_email
+  end
+
+  def set_current_user user
+    @connection.data[:current_user] = user
+    if user then
+      @connection.add_controller SyncController.new @connection
+    else
+      # TODO: find that name dynamically
+      @connection.remove_controller 'sync'
+    end
   end
 
   def send_confirmation_email
@@ -49,7 +60,7 @@ class UsersController < Controller::Base
   def delete
     user = @connection.data[:current_user]
     @connection.error_delete_failed unless user.destroy
-    @connection.data[:current_user] = nil
+    set_current_user nil
     @connection.send_message :signout_successful
   end
 
@@ -70,13 +81,13 @@ class UsersController < Controller::Base
     user = User.first login: param['login']
     @connection.error_user_not_found unless user
     @connection.error_bad_password unless user.has_password? param['password']
-    @connection.data[:current_user] = user
+    self.set_current_user user
     @connection.send_message :login_successful
   end
 
   # Devrait peut-etre renvoyer une erreur si l'user est pas logge
   def logout
-    @connection.data[:current_user] = nil
+    set_current_user nil
     @connection.send_message :logout_successful
   end
 end

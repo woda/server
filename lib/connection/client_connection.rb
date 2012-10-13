@@ -9,6 +9,7 @@ class ClientConnection < EventMachine::Connection
   attr_accessor :data
 
   MESSAGES = {
+    file_need_upload: "Need to upload the file",
     file_add_successful: "File added successfully",
     invalid_login: "Login is invalid",
     good_login: "Login succeeded",
@@ -40,16 +41,22 @@ class ClientConnection < EventMachine::Connection
   def initialize
     super
     @parser_name = ""
-    @state_machine = []
+    @state_machine = {}
     @data = {}
-    push_controller_set [UsersController]
+    add_controller UsersController.new self
   end
 
-  def push_controller_set controllers
-    @state_machine << {}
-    controllers.each do |controller_class|
-      controller = controller_class.new self
-      @state_machine.last[controller.route] = controller
+  def add_controller controller
+    if @state_machine[controller.route] then
+      controller.destroy
+    else
+      @state_machine[controller.route] = controller
+    end
+  end
+
+  def remove_controller key
+    if @state_machine[key] then
+      @state_machine.delete(key).destroy
     end
   end
 
@@ -70,8 +77,8 @@ class ClientConnection < EventMachine::Connection
     route, action = request['action'].split '/'
     action, route = route, action unless action
 
-    error_invalid_route unless route || @state_machine.last.length == 1
-    controller = route ? @state_machine.last[route] : @state_machine.last[0]
+    error_invalid_route unless route || @state_machine.length == 1
+    controller = route ? @state_machine[route] : @state_machine[0]
 
     error_invalid_route unless controller && controller.actions.member?(action)
     controller.param = request
