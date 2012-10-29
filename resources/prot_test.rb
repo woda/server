@@ -22,18 +22,12 @@ connection = Connection.new(host, port)
 puts "Connected to host #{host} on port #{port}"
 puts "Type help to get the help"
 
-def help()
+def help
   puts ""
   puts "Protocol tester by Woda Group"
   puts "(C)2012-2013"
-  puts "send {filename}: Send the file {filename} to the connected host"
-  puts "exit || quit: Close the program"
-  puts "create user {login} {password} {firstname} {lastname} {email}: To create a new user on the Database"
-  puts "update user {login} {password} {firstname} {lastname} {email}: To update a existing user's password"
-  puts "delete user {login}: To delete an user from the Database"
-  puts "login as {login} {password}: Logged you as {login} user"
-  puts "logout user: Simply logout user if you are already logged"
-  puts "show user {login}: Show the user login and his details"
+  puts "exit".yellow + " || " + "quit".yellow + ": Close the program"
+  puts "help ".yellow + "{user || file}: Get any help concerning the parameter"
   puts ""
 end
 

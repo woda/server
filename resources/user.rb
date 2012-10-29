@@ -14,7 +14,7 @@ class User
     @logged_as = str
   end
 
-  def self.create(command, s)
+  def self.create(command, connection)
     login = command[2]
     password = command[3]
     firstname = command[4]
@@ -27,9 +27,9 @@ class User
                                         "first_name"=>firstname,
                                         "last_name"=>lastname,
                                         "email"=>email)
-    s.puts json_data[1.. json_data.size - 2]
+    connection.puts json_data[1.. json_data.size - 2]
     
-    res = s.gets
+    res = connection.gets
     res = JsonController.new(res)
     if res.error?
       puts "Unable to create user #{login} with password #{password}".red
@@ -39,7 +39,7 @@ class User
     end
   end
 
-  def self.login(command, s)
+  def self.login(command, connection)
     login = command[2]
     password = command[3]
 
@@ -47,9 +47,9 @@ class User
                                         "login"=>login,
                                         "password"=>password)
     
-    s.puts json_data[1..json_data.size - 2]
+    connection.puts json_data[1..json_data.size - 2]
 
-    res = s.gets
+    res = connection.gets
     res = JsonController.new(res)
     if res.error?
       puts "Unable to login as #{login}".red
@@ -60,13 +60,13 @@ class User
     end
   end
 
-  def self.logout(command, s)
+  def self.logout(command, connection)
     login = command[2]
     json_data = JsonController.generate("action"=>"users/logout",
                                         "login"=>login)
-    s.puts json_data[1..json_data.size - 2]
+    connection.puts json_data[1..json_data.size - 2]
 
-    res = s.gets
+    res = connection.gets
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to logout #{login}".red
@@ -77,7 +77,7 @@ class User
      end
    end
 
-   def self.update(command, s)
+   def self.update(command, connection)
      login = command[2]
      password = command[3]
      firstname = command[4]
@@ -91,9 +91,9 @@ class User
                                          "last_name"=>lastname,
                                          "email"=>email)
 
-     s.puts json_data[1..json_data.size - 2]
+     connection.puts json_data[1..json_data.size - 2]
 
-     res = s.gets
+     res = connection.gets
      res = JsonController.new(res)
      if (res.error?)
        puts "Unable to update user #{login}".red
@@ -103,11 +103,11 @@ class User
      end
    end
 
-   def self.delete(command, s)
+   def self.delete(command, connection)
 
      json_data = JsonController.generate("action"=>"users/delete",
                                          "login"=>command[2])
-     res = s.gets
+     res = connection.gets
      res = JsonController.new(res)
      if (res.error?)
        puts "Unable to delete user #{login}".red
@@ -117,12 +117,12 @@ class User
      end
    end
 
-   def self.show(command, s)
+   def self.show(command, connection)
      json_data = JsonController.generate("action"=>"users/show",
                                          "login"=>command[1])
-     s.puts json_data[1..json_data.size - 2]
+     connection.puts json_data[1..json_data.size - 2]
 
-     res = s.gets
+     res = connection.gets
      res = JsonController.new(res)
      if (res.error?)
        puts "Unable to show user #{User.instance.logged_as}".red
@@ -137,6 +137,20 @@ class User
        end
      end
    end
-  
+
+def self.help(command, connection)
+  puts "login".yellow + " as " + "login".underline + " " + "password".underline + ": Logged as user <login>"
+  puts "logout".yellow + " user: To loggout from your session"
+  puts "create".yellow + " user " + 
+    "login".underline + " " + "password".underline + " " +
+    "first_name".underline + " " + "last_name".underline + " " + 
+    "email".underline + ": To create the user <login>"
+  puts "upade".yellow + " user " + 
+    "login".underline + " " + "password".underline + " " +
+    "first_name".underline + " " + "last_name".underline + " " + 
+    "email".underline + ": To update an user"
+  puts "delete".yellow + " user " + "login".underline + ": To delete the user <login>"
+  puts "show".yellow + " user " + "login".underline + ": To show the user <login>"
+end  
   
 end
