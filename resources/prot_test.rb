@@ -5,9 +5,10 @@
 require "highline/import"
 require 'socket'      # Sockets are in standard library
 require 'openssl'
-require './user'
-require './connection'
-require './json_controller'
+require './helpers/connection'
+require './controllers/json_controller'
+require './controllers/user_controller'
+require './controllers/sync_controller'
 
 if !ARGV.any?
     puts 'Usage: ruby client.rb host port'
@@ -31,37 +32,58 @@ def help
   puts ""
 end
 
-def sendFile(fileName, s)
-  return "File does not exist" if !File.exists?(fileName)
-  puts("Sending \"#{fileName}\"...")
-  file = File.open fileName, 'rb'
-  fileContent = file.read
-  s.send fileContent, 0
-  "Sent successfully"
+def user_action(inputA, connection)
+  if inputA[1] == "user" || inputA[1] == "as"
+    puts " "
+    if UserController.respond_to? inputA[0]
+      UserController.send(inputA[0], inputA, connection)
+      puts " "
+    else
+      puts "** " + "UserController.".green + inputA[0].yellow + ": Unknown command"
+      puts " "
+    end
+  end  
+end
+
+def file_action(inputA, connection)
+  if inputA[1] == "file"
+    puts " "
+    if SyncController.respond_to? inputA[0]
+      sync = Sync.open inputA[2]
+      sctrl = SyncController.new sync, connection if sync.nil? == false
+      SyncController.send(inputA[0], inputA, connection)
+      puts " "
+    else
+      puts "** " + "UserController.".green + inputA[0].yellow + ": Unknown command"
+      puts " "
+    end
+  end  
+  if inputA[1] == "file"
+    puts ""
+    if SyncController.respond_to? inputA[0]
+      sync = Sync.open inputA[2]
+      scontroller = nil
+      if sync.nil? == false
+        scontroller = SyncController.new sync, connection
+        scontoller.call(inputA[0], inputA)
+      end
+      puts ""
+    else
+      puts "** " + "SyncController.".green + inputA[0].yellow + ": Unknown command"
+      puts ""
+    end
+  end
 end
 
 user = User.instance
 
 help 
 loop {
-  input = ask "$ [#{User.instance.logged_as}] > "
+  input = ask "$ [#{user.logged_as}] > "
   exit if input == "exit" || input == "quit"
   help if input == "help" || input == "--help"
   inputA = input.to_s.split
-  if inputA[0] == "send"
-    inputA.delete_at(0)
-    fileName = inputA.join ' '
-    puts sendFile fileName, connection
-  end
- 
-  if inputA[1] == "user" || inputA[1] == "as"
-    puts " "
-    if User.respond_to? inputA[0]
-      User.send(inputA[0], inputA, connection)
-      puts " "
-    else
-      puts "** " + "User.".green + inputA[0].yellow + ": Unknown command"
-      puts " "
-    end
-  end
+  
+  user_action inputA, connection
+  file_action inputA, connection
 }
