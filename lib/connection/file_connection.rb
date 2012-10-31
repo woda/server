@@ -2,58 +2,55 @@ require 'eventmachine'
 require 'connection/parser/serializer'
 require 'connection/connection_protocol'
 require 'controllers/users_controller'
+require 'controllers/synchronisation_controller'
 require 'tempfile'
 
 BUF_SIZE = 2048
 
 # TODO: handle connection errors.
 class FileConnection < EventMachine::Connection
-
+  attr_reader :file, :tmpfile, :token
 
   def initialize
-    @username = nil
-    @user = nil
-    @connected = false
-    @file = nil
     @buffer = StringBuffer.new
-    @controller = nil
+    @file = None
+    @tmpfile = None
+    @controller = None
   end
 
   def receive_data data
     @buffer << data
-    if !@controller then
+    if !@file then
       self.continue_connection
     end
     # We might have connected successfully thanks to continue_connection
     if @controller && @buffer.length > BUF_SIZE
-      @file.write(@buffer.read)
+      @tmpfile.write(@buffer.read)
     end
   end
 
   def continue_connection
     line = @buffer.nextline
+    return unless line
     line.chomp!
-    if !@user then
-      @username = line
-      @user = User.first login: @username
-      # TODO: handle errors
-    elsif !@connected then
-      @connected = @user.has_password? line
-      # TODO: handle errors
-    elsif !@controller then
-      @controller = SyncController[line]
-      @file = Tempfile.new 'woda'
-      # TODO: handle errors (users can steal others' controller...)
+    @token = line
+    data = SyncController[@token]
+    unless data
+      send_data 'Invalid token!'
+      close_connection_after_writing
     end
+    @file = data.file
+    @controller = data.controller
+    @tmpfile = Tempfile.new('woda_file')
   end
 
   def connection_completed
-    @file.write(@buffer.read)
+    @tmpfile.write(@buffer.read)
     @controller.file_received(self)
   end
 end
 
-class FileSslConnection < ClientConnection
+class FileSslConnection < FileConnection
   def post_init
     super
     start_tls

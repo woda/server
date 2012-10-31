@@ -4,6 +4,7 @@ $: << "#{File.dirname(__FILE__)}/lib"
 
 require 'environment'
 require 'connection/client_connection'
+require 'connection/file_connection'
 require 'optparse'
 
 woda_port = 8850
@@ -26,5 +27,5 @@ EventMachine::run do
   host = '0.0.0.0'
   port = woda_port
   EventMachine::start_server host, port, (use_tls ? ClientSslConnection : ClientConnection)
-  EventMachine::start_server host, port, (use_tls ? FileSslConnection : FileConnection)
+  EventMachine::start_server host, port + 1, (use_tls ? FileSslConnection : FileConnection)
 end

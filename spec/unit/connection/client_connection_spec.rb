@@ -48,9 +48,9 @@ describe ClientConnection, :unit do
     [klass, obj]
   end
 
-  it "should be able to receive controler set" do
+  it "should be able to add controller set" do
     klass, obj = generate_mocks
-    @connection.push_controller_set [klass]
+    @connection.add_controller klass.new(@connection)
   end
 
   it "should parse route correctly" do
@@ -63,7 +63,7 @@ describe ClientConnection, :unit do
     obj.should_receive(:actions).once.and_return(Set.new ['action_1'])
     request = {"action" => "dummy/action_1"}
     obj.should_receive(:param=).with(request)
-    @connection.push_controller_set [klass]
+    @connection.add_controller klass.new(@connection)
     @connection.on_request(request)
   end
 
@@ -97,6 +97,7 @@ describe ClientConnection, :unit do
 
     obj = mock()
     obj.should_receive(:route).twice.and_return("dummy")
+    obj.should_receive(:destroy)
     klass = mock()
     klass.should_receive(:new).with(@connection).any_number_of_times.and_return(obj)
 
@@ -105,7 +106,8 @@ describe ClientConnection, :unit do
     obj.should_receive(:param=)
     obj.should_receive(:action_1)
 
-    @connection.push_controller_set [klass, klass]
+    @connection.add_controller klass.new(@connection)
+    @connection.add_controller klass.new(@connection)
 
     lambda { @connection.on_request({}) }.should raise_error(Protocol::RequestShortCut)
 
