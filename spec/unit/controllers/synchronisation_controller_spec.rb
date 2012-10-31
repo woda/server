@@ -12,6 +12,8 @@ describe SyncController, :unit do
     content = 'hello'
     @controller.param['content_hash'] = WodaHash.digest(content).to_hex
     @controller.param['filename'] = 'abc'
+    # TODO: test token and message symbol
+    @connection.should_receive(:send_message)
     @controller.put
   end
 end

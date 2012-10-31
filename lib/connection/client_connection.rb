@@ -47,10 +47,11 @@ class ClientConnection < EventMachine::Connection
   end
 
   def add_controller controller
-    if @state_machine[controller.route] then
+    route = controller.route
+    if @state_machine[route] then
       controller.destroy
     else
-      @state_machine[controller.route] = controller
+      @state_machine[route] = controller
     end
   end
 

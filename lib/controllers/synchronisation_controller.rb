@@ -1,7 +1,9 @@
 require 'models/file'
 require 'helpers/hash_digest'
 require 'connection/client_connection'
+require 'connection/file_connection'
 require 'securerandom'
+require 'ostruct'
 
 class SyncController < Controller::Base
   actions :put, :get, :delete, :change, :upload
@@ -10,20 +12,19 @@ class SyncController < Controller::Base
   before [:check_param, :filename], :get, :delete
   before [:check_param, :size], :upload
 
-  @@controllers = {}
+  @@files = {}
 
-  def self.[] uuid
-    @@controllers[uuid]
+  def self.[] token
+    @@files[uuid]
   end
 
   def initialize connection
     super
-    @uuid = SecureRandom.uuid
-    @@controllers[@uuid] = self
+    @files_allocated = []
   end
 
   def destroy
-    @@controllers.delete uuid
+    @files_allocated.map { |name| @@files.delete(name) }
   end
 
   def model
@@ -83,12 +84,42 @@ class SyncController < Controller::Base
   end
 
   def add_new_file f
-    @current_file = f
-    connection.send_message :file_need_upload
+    token = SecureRandom.base64(64)
+    @@files[token] = OpenStruct.new(file: f, controller: self)
+    connection.send_message :file_need_upload, token: token
+  end
+
+  def compute_hash(file)
+    FileSyncResults.new(file)
+  end
+
+  def on_file_splitted results, file
+    error_bad_hash unless results.hash == file.content.content_hash
+    connection.send_message :file_synced
+  end
+
+  def sync_received_file tmpfile, file_in_db
+    return FileSyncResults.new tmpfile
   end
 
   def file_received fileco
     # TODO: send some indication that we received the file
-    # TODO: write this
+    file = fileco.tmpfile
+    file.seek 0
+    file_database = fileco.file
+    EM.defer Proc.new { self.sync_received_file(file, file_database) }, Proc.new { |results| on_file_splitted results, file_database }
+    connection.send_message :file_fully_received
+  end
+end
+
+class FileSyncResults
+  attr_reader :hash
+
+  def initialize(file)
+    hash = WodaHash.new
+    until file.eof?
+      hash << file.read(CHUNK_SIZE)
+    end
+    @hash = hash.to_hex
   end
 end
