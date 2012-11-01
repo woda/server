@@ -64,12 +64,12 @@ module Protocol
       send_object({ status: "ko", type: (options[:type].to_s || "exception"), message: e.message})
     end
     
-    def send_error slug
-      send_object({status: "ko", type: slug.to_s, message: messages[slug]})
+    def send_error slug, additional_hash = {}
+      send_object(additional_hash.merge({status: "ko", type: slug.to_s, message: messages[slug]}))
     end
     
-    def send_message slug
-      send_object({status: "ok", type: slug.to_s, message: messages[slug]})
+    def send_message slug, additional_hash = {}
+      send_object(additional_hash.merge({status: "ok", type: slug.to_s, message: messages[slug]}))
     end
 
     def method_missing name, *args, &block
