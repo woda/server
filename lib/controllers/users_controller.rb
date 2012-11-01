@@ -73,8 +73,13 @@ class UsersController < Controller::Base
   end
 
   def show
+    # @connection.send_object(status: "ok", type: "user_infos",
+    #                        data: @connection.data[:current_user].attributes)
+    # Ne display que l'user loguer
+
+    user = user.find param['login']
     @connection.send_object(status: "ok", type: "user_infos",
-                            data: @connection.data[:current_user].attributes)
+                            data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
   end
   
   def login
@@ -90,4 +95,17 @@ class UsersController < Controller::Base
     set_current_user nil
     @connection.send_message :logout_successful
   end
+
+  def get_user_list
+    user = User.all:login => param['login'] if param['login'].exists?
+    user = User.all :email => param['email'] if param['email'].exists?
+    user = User.all(:login =>param['login']) + User.all(:email => param['email']) if param['login'].exists? && param['email'].exists?
+    
+    userList.each do | user |
+      @connection.send_object(status: "ok",
+                              type: "user_infos",
+                              data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
+    end
+  end
+
 end
