@@ -24,7 +24,7 @@ class SyncController
     json_data = JsonController.generate("action"=>"sync/put",
                                         "content_hash"=>@sync.hexhash,
                                         "path"=>@sync.path)
-  
+    puts json_data[1..json_data.size-2]
     @connection.puts json_data[1..json_data.size - 2]
     
     res = @connection.gets
