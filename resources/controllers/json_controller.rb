@@ -16,20 +16,8 @@ class JsonController
     end
   end
 
-  def status
-    @parsed_string['status']
-  end
-
-  def type
-    @parsed_string['type']
-  end
-
-  def message
-    @parsed_string['message']
-  end
-
-  def nested
-    @parsed_string['data']
+  def get(what)
+    @parsed_string[what]
   end
 
   def self.generate(*args)

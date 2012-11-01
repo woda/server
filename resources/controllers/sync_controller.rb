@@ -31,7 +31,7 @@ class SyncController
     res = JsonController.new(res)
     if res.error?
       puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
-      puts "** Server response: " + res.message.yellow
+      puts "** Server response: " + res.get("message").yellow
       return false
     end
     return true

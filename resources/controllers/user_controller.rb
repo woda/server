@@ -22,7 +22,7 @@ class UserController
     res = JsonController.new(res)
     if res.error?
       puts "Unable to create user #{login} with password #{password}".red
-      puts "** Server response: " + res.message.yellow
+      puts "** Server response: " + res.get("message").yellow
     else
       puts "User ".green + login.yellow + " created successfully".green
     end
@@ -42,10 +42,10 @@ class UserController
     res = JsonController.new(res)
     if res.error?
       puts "Unable to login as #{login}".red
-      puts "**Server response: " + res.message.yellow
+      puts "**Server response: " + res.get("message").yellow
     else
       User.instance.set_logged_as login.blue
-      puts res.message.green + " as ".green + login.blue
+      puts res.get("message").green + " as ".green + login.blue
     end
   end
   
@@ -59,7 +59,7 @@ class UserController
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to logout #{login}".red
-      puts "** Server response: " + res.message.yellow
+      puts "** Server response: " + res.get("message").yellow
     else
       puts "User logout successfully".green
       User.instance.set_logged_as "Anonymous".blue
@@ -86,7 +86,7 @@ class UserController
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to update user #{login}".red
-      puts "** Server response: " + res.message.yellow
+      puts "** Server response: " + res.get("message").yellow
     else
       puts "User ".green + login.yellow + " updated successfully".green
     end
@@ -100,7 +100,7 @@ class UserController
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to delete user #{login}".red
-      puts "** Server response: " + res.message.yellow
+      puts "** Server response: " + res.get("message").yellow
     else
       puts "User deleted successfully"
     end
@@ -130,7 +130,7 @@ class UserController
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to show user #{User.instance.logged_as}".red
-      puts "** Server response: " + res.message.yellow
+      puts "** Server response: " + res.get("message").yellow
     else
       res = res.nested.to_s
       res = res.gsub(/=>/, ":")
