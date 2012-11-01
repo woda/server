@@ -38,6 +38,9 @@ class SyncController
   end
 
   def synchronize
+    ## TODO
+    ## Get the new port for the sending from the server response
+    ## Open a TCPServer socket
     puts "Sending file: 42%"
   end
 end

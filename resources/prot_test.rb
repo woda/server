@@ -19,6 +19,15 @@ host=ARGV[0]
 port=ARGV[1]
 
 connection = Connection.new(host, port)
+@serverSocket.puts("json");
+
+line = @serverSocket.gets
+line = JsonController.new(line)
+if (line.error?)
+  puts "[CONNECTION ERROR]: Server response was negative for connection"
+  puts "\t\t\tPlease try again later"
+  exit
+end
 
 puts "Connected to host #{host} on port #{port}"
 puts "Type help to get the help"

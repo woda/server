@@ -18,15 +18,6 @@ class Connection
       puts "** Server does not respond. is it online ? Try again later".red
       exit
     end
-    @serverSocket.puts("json");
-    
-    line = @serverSocket.gets
-    line = JsonController.new(line)
-    if (line.error?)
-      puts "[CONNECTION ERROR]: Server response was negative for connection"
-      puts "\t\t\tPlease try again later"
-      exit
-    end
     
   end
   
