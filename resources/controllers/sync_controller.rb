@@ -4,8 +4,8 @@ require File.join(File.dirname(__FILE__), "..", "models/sync")
 class SyncController
   attr_accessor :sync, :connection
 
-  def initialize(sync, connection)
-    @sync = sync
+  def initialize(connection)
+    @sync = nil
     @connection = connection
   end
 
@@ -14,31 +14,30 @@ class SyncController
   end
 
   def sync(command)
-    sync @sync if sync == nil
-    
-    sync_file if get_autorisation == true
+    @sync = Sync.open command[2]
+    return if @sync == nil
+    synchronize if sync_autorisation? == true
   end
-
   
   private
-  def get_autorisation
+  def sync_autorisation?
     json_data = JsonController.generate("action"=>"sync/put",
-                                        "content_hash"=>sync.hexhash,
+                                        "content_hash"=>@sync.hexhash,
                                         "path"=>@sync.path)
   
     @connection.puts json_data[1..json_data.size - 2]
     
     res = @connection.gets
-    res = JsonController.parse(res)
+    res = JsonController.new(res)
     if res.error?
-      puts "Something wrong happened. We can't synchronize the file with Woda's cloud".red
+      puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
       puts "** Server response: " + res.message.yellow
       return false
     end
     return true
   end
 
-  def sync_file
+  def synchronize
     puts "Sending file: 42%"
   end
 end

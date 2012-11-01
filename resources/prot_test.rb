@@ -45,28 +45,12 @@ def user_action(inputA, connection)
   end  
 end
 
-def file_action(inputA, connection)
-  if inputA[1] == "file"
-    puts " "
-    if SyncController.respond_to? inputA[0]
-      sync = Sync.open inputA[2]
-      sctrl = SyncController.new sync, connection if sync.nil? == false
-      SyncController.send(inputA[0], inputA, connection)
-      puts " "
-    else
-      puts "** " + "UserController.".green + inputA[0].yellow + ": Unknown command"
-      puts " "
-    end
-  end  
+def file_action(inputA, connection) 
   if inputA[1] == "file"
     puts ""
-    if SyncController.respond_to? inputA[0]
-      sync = Sync.open inputA[2]
-      scontroller = nil
-      if sync.nil? == false
-        scontroller = SyncController.new sync, connection
-        scontoller.call(inputA[0], inputA)
-      end
+    scontroller = SyncController.new connection
+    if scontroller.respond_to? inputA[0]
+        scontroller.send(inputA[0], inputA)
       puts ""
     else
       puts "** " + "SyncController.".green + inputA[0].yellow + ": Unknown command"

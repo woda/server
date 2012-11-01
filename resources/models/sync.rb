@@ -41,5 +41,9 @@ class Sync
   def ext
     @file.extname @name
   end
+
+  def hexhash
+    @hexhash
+  end
   
 end
