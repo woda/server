@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # Protocol tester by Woda Group
 # (C) 2012-2013
 # Kevin Guillouard && Etienne Linck
