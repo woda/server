@@ -18,10 +18,15 @@ end
 host=ARGV[0]
 port=ARGV[1]
 
-connection = Connection.new(host, port)
-connection.puts("json");
+connection = Connection.new
 
-line = connection.gets
+if !connection.connectToHost(host, port)
+  puts "** Server does not respond. is it online ? Try again later".red
+  exit
+end
+connection.put_data("json");
+
+line = connection.get_data
 line = JsonController.new(line)
 if (line.error?)
   puts "[CONNECTION ERROR]: Server response was negative for connection"
