@@ -50,10 +50,21 @@ class SyncController
     ## Get the new port for the sending from the server response
     ## Open a TCPServer socket
     data_connection = Connection.new
+    puts "Connecting to data socket..."
     if data_connection.connectToHost(ARGV[0], ARGV[1].to_i + 1) == false
       puts "Failed to upload a file!".red
       return false
     end
-    puts "Sending file: 42%"
+    begin
+      puts "Uploading.. in progress".yellow
+      while @sync.eof? do
+        buffer = @sync.read(10)
+        data.connection.put_data(buffer);
+     end
+    rescue
+      puts "Failed to upload a file!".red
+      return false
+    end
+    return true
   end
 end
