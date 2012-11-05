@@ -6,11 +6,7 @@ require 'thread'
 # colorize doesn't implement this one for some reason...
 String.class_eval do
   def bold
-    if self =~ /^\e\[\d+;(\d+);(\d+)m(.*)\e\[0m$/
-      "\e[1;#{$1};#{$2}m#{$3}\e[0m"
-    else
-      "\e[1;39;49m#{self}\e[0m"
-    end
+    "\e[1;39;49m#{self}\e[0m"
   end
 end
 

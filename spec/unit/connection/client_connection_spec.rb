@@ -43,6 +43,7 @@ describe ClientConnection, :unit do
   def generate_mocks
     obj = mock()
     obj.should_receive(:route).once.and_return("dummy")
+    obj.should_receive(:destroy).any_number_of_times
     klass = mock()
     klass.should_receive(:new).with(@connection).once.and_return(obj)
     [klass, obj]
@@ -65,6 +66,9 @@ describe ClientConnection, :unit do
     obj.should_receive(:param=).with(request)
     @connection.add_controller klass.new(@connection)
     @connection.on_request(request)
+    klass, obj = generate_mocks
+    @connection.remove_controller klass.new(@connection).route
+    lambda { @connection.on_request(request) }.should raise_error(Protocol::RequestShortCut)
   end
 
   it "should handle bad JSON" do

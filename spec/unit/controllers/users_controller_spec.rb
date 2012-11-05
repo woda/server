@@ -79,13 +79,69 @@ describe UsersController, :unit do
     lambda { @connection.call_request method_name, @controller }.should raise_error
   end
 
+  it "should update users" do
+    create_user
+
+    user = User.first login: 'test'
+    @connection.data[:current_user] = user
+    prev_hash = user.pass_hash
+
+    @controller.param['first_name'] = 'pokemon'
+    @controller.param['last_name'] = 'pikachu'
+    @controller.param['password'] = 'hutehute'
+
+    @connection.should_receive(:send_message)
+    @connection.call_request :update, @controller
+
+    user.first_name.should eq('pokemon')
+    user.last_name.should eq('pikachu')
+    user.pass_hash.should_not eq(prev_hash)
+  end
+
+  it "should handle logout" do
+    create_user
+
+    @connection.data[:current_user] = User.first login: 'test'
+
+    @connection.should_receive(:send_message)
+    @connection.call_request :logout, @controller
+
+    @connection.data[:current_user].should_not be
+
+    @connection.should_receive(:send_error)
+    lambda { @connection.call_request :logout, @controller }.should raise_error(Protocol::RequestShortCut)
+  end
+
+  it "should handle self deletion" do
+    create_user
+
+    @connection.data[:current_user] = User.first login: 'test'
+
+    @connection.should_receive(:send_message)
+    @connection.call_request :delete, @controller
+
+    @connection.data[:current_user].should_not be
+    User.first(login: 'test').should_not be
+
+    @connection.should_receive(:send_error).twice
+    lambda { @connection.call_request :delete, @controller }.should raise_error(Protocol::RequestShortCut)
+
+    create_user
+    @connection.data[:current_user] = User.first login: 'test'
+    @connection.data[:current_user].should_receive(:destroy).and_return(nil)
+    lambda { @connection.call_request :delete, @controller }.should raise_error(Protocol::RequestShortCut)
+  end
+
   it "should be able to show user" do
     create_user
 
     @connection.data[:current_user] = User.first login: 'test'
     
     # Now the actual proper case
-    @connection.should_receive(:send_object).with({ status: "ok", type: "user_infos", data: User.first(login: "test").attributes})
+    expected = User.first(login: "test").attributes
+    expected.delete :pass_hash
+    expected.delete :pass_salt
+    @connection.should_receive(:send_object).with({ status: "ok", type: "user_infos", data: expected})
     @connection.call_request :show, @controller
   end
 

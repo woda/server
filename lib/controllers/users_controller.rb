@@ -9,7 +9,7 @@ class UsersController < Controller::Base
   before :check_authenticate, :delete, :update, :show, :logout
   before :check_create_params, :create
   before [:check_params, :password], :create
-  before :check_update_params, :update
+  before [:check_update_params, :password], :update
   before [:check_params, :login, :password], :login
 
   def model
@@ -38,6 +38,7 @@ class UsersController < Controller::Base
     end
   end
 
+  # TODO(adrien): Tester cette fonction dans les tests unitaires
   def send_confirmation_email
     mail = MailFactory.new
     mail.to = @connection.data[:current_user].email
@@ -73,13 +74,12 @@ class UsersController < Controller::Base
   end
 
   def show
-    # @connection.send_object(status: "ok", type: "user_infos",
-    #                        data: @connection.data[:current_user].attributes)
-    # Ne display que l'user loguer
-
-    user = user.find param['login']
+    user = User.first param['login']
+    attributes = user.attributes.clone()
+    attributes.delete(:pass_hash)
+    attributes.delete(:pass_salt)
     @connection.send_object(status: "ok", type: "user_infos",
-                            data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
+                            data: attributes)
   end
   
   def login
@@ -96,16 +96,22 @@ class UsersController < Controller::Base
     @connection.send_message :logout_successful
   end
 
-  def get_user_list
-    user = User.all:login => param['login'] if param['login'].exists?
-    user = User.all :email => param['email'] if param['email'].exists?
-    user = User.all(:login =>param['login']) + User.all(:email => param['email']) if param['login'].exists? && param['email'].exists?
-    
-    userList.each do | user |
-      @connection.send_object(status: "ok",
-                              type: "user_infos",
-                              data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
-    end
-  end
+  # Je ne comprends pas cette fonction:
+  # Pourquoi prendre l'email et le login en parametre alors que les deux sont garantis d'etre unique?
+  # De plus, la facon dont les choses sont retournees est incorrecte:
+  #   1/ Ne pas ecrire du json en dur dans une string. C'est inutile et ca ne donne pas le meme resultat
+  #   2/ Comment le client sait-il quand le flux de reponses s'arrete? Pourquoi ne pas faire une seule reponse et tout
+  #      mettre dans un array?
+  #def get_user_list
+  #  user = User.all:login => param['login'] if param['login'].exists?
+  #  user = User.all :email => param['email'] if param['email'].exists?
+  #  user = User.all(:login =>param['login']) + User.all(:email => param['email']) if param['login'].exists? && param['email'].exists?
+  #
+  #  userList.each do | user |
+  #    @connection.send_object(status: "ok",
+  #                            type: "user_infos",
+  #                            data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
+  #  end
+  #end
 
 end

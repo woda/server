@@ -5,7 +5,8 @@ require_corresponding __FILE__
 describe 'Colorize', :unit do
   it 'should not crash when making string bold' do
     'a'.bold
-    'a'.red.bold
+    'a'.red.on_blue.bold
+    'a'.bold.red
   end
 end
 

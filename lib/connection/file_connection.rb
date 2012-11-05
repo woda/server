@@ -4,6 +4,7 @@ require 'connection/connection_protocol'
 require 'controllers/users_controller'
 require 'controllers/synchronisation_controller'
 require 'tempfile'
+require 'helpers/stringbuffer'
 
 BUF_SIZE = 2048
 
@@ -13,9 +14,9 @@ class FileConnection < EventMachine::Connection
 
   def initialize
     @buffer = StringBuffer.new
-    @file = None
-    @tmpfile = None
-    @controller = None
+    @file = nil
+    @tmpfile = nil
+    @controller = nil
   end
 
   def receive_data data

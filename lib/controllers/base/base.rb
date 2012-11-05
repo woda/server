@@ -56,8 +56,8 @@ module Controller
       check_params(*(model.properties.find_all { |p| model.updatable?(p.name) && p.required? }.map(&:name)))
     end
 
-    def check_update_params
-      check_any_params(*(model.properties.find_all { |p| model.updatable?(p.name) }.map(&:name)))
+    def check_update_params *args
+      check_any_params(*(model.properties.find_all { |p| model.updatable?(p.name) }.map(&:name) + args))
     end
 
     def has_param? p

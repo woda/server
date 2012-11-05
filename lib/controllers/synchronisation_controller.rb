@@ -8,14 +8,14 @@ require 'ostruct'
 class SyncController < Controller::Base
   actions :put, :get, :delete, :change, :upload
   before :check_authenticate, :put, :get, :delete, :change
-  before [:check_param, :content_hash, :filename], :put, :change
-  before [:check_param, :filename], :get, :delete
-  before [:check_param, :size], :upload
+  before [:check_params, :content_hash, :filename], :put, :change
+  before [:check_params, :filename], :get, :delete
+  before [:check_params, :size], :upload
 
   @@files = {}
 
   def self.[] token
-    @@files[uuid]
+    @@files[token]
   end
 
   def initialize connection
@@ -84,6 +84,7 @@ class SyncController < Controller::Base
   end
 
   def add_new_file f
+    f.content = Content.new content_hash: param['content_hash']
     token = SecureRandom.base64(64)
     @@files[token] = OpenStruct.new(file: f, controller: self)
     connection.send_message :file_need_upload, token: token
@@ -94,8 +95,8 @@ class SyncController < Controller::Base
   end
 
   def on_file_splitted results, file
-    error_bad_hash unless results.hash == file.content.content_hash
-    connection.send_message :file_synced
+    connection.error_bad_hash unless results.hash == file.content.content_hash
+    connection.send_message :file_add_successful
   end
 
   def sync_received_file tmpfile, file_in_db
@@ -108,18 +109,21 @@ class SyncController < Controller::Base
     file.seek 0
     file_database = fileco.file
     EM.defer Proc.new { self.sync_received_file(file, file_database) }, Proc.new { |results| on_file_splitted results, file_database }
-    connection.send_message :file_fully_received
+    connection.send_message :file_received
   end
 end
 
 class FileSyncResults
   attr_reader :hash
 
+  CHUNK_SIZE = 8096
+
   def initialize(file)
     hash = WodaHash.new
     until file.eof?
-      hash << file.read(CHUNK_SIZE)
+      chunk = file.read(CHUNK_SIZE)
+      hash << chunk
     end
-    @hash = hash.to_hex
+    @hash = hash.to_s
   end
 end

@@ -31,7 +31,9 @@ class ClientConnection < EventMachine::Connection
     could_not_update_user: "Could not update user: failed",
     user_not_found: "User not found",
     bad_password: "Bad password",
-    not_a_hash: "The data is not a hash"
+    not_a_hash: "The data is not a hash",
+    delete_failed: "Deletion of user failed",
+    bad_hash: "File hash was invalid"
   }
 
   def messages

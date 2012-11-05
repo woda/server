@@ -7,6 +7,10 @@ describe User, :unit do
     DataMapper::Model.raise_on_save_failure = true
   end
 
+  it "should have proper updatable properties" do
+    User.updatable_properties.should eq(Set.new([:last_name, :first_name, :login, :email]))
+  end
+
   def build_user
     @user = User.new login: "hello", email: 'a@b.com', first_name: 'a', last_name: 'b'
     @user.set_password "world"
