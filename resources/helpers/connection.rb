@@ -27,6 +27,10 @@ class Connection
     @serverSocket.puts data
   end
 
+  def write_binary(data)
+    @serverSocket.write data
+  end
+  
   def get_data
     begin
       timeout(@timout) do

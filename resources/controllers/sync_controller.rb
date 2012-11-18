@@ -42,7 +42,7 @@ class SyncController
       puts "We need to upload file"
       return true
     end
-    return true # for test : true.... working function : false
+    return false
   end
 
   def synchronize
@@ -52,19 +52,20 @@ class SyncController
     data_connection = Connection.new
     puts "Connecting to data socket..."
     if data_connection.connectToHost(ARGV[0], ARGV[1].to_i + 1) == false
-      puts "Failed to upload a file!".red
+      puts "Failed to connection to data stream".red
       return false
     end
     begin
       puts "Uploading.. in progress".yellow
-      while @sync.eof? do
+      while @sync.eof == false
         buffer = @sync.read(10)
-        data.connection.put_data(buffer);
-     end
+        data_connection.write_binary(buffer);
+      end
     rescue
       puts "Failed to upload a file!".red
       return false
     end
+      puts "Upload complete".green
     return true
   end
 end
