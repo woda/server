@@ -29,10 +29,18 @@ describe SyncController, :unit do
     @connection.call_request :put, @controller
     token.should be
 
+    WFile.first(filename: 'abc').should be_nil
+
     @connection.should_receive(:send_message).with(:file_received)
     @file_connection.receive_data token
     @file_connection.receive_data "\n"
     @file_connection.receive_data content
     @file_connection.unbind
+
+    WFile.first(filename: 'abc').should_not be_nil
+  end
+
+  it "should allow deleting a file" do
+    #@file
   end
 end

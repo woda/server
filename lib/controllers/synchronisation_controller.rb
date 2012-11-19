@@ -89,6 +89,7 @@ class SyncController < Controller::Base
   def add_new_file f
     LOG.info "Requesting upload of file #{f.filename}"
     f.content = Content.new content_hash: param['content_hash']
+    f.user = @connection.data[:current_user]
     token = SecureRandom.base64(64)
     @@files[token] = OpenStruct.new(file: f, controller: self)
     connection.send_message :file_need_upload, token: token
@@ -100,6 +101,10 @@ class SyncController < Controller::Base
 
   def on_file_splitted results, file
     connection.error_bad_hash unless results.hash == file.content.content_hash
+    file.content.crypt_key = WodaCrypt.new.random_key.to_hex
+    file.content.init_vector = WodaCrypt.new.random_iv.to_hex
+    file.content.size = results.size
+    file.save
     connection.send_message :file_add_successful
   end
 
@@ -119,14 +124,17 @@ end
 
 class FileSyncResults
   attr_reader :hash
+  attr_reader :size
 
   CHUNK_SIZE = 8096
 
   def initialize(file)
     hash = WodaHash.new
+    @size = 0
     until file.eof?
       chunk = file.read(CHUNK_SIZE)
       hash << chunk
+      @size += chunk.size
     end
     @hash = hash.to_s
   end
