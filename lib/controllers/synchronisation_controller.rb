@@ -36,6 +36,7 @@ class SyncController < Controller::Base
   end
 
   def put
+    LOG.info "Adding file: #{param['filename']} for user #{@connection.data[:current_user].login}"
     current_content = Content.first content_hash: param['content_hash']
     f = WFile.new(filename: param['filename'],
                   last_modification_time: DateTime.now)
@@ -52,6 +53,7 @@ class SyncController < Controller::Base
   end
 
   def delete
+    LOG.info "Removing file #{param['filename']}"
     f = WFile.first filename: param['filename'], user_id: connection.data[:current_user]
     destroy_content = nil
     if WFile.count(content_id: f.content.id) == 1 then
@@ -75,6 +77,7 @@ class SyncController < Controller::Base
   # be salted, and to ask the client to give us the hash with the salt. If he
   # does, then he probably has the file.
   def add_existing_file f, content
+    LOG.info "A file like #{f.filename} already exists"
     f.content = content
     # This is temporary, when we check for the salted hash thing there will be
     # more stuff in this function
@@ -84,6 +87,7 @@ class SyncController < Controller::Base
   end
 
   def add_new_file f
+    LOG.info "Requesting upload of file #{f.filename}"
     f.content = Content.new content_hash: param['content_hash']
     token = SecureRandom.base64(64)
     @@files[token] = OpenStruct.new(file: f, controller: self)

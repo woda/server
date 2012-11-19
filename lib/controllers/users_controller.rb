@@ -18,6 +18,7 @@ class UsersController < Controller::Base
 
   def create
 # TODO: remove those two line to replace them with more generic error handling from user.save
+    LOG.info "Trying to create #{param['login']}"
     @connection.error_login_taken if User.first login: param['login']
     @connection.error_email_taken if User.first email: param['email']
     user = set_properties User.new
@@ -25,6 +26,7 @@ class UsersController < Controller::Base
     @connection.error_could_not_create_user unless user.save
     self.set_current_user user
     connection.send_message :signup_successful
+    # TODO: defer this
     send_confirmation_email
   end
 
@@ -59,6 +61,7 @@ class UsersController < Controller::Base
   end
 
   def delete
+    LOG.info "Trying to delete #{@connection.data[:current_user].login}"
     user = @connection.data[:current_user]
     @connection.error_delete_failed unless user.destroy
     set_current_user nil
@@ -66,6 +69,7 @@ class UsersController < Controller::Base
   end
 
   def update
+    LOG.info "Modifying information for user #{@connection.data[:current_user].login}"
     user = @connection.data[:current_user]
     set_properties user
     user.set_password param['password'] if param['password']
@@ -74,6 +78,7 @@ class UsersController < Controller::Base
   end
 
   def show
+    LOG.info "Showing user #{param['login']}"
     user = User.first param['login']
     attributes = user.attributes.clone()
     attributes.delete(:pass_hash)
@@ -83,6 +88,7 @@ class UsersController < Controller::Base
   end
   
   def login
+    LOG.info "User trying to login: #{param['login']}"
     user = User.first login: param['login']
     @connection.error_user_not_found unless user
     @connection.error_bad_password unless user.has_password? param['password']
@@ -90,8 +96,8 @@ class UsersController < Controller::Base
     @connection.send_message :login_successful
   end
 
-  # Devrait peut-etre renvoyer une erreur si l'user est pas logge
   def logout
+    LOG.info "Logging out user #{@connection.data[:current_user].login}"
     set_current_user nil
     @connection.send_message :logout_successful
   end

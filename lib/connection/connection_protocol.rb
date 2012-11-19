@@ -54,6 +54,7 @@ module Protocol
     end
     
     def send_object obj
+      LOG.debug "Sending on #{@uuid}: #{obj}"
       @parser.pack.encode(obj) do |chunk|
         send_data chunk
       end

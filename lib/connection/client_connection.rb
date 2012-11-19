@@ -45,6 +45,8 @@ class ClientConnection < EventMachine::Connection
     @parser_name = ""
     @state_machine = {}
     @data = {}
+    @uuid = SecureRandom.uuid
+    LOG.debug "Created connection #{@uuid}"
     add_controller UsersController.new self
   end
 
@@ -76,6 +78,7 @@ class ClientConnection < EventMachine::Connection
   end
   
   def on_request request
+    LOG.debug "Received request from connection #{@uuid}: #{request}"
     error_invalid_route unless request['action']
     route, action = request['action'].split '/'
     action, route = route, action unless action
