@@ -45,7 +45,7 @@ class FileConnection < EventMachine::Connection
     @tmpfile = Tempfile.new('woda_file')
   end
 
-  def connection_completed
+  def unbind
     @tmpfile.write(@buffer.read)
     @controller.file_received(self)
   end

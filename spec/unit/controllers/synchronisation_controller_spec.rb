@@ -33,6 +33,6 @@ describe SyncController, :unit do
     @file_connection.receive_data token
     @file_connection.receive_data "\n"
     @file_connection.receive_data content
-    @file_connection.connection_completed
+    @file_connection.unbind
   end
 end
