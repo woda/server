@@ -3,7 +3,7 @@ require 'timeout'
 class Connection
   attr_accessor :timout, :serverSocket
 
-  def initialize (t = 5)
+  def initialize (t = 10)
    @timout = t
   end
 
@@ -22,6 +22,11 @@ class Connection
     end
     return true
  end
+
+  def disconnectFromHost
+    @serverSocket.close
+    puts @serverSocket.state
+  end
 
   def put_data(data)
     @serverSocket.puts data

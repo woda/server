@@ -34,6 +34,10 @@ class Sync
    return @file.eof?
   end
 
+  def size
+    @file.size
+  end
+
   def path
     @file.path
   end

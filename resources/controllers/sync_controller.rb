@@ -7,6 +7,7 @@ class SyncController
   def initialize(connection)
     @sync = nil
     @connection = connection
+    @token = nil
   end
 
   def self.get_file_list
@@ -33,18 +34,47 @@ class SyncController
     if res.error?
      puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
      puts "** Server response: " + res.get("message").yellow
-    # return false // uncomment after testing
+     return false # uncomment after testing
     end
     if res.get("type") == "file_add_successful"
       puts "File added successfuly, don't need to upload"
       return false
     elsif res.get("type") == "file_need_upload"
       puts "We need to upload file"
+      @token =  res.get("token")
       return true
     end
     return false
   end
 
+  def sync_end    
+     res = @connection.get_data
+     res = JsonController.new(res)
+     puts res.inital_string
+     if res.error?
+      puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
+      puts "** Server response: " + res.get("message").yellow
+      return false # uncomment after testing                                                                                    
+     end
+    puts "Sync ended successfully".green
+    return true
+  end
+  
+  def server_confirmation
+    res = @connection.get_data
+    res = JsonController.new(res)
+    puts res.inital_string
+    if res.error?
+      puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
+      puts "** Server response: " + res.get("message").yellow
+      return false # uncomment after testing                                                                                    
+    end
+    if res.get("type") == "file_add_successful"
+      puts "Server confirm :" + "File added successfuly".green
+    end
+    return true
+  end
+  
   def synchronize
     ## TODO
     ## Get the new port for the sending from the server response
@@ -56,16 +86,25 @@ class SyncController
       return false
     end
     begin
+#      puts "Need to Upload " + @sync.size
       puts "Uploading.. in progress".yellow
-      while @sync.eof == false
-        buffer = @sync.read(10)
-        data_connection.write_binary(buffer);
+      puts @token
+      data_connection.write_binary(@token+"\n")
+     while @sync.eof == false
+        buffer = @sync.read(10000)
+       puts buffer.size
+        data_connection.write_binary(buffer)
       end
     rescue
       puts "Failed to upload a file!".red
+      data_connection.disconnectFromHost
       return false
     end
-      puts "Upload complete".green
+    data_connection.disconnectFromHost
+    if sync_end == false || server_confirmation == false
+      return false
+    end
+    puts "Upload complete".green
     return true
   end
 end
