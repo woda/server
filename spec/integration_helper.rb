@@ -3,20 +3,20 @@ TEST_PORT = 12345
 require 'eventmachine'
 
 module IntegrationHelperImplementation
-  def around_connection_timeout
+  def around_connection_timeout between=nil
     proc = Proc.new { raise 'timeout' }
-    around_connection_implementation(proc) { yield }
+    around_connection_implementation(proc, between) { yield }
   end
 
-  def around_connection
+  def around_connection between=nil
     proc = Proc.new { }
-    around_connection_implementation(proc) { yield }
+    around_connection_implementation(proc, between) { yield }
   end
 
-  def around_connection_implementation proc
+  def around_connection_implementation proc, between
     EventMachine::run do
       EventMachine::start_server '0.0.0.0', TEST_PORT, (is_ssl ? ClientSslConnection : ClientConnection)
-      @connection = EM.connect '0.0.0.0', PORT, (is_ssl ? FakeSslConnection : FakeConnection)
+      @connection = EM.connect '0.0.0.0', TEST_PORT, (is_ssl ? FakeSslConnection : FakeConnection)
       build_timer(1, &proc)
       yield
     end
@@ -54,6 +54,7 @@ class FakeConnection < EventMachine::Connection
   def initialize
     @data = []
     @registered = {}
+    @post_inited = false
   end
 
   def receive_data(data)
@@ -63,6 +64,22 @@ class FakeConnection < EventMachine::Connection
 
   def unbind
     @onclose.call if @onclose
+  end
+
+  def post_init
+    if @registered.include? :post_init then
+      @registered[:post_init].()
+    else
+      @post_inited = true
+    end
+  end
+
+  def register_post_init &block
+    if @post_inited then
+      block.()
+    else
+      @registered[:post_init] = block
+    end
   end
 
   def method_missing name, *args, &block

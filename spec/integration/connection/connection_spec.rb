@@ -16,7 +16,7 @@ describe "Connection integration", :integration do
   shared_examples_for "connectable server" do
     it "should connect" do
       around_connection_timeout do
-        @connection.register_connection_completed do
+        @connection.register_post_init do
           EM.stop
         end
       end
