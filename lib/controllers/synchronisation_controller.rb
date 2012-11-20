@@ -137,5 +137,6 @@ class FileSyncResults
       @size += chunk.size
     end
     @hash = hash.to_s
+    file.close
   end
 end

@@ -35,6 +35,7 @@ gem 'datamapper', '~> 1.2'
 gem 'dm-transactions'
 gem 'dm-postgres-adapter'
 gem 'dm-sqlite-adapter'
+gem 'dm-mysql-adapter'
 
 # Deployment
 gem 'capistrano', :require => nil

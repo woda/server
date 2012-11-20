@@ -42,7 +42,7 @@ class FileConnection < EventMachine::Connection
     end
     @file = data.file
     @controller = data.controller
-    @tmpfile = Tempfile.new('woda_file')
+    @tmpfile = File.new("/tmp/woda_file_#{@file.content.content_hash}", 'w+')
   end
 
   def unbind

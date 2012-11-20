@@ -53,6 +53,9 @@ GEM
       dm-core (~> 1.2.0)
     dm-migrations (1.2.0)
       dm-core (~> 1.2.0)
+    dm-mysql-adapter (1.2.0)
+      dm-do-adapter (~> 1.2.0)
+      do_mysql (~> 0.10.6)
     dm-postgres-adapter (1.2.0)
       dm-do-adapter (~> 1.2.0)
       do_postgres (~> 0.10.6)
@@ -79,6 +82,8 @@ GEM
       uuidtools (~> 2.1.2)
     dm-validations (1.2.0)
       dm-core (~> 1.2.0)
+    do_mysql (0.10.8)
+      data_objects (= 0.10.8)
     do_postgres (0.10.8)
       data_objects (= 0.10.8)
     do_sqlite3 (0.10.8)
@@ -185,6 +190,7 @@ DEPENDENCIES
   capistrano-offroad
   colorize
   datamapper (~> 1.2)
+  dm-mysql-adapter
   dm-postgres-adapter
   dm-sqlite-adapter
   dm-transactions
