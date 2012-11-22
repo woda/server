@@ -1,5 +1,5 @@
-
 require File.join(File.dirname(__FILE__), "..", "models/user")
+require "./helpers/connection"
 
 class UserController
 
@@ -16,9 +16,9 @@ class UserController
                                         "first_name"=>firstname,
                                         "last_name"=>lastname,
                                         "email"=>email)
-    connection.puts json_data[1.. json_data.size - 2]
+    connection.put_data json_data[1.. json_data.size - 2]
     
-    res = connection.gets
+    res = connection.get_data
     res = JsonController.new(res)
     if res.error?
       puts "Unable to create user #{login} with password #{password}".red
@@ -36,9 +36,9 @@ class UserController
                                         "login"=>login,
                                         "password"=>password)
     
-    connection.puts json_data[1..json_data.size - 2]
+    connection.put_data json_data[1..json_data.size - 2]
     
-    res = connection.gets
+    res = connection.get_data
     res = JsonController.new(res)
     if res.error?
       puts "Unable to login as #{login}".red
@@ -53,9 +53,9 @@ class UserController
     login = command[2]
     json_data = JsonController.generate("action"=>"users/logout",
                                         "login"=>login)
-    connection.puts json_data[1..json_data.size - 2]
+    connection.put_data json_data[1..json_data.size - 2]
     
-    res = connection.gets
+    res = connection.get_data
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to logout #{login}".red
@@ -80,9 +80,9 @@ class UserController
                                         "last_name"=>lastname,
                                         "email"=>email)
     
-    connection.puts json_data[1..json_data.size - 2]
+    connection.put_data json_data[1..json_data.size - 2]
     
-    res = connection.gets
+    res = connection.get_data
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to update user #{login}".red
@@ -93,13 +93,14 @@ class UserController
   end
   
   def self.delete(command, connection)
-    
+   
     json_data = JsonController.generate("action"=>"users/delete",
                                         "login"=>command[2])
-    res = connection.gets
+    connection.put_data json_data[1..json_data.size - 2]
+    res = connection.get_data
     res = JsonController.new(res)
     if (res.error?)
-      puts "Unable to delete user #{login}".red
+      puts "Unable to delete user ".red << command[2].red
       puts "** Server response: " + res.get("message").yellow
     else
       puts "User deleted successfully"
@@ -138,9 +139,9 @@ class UserController
   def self.show(command, connection)
     json_data = JsonController.generate("action"=>"users/show",
                                         "login"=>command[1])
-    connection.puts json_data[1..json_data.size - 2]
+    connection.put_data json_data[1..json_data.size - 2]
     
-    res = connection.gets
+    res = connection.get_data
     res = JsonController.new(res)
     if (res.error?)
       puts "Unable to show user #{User.instance.logged_as}".red

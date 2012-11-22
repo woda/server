@@ -3,10 +3,13 @@ require 'timeout'
 class Connection
   attr_accessor :timout, :serverSocket
 
-  def initialize(host, port, t = 5)
+  def initialize (t = 10)
+   @timout = t
+  end
+
+  def connectToHost(host, port, t = 5)
     @timout = t
-    
-    begin    
+    begin
       timeout(@timout) do
         socket = TCPSocket.new(host, port)
         sslContext = OpenSSL::SSL::SSLContext.new
@@ -15,17 +18,24 @@ class Connection
         @serverSocket.connect
       end
     rescue Timeout::Error
-      puts "** Server does not respond. is it online ? Try again later".red
-      exit
+      return false
     end
-    
+    return true
+ end
+
+  def disconnectFromHost
+    @serverSocket.close
   end
-  
-  def puts(data)
+
+  def put_data(data)
     @serverSocket.puts data
   end
 
-  def gets
+  def write_binary(data)
+    @serverSocket.write data
+  end
+  
+  def get_data
     begin
       timeout(@timout) do
         @serverSocket.gets

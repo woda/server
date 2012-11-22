@@ -10,10 +10,11 @@ class SyncController < Controller::Base
   before :check_authenticate, :put, :get, :delete, :change
   before [:check_params, :content_hash, :filename], :put, :change
   before [:check_params, :filename], :get, :delete
-  before [:check_params, :size], :upload
 
   @@files = {}
 
+  ##
+  # Gets the file corresponding to a token
   def self.[] token
     @@files[token]
   end
@@ -31,10 +32,9 @@ class SyncController < Controller::Base
     WFile
   end
   
-  def upload
-    @connection
-  end
-
+  ##
+  # Action: Receives request to add a file.
+  # May answer by saying that the file is already there or by asking the user to upload
   def put
     LOG.info "Adding file: #{param['filename']} for user #{@connection.data[:current_user].login}"
     current_content = Content.first content_hash: param['content_hash']
@@ -47,11 +47,15 @@ class SyncController < Controller::Base
     end
   end
 
+  ##
+  # Action: Modifies a file. This is effectively a delete and a put, and should receive the same parameters
   def change
     delete
     put
   end
 
+  ##
+  # Action: Deletes a file.
   def delete
     LOG.info "Removing file #{param['filename']}"
     f = WFile.first filename: param['filename'], user_id: connection.data[:current_user]
@@ -71,21 +75,21 @@ class SyncController < Controller::Base
     end
   end
   
-  # Note: we should add an additional security step here to prevent people from
-  # being able to get another user's file content by pretending to have a file
-  # with the same hash. The solution would be to store another hash which would
-  # be salted, and to ask the client to give us the hash with the salt. If he
-  # does, then he probably has the file.
+  ##
+  # If a file with the same hash already exists, just use that content.
   def add_existing_file f, content
     LOG.info "A file like #{f.filename} already exists"
     f.content = content
     # This is temporary, when we check for the salted hash thing there will be
     # more stuff in this function
-    connection.data[:current_user].files << f
-    connection.data[:current_user].save
+    f.user = connection.data[:current_user]
+    f.save
     connection.send_message :file_add_successful
   end
 
+  ##
+  # If the hash is new, generate a token and require an upload. The upload
+  # is asynchronous and on a FileConnection
   def add_new_file f
     LOG.info "Requesting upload of file #{f.filename}"
     f.content = Content.new content_hash: param['content_hash']
@@ -95,10 +99,8 @@ class SyncController < Controller::Base
     connection.send_message :file_need_upload, token: token
   end
 
-  def compute_hash(file)
-    FileSyncResults.new(file)
-  end
-
+  ##
+  # When the file is fully uploaded, checked and processed, send a success message
   def on_file_splitted results, file
     connection.error_bad_hash unless results.hash == file.content.content_hash
     file.content.crypt_key = WodaCrypt.new.random_key.to_hex
@@ -108,10 +110,16 @@ class SyncController < Controller::Base
     connection.send_message :file_add_successful
   end
 
+  ##
+  # Computes the temporary file information
   def sync_received_file tmpfile, file_in_db
     return FileSyncResults.new tmpfile
   end
 
+  ##
+  # Called when the file is fully received.
+  #
+  # fileco is the FileConnection object.
   def file_received fileco
     # TODO: send some indication that we received the file
     file = fileco.tmpfile
@@ -122,6 +130,8 @@ class SyncController < Controller::Base
   end
 end
 
+##
+# Information on a received file. In particular its size and hash.
 class FileSyncResults
   attr_reader :hash
   attr_reader :size

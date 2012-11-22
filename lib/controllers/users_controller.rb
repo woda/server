@@ -16,8 +16,9 @@ class UsersController < Controller::Base
     User
   end
 
+  ##
+  # Action: creates a user according to the params
   def create
-# TODO: remove those two line to replace them with more generic error handling from user.save
     LOG.info "Trying to create #{param['login']}"
     @connection.error_login_taken if User.first login: param['login']
     @connection.error_email_taken if User.first email: param['email']
@@ -30,6 +31,8 @@ class UsersController < Controller::Base
     send_confirmation_email
   end
 
+  ##
+  # Sets the current user: from then on, that user is logged in.
   def set_current_user user
     @connection.data[:current_user] = user
     if user then
@@ -40,7 +43,9 @@ class UsersController < Controller::Base
     end
   end
 
-  # TODO(adrien): Tester cette fonction dans les tests unitaires
+  ##
+  # Sends registration confirmation email to whoever is the current user.
+  # Should only be called by create()
   def send_confirmation_email
     mail = MailFactory.new
     mail.to = @connection.data[:current_user].email
@@ -60,6 +65,8 @@ class UsersController < Controller::Base
     email.errback { } # TODO: failure log
   end
 
+  ##
+  # Action: Deletes the current user.
   def delete
     LOG.info "Trying to delete #{@connection.data[:current_user].login}"
     user = @connection.data[:current_user]
@@ -68,6 +75,8 @@ class UsersController < Controller::Base
     @connection.send_message :signout_successful
   end
 
+  ##
+  # Action: update informations for the current user.
   def update
     LOG.info "Modifying information for user #{@connection.data[:current_user].login}"
     user = @connection.data[:current_user]
@@ -77,6 +86,9 @@ class UsersController < Controller::Base
     @connection.send_message :update_sucessful
   end
 
+  ##
+  # Action: show a user specified in param. Currently every information, except those
+  # related to the password.
   def show
     LOG.info "Showing user #{param['login']}"
     user = User.first param['login']
@@ -87,6 +99,8 @@ class UsersController < Controller::Base
                             data: attributes)
   end
   
+  ##
+  # Action: login as a given user.
   def login
     LOG.info "User trying to login: #{param['login']}"
     user = User.first login: param['login']
@@ -96,12 +110,15 @@ class UsersController < Controller::Base
     @connection.send_message :login_successful
   end
 
+  ##
+  # Action: logout
   def logout
     LOG.info "Logging out user #{@connection.data[:current_user].login}"
     set_current_user nil
     @connection.send_message :logout_successful
   end
 
+<<<<<<< HEAD
   # Je ne comprends pas cette fonction:
   # Pourquoi prendre l'email et le login en parametre alors que les deux sont garantis d'etre unique?
   # De plus, la facon dont les choses sont retournees est incorrecte:
@@ -122,4 +139,18 @@ class UsersController < Controller::Base
                               type: "user_list",
                               data: user_infos)
   end
+=======
+  #def get_user_list
+  #  user = User.all:login => param['login'] if param['login'].exists?
+  #  user = User.all :email => param['email'] if param['email'].exists?
+  #  user = User.all(:login =>param['login']) + User.all(:email => param['email']) if param['login'].exists? && param['email'].exists?
+  #
+  #  userList.each do | user |
+  #    @connection.send_object(status: "ok",
+  #                            type: "user_infos",
+  #                            data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
+  #  end
+  #end
+
+>>>>>>> f8739a9a78445ec7aa43637f382ae6f6ccecff14
 end

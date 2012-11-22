@@ -1,12 +1,13 @@
 require File.join(File.dirname(__FILE__), "..", "models/sync")
 
-
 class SyncController
   attr_accessor :sync, :connection
+
 
   def initialize(connection)
     @sync = nil
     @connection = connection
+    @token = nil
   end
 
   def self.get_file_list
@@ -15,32 +16,91 @@ class SyncController
 
   def sync(command)
     @sync = Sync.open command[2]
-    return if @sync == nil
+    return if @sync == nil    
     synchronize if sync_autorisation? == true
   end
-  
+
   private
   def sync_autorisation?
     json_data = JsonController.generate("action"=>"sync/put",
-                                        "content_hash"=>@sync.hexhash,
-                                        "path"=>@sync.path)
-    puts json_data[1..json_data.size-2]
-    @connection.puts json_data[1..json_data.size - 2]
+                                        "filename"=>@sync.path,
+                                        "content_hash"=>@sync.hexhash,)
+ #   puts json_data[1..json_data.size-2]
+    @connection.put_data json_data[1..json_data.size - 2]
     
-    res = @connection.gets
+    res = @connection.get_data
     res = JsonController.new(res)
+#    puts res.inital_string
+    if res.error?
+     puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
+     puts "** Server response: " + res.get("message").yellow
+     return false 
+    end
+    if res.get("type") == "file_add_successful"
+      puts "** Server response: " + res.get("message").yellow
+      return false
+    elsif res.get("type") == "file_need_upload"
+      puts "** Server response: " + res.get("message").yellow << " - " << @sync.name << " (" << (@sync.filesize / 1024 ).to_s << " KB)"
+      @token =  res.get("token")
+      return true
+    end
+    return false
+  end
+
+  def upload_end    
+     res = @connection.get_data
+     res = JsonController.new(res)
+    # puts res.inital_string
+     if res.error?
+      puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
+      puts "** Server response: " + res.get("message").yellow
+      return false
+     end
+    puts "Upload successful".green
+    return true
+  end
+  
+  def server_confirmation
+    res = @connection.get_data
+    res = JsonController.new(res)
+   # puts res.inital_string
     if res.error?
       puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
       puts "** Server response: " + res.get("message").yellow
       return false
     end
+    if res.get("type") == "file_add_successful"
+      puts "** Server reponse: " + res.get("message").green
+    end
     return true
   end
-
+  
   def synchronize
-    ## TODO
-    ## Get the new port for the sending from the server response
     ## Open a TCPServer socket
-    puts "Sending file: 42%"
+    data_connection = Connection.new
+#    puts "Connecting to data socket..."
+    if data_connection.connectToHost(ARGV[0], ARGV[1].to_i + 1) == false
+      puts "Failed to connection to data stream".red
+      return false
+    end
+    begin
+      print "Uploading in progress.".yellow
+#      puts @token
+      data_connection.write_binary(@token+"\n")
+     while @sync.eof == false
+        buffer = @sync.read(100000)
+        data_connection.write_binary(buffer)
+       print "."
+      end
+    rescue
+      print "Failed to upload a file!".red
+      data_connection.disconnectFromHost
+      return false
+    end
+    data_connection.disconnectFromHost
+    if upload_end == false || server_confirmation == false
+      return false
+    end
+    return true
   end
 end

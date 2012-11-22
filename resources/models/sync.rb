@@ -7,11 +7,12 @@ require 'digest'
 #
 
 class Sync
-  attr_accessor :file, :name, :hash, :hexhash
+  attr_accessor :file, :name, :hash, :hexhash, :filesize
   @file = nil
 
   def initialize(file_name)
     @name = File.basename(file_name)
+    @filesize = File.size(file_name)
     @file = File.open file_name, "rb"
     @hash = Digest::SHA256.file(file_name)
     @hexhash = @hash.hexdigest
@@ -25,7 +26,15 @@ class Sync
     end
     Sync.new file_name
   end
+
+  def read(size)
+    return @file.read(size)
+  end
   
+  def eof
+   return @file.eof?
+  end
+
   def path
     @file.path
   end
