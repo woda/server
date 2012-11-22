@@ -25,7 +25,19 @@ class Sync
     end
     Sync.new file_name
   end
+
+  def read(size)
+    return @file.read(size)
+  end
   
+  def eof
+   return @file.eof?
+  end
+
+  def size
+    @file.size
+  end
+
   def path
     @file.path
   end
