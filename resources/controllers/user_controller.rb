@@ -93,13 +93,14 @@ class UserController
   end
   
   def self.delete(command, connection)
-    
+   
     json_data = JsonController.generate("action"=>"users/delete",
                                         "login"=>command[2])
+    connection.put_data json_data[1..json_data.size - 2]
     res = connection.get_data
     res = JsonController.new(res)
     if (res.error?)
-      puts "Unable to delete user #{login}".red
+      puts "Unable to delete user ".red << command[2].red
       puts "** Server response: " + res.get("message").yellow
     else
       puts "User deleted successfully"

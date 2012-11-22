@@ -74,21 +74,6 @@ class SyncController
     end
     return true
   end
-
- def server_synced
-    res = @connection.get_data
-    res = JsonController.new(res)
-   # puts res.inital_string
-    if res.error?
-      puts "Something went wrong. We can't synchronize the file with Woda's cloud".red
-      puts "** Server response: " + res.get("message").yellow
-      return false
-    end
-    ##if res.get("type") == "file_synced"
-      # puts "Server confirm :" + "Sync successfull".green
-    ##end
-    return true
-  end
   
   def synchronize
       ## Get the new port for the sending from the server response
@@ -113,7 +98,7 @@ class SyncController
       return false
     end
     data_connection.disconnectFromHost
-    if upload_end == false || server_confirmation == false || server_synced == false
+    if upload_end == false || server_confirmation == false
       return false
     end
     puts "Sync complete".green
