@@ -19,6 +19,10 @@ class JsonController
   def get(what)
     @parsed_string[what]
   end
+  
+  def nested
+    @parsed_string['data']
+  end
 
   def self.generate(*args)
     JSON.generate(args)
