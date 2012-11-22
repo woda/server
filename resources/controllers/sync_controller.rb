@@ -19,7 +19,7 @@ class SyncController
     return if @sync == nil    
     synchronize if sync_autorisation? == true
   end
-  
+
   private
   def sync_autorisation?
     json_data = JsonController.generate("action"=>"sync/put",
@@ -37,10 +37,10 @@ class SyncController
      return false 
     end
     if res.get("type") == "file_add_successful"
-      puts "File added successfuly, don't need to upload"
+      puts "** Server response: " + res.get("message").yellow
       return false
     elsif res.get("type") == "file_need_upload"
-      puts "We need to upload file"
+      puts "** Server response: " + res.get("message").yellow << " - " << @sync.name << " (" << (@sync.filesize / 1024 ).to_s << " KB)"
       @token =  res.get("token")
       return true
     end
@@ -70,13 +70,12 @@ class SyncController
       return false
     end
     if res.get("type") == "file_add_successful"
- #     puts "Server confirm :" + "File added successfuly".green
+      puts "** Server reponse: " + res.get("message").green
     end
     return true
   end
   
   def synchronize
-      ## Get the new port for the sending from the server response
     ## Open a TCPServer socket
     data_connection = Connection.new
 #    puts "Connecting to data socket..."
@@ -85,15 +84,16 @@ class SyncController
       return false
     end
     begin
-      puts "Uploading.. in progress".yellow
+      print "Uploading in progress.".yellow
 #      puts @token
       data_connection.write_binary(@token+"\n")
      while @sync.eof == false
-        buffer = @sync.read(10000)
+        buffer = @sync.read(100000)
         data_connection.write_binary(buffer)
+       print "."
       end
     rescue
-      puts "Failed to upload a file!".red
+      print "Failed to upload a file!".red
       data_connection.disconnectFromHost
       return false
     end
@@ -101,7 +101,6 @@ class SyncController
     if upload_end == false || server_confirmation == false
       return false
     end
-    puts "Sync complete".green
     return true
   end
 end
