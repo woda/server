@@ -3,11 +3,18 @@ require 'connection/parser/serializer'
 require 'connection/connection_protocol'
 require 'controllers/users_controller'
 
+##
+# A client communication connection. This implements the application logic of
+# the connection (routing to controller etc.), while the mixin in connection_protocol
+# implements the technical logic: dealing with raw network data and parsing it for
+# this class.
 class ClientConnection < EventMachine::Connection
   include Protocol::ConnectionProtocol
 
   attr_accessor :data
 
+  ##
+  # The possible error and success messages the server can return
   MESSAGES = {
     file_need_upload: "Need to upload the file",
     file_add_successful: "File added successfully",
@@ -50,6 +57,10 @@ class ClientConnection < EventMachine::Connection
     add_controller UsersController.new self
   end
 
+  ##
+  # Add an instance of a controller. Though the instance is passed, there can be only
+  # one controller of each type for each connection. The controller will be called with
+  # {"action": "controller/function"}
   def add_controller controller
     route = controller.route
     if @state_machine[route] then
@@ -59,12 +70,17 @@ class ClientConnection < EventMachine::Connection
     end
   end
 
+  ##
+  # Removes a controller. Takes the key, aka route, of the controller.
   def remove_controller key
     if @state_machine[key] then
       @state_machine.delete(key).destroy
     end
   end
 
+  ##
+  # Handles the actual calling of the request. Is separate from on_request to facilitate
+  # unit tests.
   def call_request action, controller
     before = controller.before[action.to_sym] || []
     before.each do |a|
@@ -76,7 +92,9 @@ class ClientConnection < EventMachine::Connection
     end
     controller.send(action)
   end
-  
+
+  ##
+  # Parses the route of the parsed requests and calls call_request
   def on_request request
     LOG.debug "Received request from connection #{@uuid}: #{request}"
     error_invalid_route unless request['action']
@@ -92,6 +110,8 @@ class ClientConnection < EventMachine::Connection
   end
 end
 
+##
+# SSL version of ClientConnection.
 class ClientSslConnection < ClientConnection
   def post_init
     super
