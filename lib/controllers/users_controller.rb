@@ -118,7 +118,6 @@ class UsersController < Controller::Base
     @connection.send_message :logout_successful
   end
 
-<<<<<<< HEAD
   # Je ne comprends pas cette fonction:
   # Pourquoi prendre l'email et le login en parametre alors que les deux sont garantis d'etre unique?
   # De plus, la facon dont les choses sont retournees est incorrecte:
@@ -139,18 +138,4 @@ class UsersController < Controller::Base
                               type: "user_list",
                               data: user_infos)
   end
-=======
-  #def get_user_list
-  #  user = User.all:login => param['login'] if param['login'].exists?
-  #  user = User.all :email => param['email'] if param['email'].exists?
-  #  user = User.all(:login =>param['login']) + User.all(:email => param['email']) if param['login'].exists? && param['email'].exists?
-  #
-  #  userList.each do | user |
-  #    @connection.send_object(status: "ok",
-  #                            type: "user_infos",
-  #                            data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
-  #  end
-  #end
-
->>>>>>> f8739a9a78445ec7aa43637f382ae6f6ccecff14
 end
