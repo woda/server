@@ -118,12 +118,6 @@ class UsersController < Controller::Base
     @connection.send_message :logout_successful
   end
 
-  # Je ne comprends pas cette fonction:
-  # Pourquoi prendre l'email et le login en parametre alors que les deux sont garantis d'etre unique?
-  # De plus, la facon dont les choses sont retournees est incorrecte:
-  #   1/ Ne pas ecrire du json en dur dans une string. C'est inutile et ca ne donne pas le meme resultat
-  #   2/ Comment le client sait-il quand le flux de reponses s'arrete? Pourquoi ne pas faire une seule reponse et tout
-  #      mettre dans un array?
   def list
     # user = User.all :login => param['login'] if param['login'].exists?
     # user = User.all :email => param['email'] if param['email'].exists?
