@@ -5,7 +5,7 @@ require 'mailfactory'
 require 'securerandom'
 
 class UsersController < Controller::Base
-  actions :create, :delete, :update, :show, :login, :logout
+  actions :create, :delete, :update, :show, :login, :logout, :list
   before :check_authenticate, :delete, :update, :show, :logout
   before :check_create_params, :create
   before [:check_params, :password], :create
@@ -108,16 +108,18 @@ class UsersController < Controller::Base
   #   1/ Ne pas ecrire du json en dur dans une string. C'est inutile et ca ne donne pas le meme resultat
   #   2/ Comment le client sait-il quand le flux de reponses s'arrete? Pourquoi ne pas faire une seule reponse et tout
   #      mettre dans un array?
-  #def get_user_list
-  #  user = User.all:login => param['login'] if param['login'].exists?
-  #  user = User.all :email => param['email'] if param['email'].exists?
-  #  user = User.all(:login =>param['login']) + User.all(:email => param['email']) if param['login'].exists? && param['email'].exists?
-  #
-  #  userList.each do | user |
-  #    @connection.send_object(status: "ok",
-  #                            type: "user_infos",
-  #                            data: "{\"login\":\"#{user.login}\",\"email\":\"#{user.email}\"}")
-  #  end
-  #end
-
+  def list
+    # user = User.all :login => param['login'] if param['login'].exists?
+    # user = User.all :email => param['email'] if param['email'].exists?
+    
+    userList = User.all
+    user_infos = []
+    userList.each do | user |
+      hash_user={:login => user.login, :email => user.email}
+      user_infos.infos.push(hash_user)
+    end
+    @connection.send_object(status: "ok",
+                              type: "user_list",
+                              data: user_infos)
+  end
 end
