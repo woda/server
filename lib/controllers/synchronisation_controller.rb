@@ -106,8 +106,6 @@ class SyncController < Controller::Base
     file.content.size = results.size
     file.save
     connection.send_message :file_add_successful
-    error_bad_hash unless results.hash == file.content.content_hash
-    connection.send_message :file_synced
   end
 
   def sync_received_file tmpfile, file_in_db
