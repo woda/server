@@ -81,8 +81,8 @@ class SyncController < Controller::Base
     f.content = content
     # This is temporary, when we check for the salted hash thing there will be
     # more stuff in this function
-    connection.data[:current_user].files << f
-    connection.data[:current_user].save
+    f.user = connection.data[:current_user]
+    f.save
     connection.send_message :file_add_successful
   end
 
