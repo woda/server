@@ -122,6 +122,20 @@ class UserController
     puts "show".yellow + " user " + "login".underline + ": To show the user <login>"
   end  
   
+  def self.list(command, connection)
+    json_data = JsonController.generate("action"=>"users/list")
+    connection.puts json_data[1..json_data.size - 2]
+
+    res = connection.gets
+    res = JsonController.new(res)
+    if (res.error?)
+      puts "Unable to get user list".red
+      puts "** Server response: " + res.get("message").yellow
+    else
+      puts res.get("data")
+    end
+  end
+
   def self.show(command, connection)
     json_data = JsonController.generate("action"=>"users/show",
                                         "login"=>command[1])
