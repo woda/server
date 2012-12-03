@@ -16,7 +16,7 @@ describe SyncController, :unit do
     EM.stub(:defer) { |f, callback| callback.(f.()) }
   end
 
-  it "should ask for file content for file upload" do
+  def upload_file
     content = 'hello'
     @controller.param['content_hash'] = WodaHash.digest(content).to_hex
     @controller.param['filename'] = 'abc'
@@ -40,7 +40,30 @@ describe SyncController, :unit do
     WFile.first(filename: 'abc').should_not be_nil
   end
 
-  it "should allow deleting a file" do
-    #@file
+  it "should ask for file content for file upload" do
+    upload_file
+  end
+
+  it "should not ask for file content if it already exists" do
+    upload_file
+    @controller.param['content_hash'] = WodaHash.digest('hello').to_hex
+    @controller.param['filename'] = 'bcd'
+    @connection.should_receive(:send_message).with(:file_add_successful)
+    @connection.call_request :put, @controller
+    WFile.first(filename: 'bcd').should_not be_nil
+  end
+
+  it "should allow for deleting files" do
+    upload_file
+    @connection.should_receive(:send_message).with(:delete_successful)
+    @connection.call_request :delete, @controller
+    WFile.first(filename: 'abc').should be_nil
+  end
+
+  it "should allow for changing files" do
+    upload_file
+    @controller.param['content_hash'] = WodaHash.digest('helli').to_hex
+    @connection.should_receive(:send_message).twice
+    @connection.call_request :change, @controller
   end
 end

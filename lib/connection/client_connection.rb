@@ -40,7 +40,9 @@ class ClientConnection < EventMachine::Connection
     bad_password: "Bad password",
     not_a_hash: "The data is not a hash",
     delete_failed: "Deletion of user failed",
-    bad_hash: "File hash was invalid"
+    bad_hash: "File hash was invalid",
+    delete_successful: "File successfully deleted",
+    file_not_found: "File not found"
   }
 
   def messages

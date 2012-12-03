@@ -38,6 +38,7 @@ class SyncController < Controller::Base
   def put
     LOG.info "Adding file: #{param['filename']} for user #{@connection.data[:current_user].login}"
     current_content = Content.first content_hash: param['content_hash']
+    puts current_content
     f = WFile.new(filename: param['filename'],
                   last_modification_time: DateTime.now)
     if current_content
@@ -58,14 +59,16 @@ class SyncController < Controller::Base
   # Action: Deletes a file.
   def delete
     LOG.info "Removing file #{param['filename']}"
-    f = WFile.first filename: param['filename'], user_id: connection.data[:current_user]
+    f = WFile.first filename: param['filename'], user: connection.data[:current_user]
+    connection.error_file_not_found unless f
     destroy_content = nil
-    if WFile.count(content_id: f.content.id) == 1 then
+    if WFile.count(content: f.content) <= 1 then
       destroy_content = f.content
     end
-    file.destroy
+    puts connection.data[:current_user].w_files.delete(f)
+    puts f.destroy!
     if destroy_content then
-      f.content.blocks.each do |b|
+      destroy_content.blocks.each do |b|
         b.deleted = true
         b.save
       end
@@ -73,6 +76,7 @@ class SyncController < Controller::Base
       # what we want
       destroy_content.destroy
     end
+    connection.send_message(:delete_successful)
   end
   
   ##
