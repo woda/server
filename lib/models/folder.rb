@@ -1,4 +1,5 @@
 require 'data_mapper'
+require 'models/base/woda_resource'
 
 class WFolder
   include DataMapper::Resource
