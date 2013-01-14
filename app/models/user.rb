@@ -1,8 +1,7 @@
 require 'data_mapper'
-require 'helpers/hash_digest'
-require 'models/properties/sha256_hash'
-require 'models/base/woda_resource'
-require 'active_support/secure_random'
+require 'lib/helpers/hash_digest'
+require 'app/models/properties/sha256_hash'
+require 'app/models/base/woda_resource'
 
 class User
   include DataMapper::Resource

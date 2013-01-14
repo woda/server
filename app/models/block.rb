@@ -1,5 +1,5 @@
 require 'data_mapper'
-require 'models/properties/sha256_hash'
+require 'app/models/properties/sha256_hash'
 
 class Block
   include DataMapper::Resource

@@ -1,10 +1,10 @@
 require 'data_mapper'
-require 'helpers/hash_digest.rb'
-require 'helpers/crypt_helper.rb'
-require 'models/base/woda_resource'
-require 'models/properties/sha256_hash'
-require 'models/properties/aes256_key'
-require 'models/properties/aes256_iv'
+require 'lib/helpers/hash_digest.rb'
+require 'lib/helpers/crypt_helper.rb'
+require 'app/models/base/woda_resource'
+require 'app/models/properties/sha256_hash'
+require 'app/models/properties/aes256_key'
+require 'app/models/properties/aes256_iv'
 
 class Content
   include DataMapper::Resource
