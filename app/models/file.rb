@@ -1,5 +1,5 @@
 require 'data_mapper'
-require 'models/base/woda_resource'
+require 'app/models/base/woda_resource'
 
 class WFile
   include DataMapper::Resource
