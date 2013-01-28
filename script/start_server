@@ -1,4 +1,4 @@
 #!/bin/bash
-WODA_ENV=prod nohup rvm 1.9.3 do bundle exec /var/serv/current/server > log.out 2>&1 &
+WODA_ENV=prod nohup rvm 1.9.3 do bundle exec rails server > log.out 2>&1 &
 echo $! > last_pid
 

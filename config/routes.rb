@@ -55,4 +55,11 @@ Server::Application.routes.draw do
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
+
+  match 'users/:login/login' => 'users#login'
+  match 'users/logout' => 'users#logout'
+  match 'users' => 'users#index', via: :get
+  match 'users' => 'users#update', via: :post
+  match 'users' => 'users#delete', via: :delete
+  match 'users/:login' => 'users#create', via: :put
 end

@@ -38,24 +38,7 @@ class UsersController < Controller::Base
     end
   end
 
-  def send_confirmation_email
-    mail = MailFactory.new
-    mail.to = @connection.data[:current_user].email
-    mail.from = EMAIL_SETTINGS['user_name']
-    mail.subject = 'Welcome to Woda!'
-    mail.text = "Welcome to Woda #{@connection.data[:current_user].login}!"
-    email = EM::P::SmtpClient.send(domain: EMAIL_SETTINGS['domain'],
-                                   host: EMAIL_SETTINGS['address'],
-                                   starttls: true,
-                                   port: EMAIL_SETTINGS['port'],
-                                   auth: {:type => :plain,
-                                     :username => EMAIL_SETTINGS['user_name'],
-                                     :password => EMAIL_SETTINGS['password']},
-                                   from: mail.from, to: mail.to,
-                                   content: "#{mail.to_s}\r\n.\r\n",)
-    email.callback { } # TODO: success log
-    email.errback { } # TODO: failure log
-  end
+
 
   def delete
     user = @connection.data[:current_user]

@@ -1,28 +1,35 @@
 set :application, "Woda server"
 require 'capistrano-offroad'
 require 'capistrano-offroad/modules/defaults'
-set :repository,  "ssh://git@tango-mango.net:5220/woda_serv.git"
+set :repository,  "git@github.com:woda/server.git"
+
+set :user, "ubuntu"
 
 set :rvm_ruby_string, '1.9.3'
 set :rvm_install_shell, :bash
 
+before 'deploy:setup', 'rvm:install_rvm'
+set :rvm_install_with_sudo, true
+before 'deploy:setup', 'rvm:install_ruby'
 before 'deploy', 'rvm:install_ruby'
 set :rvm_install_ruby_threads, 1
 set :rvm_type, :system
+set :rvm_install_ruby, :install
 
 set :scm, :git
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
-set :ssh_options, {:forward_agent => true}
+set :ssh_options, {:forward_agent => true, :keys=>["#{ENV['HOME']}/.ssh/id_rsa", './server.pem']}
 
-set :port, 5220
+set :port, 22
 
 set :deploy_to, "/var/serv"
+set :deploy_via, :copy
+set :copy_strategy, :export
+set :deploy_group, "rvm"
 
-set :deploy_group, "deploy"
+server "ec2-54-242-98-168.compute-1.amazonaws.com", :app, :db, :primary => true
 
-server "woda-server.tango-mango.net", :app, :db, :primary => true
-
-set :use_sudo, false
+set :use_sudo, true
 
 # if you want to clean up old releases on each deploy uncomment this:
 after "deploy:restart", "deploy:cleanup"
@@ -63,7 +70,7 @@ namespace :db do
       user_name: "redmine.woda@gmail.com"
       password: "RedmineWodaMail"
     EOF
-    put yaml, "#{shared-path}/config/mail.yml"
+    put yaml, "#{shared_path}/config/mail.yml"
   end
   task :symlink, :except => { :no_release => true } do
     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
