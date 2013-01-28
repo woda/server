@@ -19,6 +19,7 @@ set :rvm_install_ruby, :install
 set :scm, :git
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 set :ssh_options, {:forward_agent => true, :keys=>["#{ENV['HOME']}/.ssh/id_rsa", './server.pem']}
+set :branch, 'master'
 
 set :port, 22
 
