@@ -299,7 +299,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  ZenTest
+  ZenTest (~> 4.8.3)
   actionmailer (~> 3.2.11)
   actionpack (~> 3.2.11)
   activeresource (~> 3.2.11)
