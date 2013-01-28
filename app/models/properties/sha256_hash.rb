@@ -1,5 +1,5 @@
 require 'dm-core'
-require 'helpers/hash_digest'
+require 'lib/helpers/hash_digest'
 require 'securerandom'
 
 module DataMapper
@@ -12,6 +12,7 @@ module DataMapper
         SecureRandom.hex(256 / 8)
       end
     end
-    SHA256Salt = SHA256Hash
+    class SHA256Salt < SHA256Hash
+    end
   end
 end

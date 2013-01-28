@@ -1,5 +1,5 @@
 require 'dm-core'
-require 'helpers/crypt_helper'
+require 'lib/helpers/crypt_helper'
 
 module DataMapper
   class Property
