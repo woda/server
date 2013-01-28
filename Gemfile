@@ -29,6 +29,8 @@ gem 'map'
 gem 'dm-rails',               '~> 1.2.1'
 gem 'dm-sqlite-adapter', DM_VERSION
 
+gem 'zentest'
+
 # You can use any of the other available database adapters.
 # This is only a small excerpt of the list of all available adapters
 # Have a look at
