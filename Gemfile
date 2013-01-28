@@ -29,7 +29,7 @@ gem 'map'
 gem 'dm-rails',               '~> 1.2.1'
 gem 'dm-sqlite-adapter', DM_VERSION
 
-gem 'ZenTest', '~> 4.8.3'
+gem 'ZenTest', '4.8.3'
 
 # You can use any of the other available database adapters.
 # This is only a small excerpt of the list of all available adapters
