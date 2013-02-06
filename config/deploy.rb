@@ -12,6 +12,7 @@ before 'deploy:setup', 'rvm:install_rvm'
 set :rvm_install_with_sudo, true
 before 'deploy:setup', 'rvm:install_ruby'
 before 'deploy', 'rvm:install_ruby'
+after 'deploy:setup', 'deploy:migrate'
 set :rvm_install_ruby_threads, 1
 set :rvm_type, :system
 set :rvm_install_ruby, :install
@@ -43,19 +44,15 @@ set :runner, nil
 DIST_PATH = '/var/serv/current'
 
 namespace :deploy do
-  task :migrate do run "cd #{DIST_PATH}; WODA_ENV=prod bundle exec rake upgrade" end
+  task :migrate do run "cd #{DIST_PATH}; RAILS_ENV=production /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rake db:migrate" end
   task :start do run "cd #{DIST_PATH}; script/start_server" end
   task :stop do run "cd #{DIST_PATH}; script/stop_server" end
   task :restart do run "cd #{DIST_PATH}; script/stop_server; script/start_server" end
 end
 namespace :db do
-  # TODO: find a clean way not to expose the credentials to the developpers, for instance
-  # by storing the database.yml file on the server and only creating the link
   task :setup do
-    run "mkdir -p #{shared_path}/config"
-
-    # configuring database
-    run 'cd #{shared_path}; RAILS_ENV=production /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rake db:migrate'
+    # configuring DB
+    run 'cp #{shared_path}/config/database.yml.example #{shared_path}/config/database.yml'
 
     # configuring emails
     yaml = <<-EOF
