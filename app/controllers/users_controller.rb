@@ -1,17 +1,20 @@
 class UsersController < ApplicationController
-	respond_to :json, :xml
 
-  rescue_from RequestError, :with => :rescue_request_error
+  before_filter :require_login, :only => [:delete, :update, :show, :logout]
+  before_filter :check_create_params, :only => [:create]
+  before_filter { |c| c.check_params(:password) }, :only => [:create]
+  before_filter { |c| c.check_update_params :password }, :only => [:update]
+  before_filter { |c| c.check_params :login, :password }, :only => [:login]
 
-  def rescue_request_error expt
-    render :json => {error: expt.sym, message: expt.str}, :status => :bad_request
+  def model
+    User
   end
 
 	def create
 	    raise RequestError.new(:login_taken, "Login already taken") if User.first login: param['login']
 	    raise RequestError.new(:email_taken, "Email already taken") if User.first email: param['email']
 	    user = set_properties User.new
-	    user.set_password param['password']
+	    user.set_password params['password']
 	    raise RequestError.new(:db_error, "Database error") unless user.save
 	    session[:user] = user
 	    send_confirmation_email

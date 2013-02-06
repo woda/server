@@ -19,7 +19,6 @@ class User
   property :pass_salt, SHA256Salt
 
   has n, :w_files
-  has n, :devices
 
   def has_password? pass
     WodaHash.digest(self.pass_salt + pass).to_hex.downcase == pass_hash.downcase

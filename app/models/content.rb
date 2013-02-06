@@ -23,6 +23,5 @@ class Content
   updatable_property :crypt_key, AES256Key
   updatable_property :init_vector, AES256Iv
   updatable_property :size, Integer
-
-  has n, :blocks
+  property :start_upload, Integer
 end

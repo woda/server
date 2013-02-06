@@ -55,11 +55,7 @@ namespace :db do
     run "mkdir -p #{shared_path}/config"
 
     # configuring database
-    yaml = <<-EOF
-    prod:
-        addr: postgres://postgres:klWEbbVX49$Z@localhost/prod
-    EOF
-    put yaml, "#{shared_path}/config/database.yml"
+    run 'cd #{shared_path}; RAILS_ENV=production /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rake db:migrate'
 
     # configuring emails
     yaml = <<-EOF
