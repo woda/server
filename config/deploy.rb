@@ -12,7 +12,6 @@ before 'deploy:setup', 'rvm:install_rvm'
 set :rvm_install_with_sudo, true
 before 'deploy:setup', 'rvm:install_ruby'
 before 'deploy', 'rvm:install_ruby'
-after 'deploy:setup', 'deploy:migrate'
 set :rvm_install_ruby_threads, 1
 set :rvm_type, :system
 set :rvm_install_ruby, :install
@@ -49,30 +48,6 @@ namespace :deploy do
   task :stop do run "cd #{DIST_PATH}; script/stop_server" end
   task :restart do run "cd #{DIST_PATH}; script/stop_server; script/start_server" end
 end
-namespace :db do
-  task :setup do
-    # configuring DB
-    run 'cp #{shared_path}/config/database.yml.example #{shared_path}/config/database.yml'
-
-    # configuring emails
-    yaml = <<-EOF
-    dev:
-      tls: true
-      address: "smtp.gmail.com"
-      port: 587
-      domain: "smtp.gmail.com" # 'your.domain.com' for GoogleApps
-      user_name: "redmine.woda@gmail.com"
-      password: "RedmineWodaMail"
-    EOF
-    put yaml, "#{shared_path}/config/mail.yml"
-  end
-  task :symlink, :except => { :no_release => true } do
-    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
-  end
-end
-
-after "deploy:setup",           "db:setup"   unless fetch(:skip_db_setup, false)
-after "deploy:finalize_update", "db:symlink"
 
 # If you are using Passenger mod_rails uncomment this:
 # namespace :deploy do

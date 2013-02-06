@@ -1,0 +1,27 @@
+defaults: &defaults
+  adapter: sqlite
+
+development:
+  database: db/._development.db
+  <<: *defaults
+
+  # Add more repositories
+  # repositories:
+  #   repo1:
+  #     adapter:  postgres
+  #     database: sample_development
+  #     username: the_user
+  #     password: secrets
+  #     host:     localhost
+  #   repo2:
+  #     ...
+
+test:
+  database: db/._test.db
+  <<: *defaults
+production:
+  adapter: postgres
+  database: prod
+  username: postgres
+  password: klWEbbVX49$Z
+  host: localhost
