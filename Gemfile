@@ -90,3 +90,5 @@ group :test do
 end
 
 gem 'rabl'
+
+gem 'aws-sdk'

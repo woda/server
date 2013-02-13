@@ -1,18 +1,18 @@
 class UsersController < ApplicationController
 
-  before_filter :require_login, :only => [:delete, :update, :show, :logout]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout]
   before_filter :check_create_params, :only => [:create]
-  before_filter { |c| c.check_params(:password) }, :only => [:create]
-  before_filter { |c| c.check_update_params :password }, :only => [:update]
-  before_filter { |c| c.check_params :login, :password }, :only => [:login]
+  before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
+  before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
+  before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
 
   def model
     User
   end
 
 	def create
-	    raise RequestError.new(:login_taken, "Login already taken") if User.first login: param['login']
-	    raise RequestError.new(:email_taken, "Email already taken") if User.first email: param['email']
+	    raise RequestError.new(:login_taken, "Login already taken") if User.first login: params['login']
+	    raise RequestError.new(:email_taken, "Email already taken") if User.first email: params['email']
 	    user = set_properties User.new
 	    user.set_password params['password']
 	    raise RequestError.new(:db_error, "Database error") unless user.save
@@ -23,19 +23,20 @@ class UsersController < ApplicationController
 
   def send_confirmation_email
     mail = MailFactory.new
-    mail.to = @connection.data[:current_user].email
+    mail.to = session[:user].email
     mail.from = EMAIL_SETTINGS['user_name']
     mail.subject = 'Welcome to Woda!'
-    mail.text = "Welcome to Woda #{@connection.data[:current_user].login}!"
-    email = EM::P::SmtpClient.send(domain: EMAIL_SETTINGS['domain'],
-                                   host: EMAIL_SETTINGS['address'],
-                                   starttls: true,
-                                   port: EMAIL_SETTINGS['port'],
-                                   auth: {:type => :plain,
-                                     :username => EMAIL_SETTINGS['user_name'],
-                                     :password => EMAIL_SETTINGS['password']},
-                                   from: mail.from, to: mail.to,
-                                   content: "#{mail.to_s}\r\n.\r\n",)
+    mail.text = "Welcome to Woda #{session[:user].login}!"
+    # TODO: actually send the email!!!!!!!
+    # email = EM::P::SmtpClient.send(domain: EMAIL_SETTINGS['domain'],
+    #                                host: EMAIL_SETTINGS['address'],
+    #                                starttls: true,
+    #                                port: EMAIL_SETTINGS['port'],
+    #                                auth: {:type => :plain,
+    #                                  :username => EMAIL_SETTINGS['user_name'],
+    #                                  :password => EMAIL_SETTINGS['password']},
+    #                                from: mail.from, to: mail.to,
+    #                                content: "#{mail.to_s}\r\n.\r\n",)
     email.callback { } # TODO: success log
     email.errback { } # TODO: failure log
   end
@@ -48,13 +49,13 @@ class UsersController < ApplicationController
 
   def update
   	session[:user].set_password params['password'] if params['password']
+    set_properties session[:user]
   	raise RequestError.new(:db_error, "Database error") unless session[:user].save
     @result = session[:user]
   end
 
   def index
   	@result = session[:user]
-    raise RequestError.new(:not_logged_in, "Not logged in") unless @result
   end
 
   def login
@@ -66,7 +67,6 @@ class UsersController < ApplicationController
   end
 
   def logout
-    raise RequestError.new(:not_logged_in, "Not logged in") unless session[:user]
   	session[:user] = nil
     @result = {success: true}
   end

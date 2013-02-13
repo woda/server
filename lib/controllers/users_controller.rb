@@ -4,7 +4,7 @@ require 'connection/client_connection'
 require 'mailfactory'
 require 'securerandom'
 
-class UsersController < Controller::Base
+class UsersController < ApplicationController
   actions :create, :delete, :update, :show, :login, :logout, :list
   before :check_authenticate, :delete, :update, :show, :logout
   before :check_create_params, :create
@@ -20,10 +20,10 @@ class UsersController < Controller::Base
   # Action: creates a user according to the params
   def create
     LOG.info "Trying to create #{param['login']}"
-    @connection.error_login_taken if User.first login: param['login']
-    @connection.error_email_taken if User.first email: param['email']
+    @connection.error_login_taken if User.first login: params['login']
+    @connection.error_email_taken if User.first email: params['email']
     user = set_properties User.new
-    user.set_password param['password']
+    user.set_password params['password']
     @connection.error_could_not_create_user unless user.save
     self.set_current_user user
     connection.send_message :signup_successful

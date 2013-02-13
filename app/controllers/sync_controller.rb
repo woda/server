@@ -5,14 +5,14 @@ require 'digest/sha1'
 class SyncController < ApplicationController
  	before_filter :require_login
  	before_filter { |c| c.check_params :filename }
- 	before_filter { |c| c.check_params :content_hash, :size }, :only => [:put, :change]
+ 	before_filter Proc.new { |c| c.check_params :content_hash, :size }, :only => [:put, :change]
 
  	def put
  		current_content = Content.first content_hash: params['content_hash']
  		f = WFile.new(filename: params['filename'], last_modification_time: DateTime.now)
  		set_content_files = [f]
  		# If it took more than 24 hours to upload the file, we just start over
- 		if current_content.start_upload != 0 && current_content.start_upload < (time.now.utc.to_i - 24 * 3600)
+ 		if current_content && current_content.start_upload != 0 && current_content.start_upload < (Time.now.utc.to_i - 24 * 3600)
  			set_content_files += WFile.find(content: current_content)
  			current_content = nil
  			delete_s3_file params['content_hash']
@@ -20,11 +20,11 @@ class SyncController < ApplicationController
  		if current_content
  			@result = {success: true, need_upload: false, file: f}
  		else
- 			current_content = content.new(content_hash: params['content_hash'],
+ 			current_content = Content.new(content_hash: params['content_hash'],
  				size: params['size'],
  				crypt_key: WodaCrypt.new.random_key.to_hex,
  				init_vector: WodaCrypt.new.random_iv.to_hex,
- 				start_upload: time.now.utc.to_i)
+ 				start_upload: Time.now.utc.to_i)
 			policy = {
 				'expiration' => (Time.now.utc + 1800).iso8601,
 				'conditions' => [
@@ -32,7 +32,7 @@ class SyncController < ApplicationController
 					{'key' => params['content_hash']},
 					{'acl' => 'private'},
 					{'success_action_redirect' => '#{BASE_URL}/sync/upload_success'},
-					['content-length-range', params['size'], params['size']]
+					['content-length-range', params['size'], params['size']],
 					{'Content-Type' => 'application/octet-stream'},
 				]
 			}
@@ -40,15 +40,16 @@ class SyncController < ApplicationController
 			signature = Base64.encode64(
     			OpenSSL::HMAC.digest(
     			    OpenSSL::Digest::Digest.new('sha1'), 
-        			aws_secret_key, policy_64)
+        			AWS_SECRET, policy_64)
 			    ).gsub("\n","")
 			@result = {success: true, need_upload: true, file: f, policy: policy,
 				signature: signature, key: current_content.crypt_key,
 				iv: current_content.init_vector}
 		end
 		set_content_files.each { |file| file.content = current_content }
- 		session[:user].files << f
- 		session[:user].save
+ 		session[:user].w_files << f
+ 		raise RequestError.new(:db_error, "Database error") unless session[:user].save
+ 		set_content_files.each { |file| raise RequestError.new(:db_error, "Database error") unless file.save }
 	end
 
 	def upload_success
@@ -62,5 +63,27 @@ class SyncController < ApplicationController
 		end
 	end
 
-	def 
+	def change
+		delete
+		put
+	end
+
+	def delete
+		f = WFile.first filename: params['filename'], user: session[:user]
+		raise RequestError.new(:file_not_found, "File not found") unless f
+		destroy_content = nil
+		if WFile.count(content: f.content) <= 1 then
+			destroy_content = f.content
+		end
+		f.destroy!
+		destroy_content.destroy! if destroy_content
+		@result = {success: true}
+	end
+
+	def get2
+		f = WFile.first filename: params['filename'], user: session[:user]
+		raise RequestError.new(:file_not_found, "File not found") unless f
+		s3 = AWS::S3.new
+		@result = {url: s3.buckets['woda-files'].objects[f.content.content_hash].url_for(:read).to_s}
+	end
 end

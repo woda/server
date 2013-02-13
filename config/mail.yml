@@ -1,4 +1,4 @@
-dev:
+development:
   tls: true
   address: "smtp.gmail.com"
   port: 587
@@ -14,7 +14,7 @@ test:
   user_name: "redmine.woda@gmail.com"
   password: "RedmineWodaMail"
 
-prod:
+production:
   tls: true
   address: "smtp.gmail.com"
   port: 587
