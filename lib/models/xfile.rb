@@ -1,5 +1,5 @@
 require 'data_mapper'
-require 'models/base/woda_resource'
+require 'app/models/base/woda_resource'
 
 class XFile
   include DataMapper::Resource
@@ -13,6 +13,6 @@ class XFile
 
   has n, :access_rights
   belongs_to :user, :child_key => :user_id
-  belongs_to :w_folder, :child_key => :parent_id
-#  has 1, :content
+  belongs_to :folder, :child_key => :parent_id
+  has 1, :content
 end
