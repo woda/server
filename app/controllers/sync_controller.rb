@@ -84,6 +84,7 @@ class SyncController < ApplicationController
 		f = WFile.first filename: params['filename'], user: session[:user]
 		raise RequestError.new(:file_not_found, "File not found") unless f
 		s3 = AWS::S3.new
-		@result = {url: s3.buckets['woda-files'].objects[f.content.content_hash].url_for(:read).to_s}
+		@result = {url: s3.buckets['woda-files'].objects[f.content.content_hash].url_for(:read).to_s,
+		  key: f.content.crypt_key, iv: f.content.init_vector}
 	end
 end
