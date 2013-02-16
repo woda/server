@@ -4,6 +4,8 @@ RAILS_VERSION = '~> 3.2.11'
 DM_VERSION    = '~> 1.2.0'
 gem 'mailfactory'
 
+gem 'minitest'
+
 gem 'activesupport',  RAILS_VERSION, :require => 'active_support'
 gem 'actionpack',     RAILS_VERSION, :require => 'action_pack'
 gem 'actionmailer',   RAILS_VERSION, :require => 'action_mailer'
@@ -41,8 +43,10 @@ gem 'ZenTest', '4.8.3'
 # for a rather complete list of available datamapper adapters and plugins
 
 gem 'dm-sqlite-adapter',    DM_VERSION
-#gem 'dm-mysql-adapter',     DM_VERSION
-gem 'dm-postgres-adapter',  DM_VERSION
+unless /cygwin/ =~ RUBY_PLATFORM then
+  gem 'dm-mysql-adapter',	    DM_VERSION
+  gem 'dm-postgres-adapter',  DM_VERSION
+end
 # gem 'dm-oracle-adapter',    DM_VERSION
 # gem 'dm-sqlserver-adapter', DM_VERSION
 
@@ -67,6 +71,8 @@ group :assets do
   gem 'coffee-rails', '~> 3.2.2'
   gem 'uglifier',     '~> 1.2.4'
 end
+
+gem 'rails'
 
 # Prompt
 gem 'highline'

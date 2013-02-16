@@ -18,6 +18,11 @@ GEM
     activemodel (3.2.12)
       activesupport (= 3.2.12)
       builder (~> 3.0.0)
+    activerecord (3.2.12)
+      activemodel (= 3.2.12)
+      activesupport (= 3.2.12)
+      arel (~> 3.0.2)
+      tzinfo (~> 0.3.29)
     activeresource (3.2.12)
       activemodel (= 3.2.12)
       activesupport (= 3.2.12)
@@ -26,6 +31,7 @@ GEM
       multi_json (~> 1.0)
     addressable (2.2.8)
     ansi (1.4.3)
+    arel (3.0.2)
     arrayfields (4.7.4)
     autotest (4.4.6)
       ZenTest (>= 4.4.1)
@@ -91,6 +97,9 @@ GEM
       dm-core (~> 1.2.0)
     dm-migrations (1.2.0)
       dm-core (~> 1.2.0)
+    dm-mysql-adapter (1.2.0)
+      dm-do-adapter (~> 1.2.0)
+      do_mysql (~> 0.10.6)
     dm-observer (1.2.0)
       dm-core (~> 1.2.0)
     dm-postgres-adapter (1.2.0)
@@ -124,6 +133,8 @@ GEM
       uuidtools (~> 2.1)
     dm-validations (1.2.0)
       dm-core (~> 1.2.0)
+    do_mysql (0.10.12)
+      data_objects (= 0.10.12)
     do_postgres (0.10.12)
       data_objects (= 0.10.12)
     do_sqlite3 (0.10.12)
@@ -193,6 +204,7 @@ GEM
       metric_fu (~> 2.1.1)
       rcov (~> 0.9)
     mime-types (1.21)
+    minitest (2.5.1)
     mocha (0.10.5)
       metaclass (~> 0.0.1)
     multi_json (1.6.0)
@@ -215,6 +227,14 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rails (3.2.12)
+      actionmailer (= 3.2.12)
+      actionpack (= 3.2.12)
+      activerecord (= 3.2.12)
+      activeresource (= 3.2.12)
+      activesupport (= 3.2.12)
+      bundler (~> 1.0)
+      railties (= 3.2.12)
     rails_best_practices (0.10.1)
       activesupport
       colored
@@ -323,6 +343,7 @@ DEPENDENCIES
   dm-aggregates (~> 1.2.0)
   dm-constraints (~> 1.2.0)
   dm-migrations (~> 1.2.0)
+  dm-mysql-adapter (~> 1.2.0)
   dm-observer (~> 1.2.0)
   dm-postgres-adapter (~> 1.2.0)
   dm-rails (~> 1.2.1)
@@ -338,7 +359,9 @@ DEPENDENCIES
   map
   metric_abc
   metrical
+  minitest
   rabl
+  rails
   railties (~> 3.2.11)
   rspec
   rspec-rails
