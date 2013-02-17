@@ -18,8 +18,18 @@ class ApplicationController < ActionController::Base
   respond_to :json, :xml
 
   rescue_from RequestError, :with => :rescue_request_error
+  rescue_from DataMapper::SaveFailureError, :with => :rescue_db_error
 
   before_filter :get_user
+  around_filter :transaction
+
+  def transaction
+    User.transaction do |t|
+      @error_occured = false
+      yield
+      t.rollback if @error_occured
+    end
+  end
 
   def get_user
     session[:user] = User.first id: session[:user] if session[:user]
@@ -34,7 +44,13 @@ class ApplicationController < ActionController::Base
   end
 
   def rescue_request_error expt
+    @error_occured = true
     render :json => {error: expt.sym, message: expt.str}, :status => :bad_request
+  end
+
+  def rescue_db_error expt
+    @error_occured = true
+    render :json => {error: :db_error, message: expt.to_s}
   end
 
     ##

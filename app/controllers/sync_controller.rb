@@ -9,7 +9,8 @@ class SyncController < ApplicationController
 
  	def put
  		current_content = Content.first content_hash: params['content_hash']
- 		f = WFile.new(filename: params['filename'], last_modification_time: DateTime.now)
+ 		f = session[:user].get_file(params['filename'].split('/'), create: true)
+ 		f.last_modification_time = DateTime.now
  		set_content_files = [f]
  		# If it took more than 24 hours to upload the file, we just start over
  		if current_content && current_content.start_upload != 0 && current_content.start_upload < (Time.now.utc.to_i - 24 * 3600)
@@ -47,9 +48,8 @@ class SyncController < ApplicationController
 				iv: current_content.init_vector}
 		end
 		set_content_files.each { |file| file.content = current_content }
- 		session[:user].w_files << f
- 		raise RequestError.new(:db_error, "Database error") unless session[:user].save
- 		set_content_files.each { |file| raise RequestError.new(:db_error, "Database error") unless file.save }
+ 		session[:user].save
+ 		set_content_files.each { |file| file.save }
 	end
 
 	def upload_success
@@ -69,7 +69,7 @@ class SyncController < ApplicationController
 	end
 
 	def delete
-		f = WFile.first filename: params['filename'], user: session[:user]
+		f = session[:user].get_file(params['filename'].split('/'))
 		raise RequestError.new(:file_not_found, "File not found") unless f
 		destroy_content = nil
 		if WFile.count(content: f.content) <= 1 then
@@ -81,7 +81,7 @@ class SyncController < ApplicationController
 	end
 
 	def get2
-		f = WFile.first filename: params['filename'], user: session[:user]
+		f = session[:user].get_file(params['filename'].split('/'))
 		raise RequestError.new(:file_not_found, "File not found") unless f
 		s3 = AWS::S3.new
 		@result = {url: s3.buckets['woda-files'].objects[f.content.content_hash].url_for(:read).to_s,

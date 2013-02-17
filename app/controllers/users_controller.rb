@@ -15,7 +15,7 @@ class UsersController < ApplicationController
 	    raise RequestError.new(:email_taken, "Email already taken") if User.first email: params['email']
 	    user = set_properties User.new
 	    user.set_password params['password']
-	    raise RequestError.new(:db_error, "Database error") unless user.save
+	   user.save
 	    session[:user] = user
 	    send_confirmation_email
 	    @result = user
@@ -37,12 +37,12 @@ class UsersController < ApplicationController
     #                                  :password => EMAIL_SETTINGS['password']},
     #                                from: mail.from, to: mail.to,
     #                                content: "#{mail.to_s}\r\n.\r\n",)
-    email.callback { } # TODO: success log
-    email.errback { } # TODO: failure log
+    # email.callback { } # TODO: success log
+    # email.errback { } # TODO: failure log
   end
 
   def delete
-  	raise RequestError.new(:db_error, "Database error") unless session[:user].destroy
+  	session[:user].destroy
   	session[:user] = nil
     @result = {success: true}
   end
@@ -50,7 +50,7 @@ class UsersController < ApplicationController
   def update
   	session[:user].set_password params['password'] if params['password']
     set_properties session[:user]
-  	raise RequestError.new(:db_error, "Database error") unless session[:user].save
+  	session[:user].save
     @result = session[:user]
   end
 

@@ -1,17 +1,18 @@
 require 'data_mapper'
 require 'app/models/base/woda_resource'
 
-class WFile
+class XFile
   include DataMapper::Resource
   include WodaResource
   
-  storage_names[:default] = "File"
+  storage_names[:default] = "XFile"
 
   property :id, Serial, key: true
-  updatable_property :filename, FilePath, index: true
+  updatable_property :name, String, index: true
   updatable_property :last_modification_time, DateTime
 
   has n, :access_rights
-  belongs_to :user, :child_key => :user_id
+  belongs_to :user, :child_key => :user_id, index: true
+  belongs_to :folder, :child_key => :parent_id, index: true
   has 1, :content
 end

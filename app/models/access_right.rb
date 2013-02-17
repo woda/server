@@ -9,5 +9,6 @@ class AccessRight
   property :access, Flag[:read, :write, :execute]
 
   belongs_to :user, key: true
-  belongs_to :w_file, key: true
+  belongs_to :folder, key: true, required: false
+  belongs_to :x_file, key: true, required: false
 end
