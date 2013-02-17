@@ -13,8 +13,12 @@ gem 'activeresource', RAILS_VERSION, :require => 'active_resource'
 gem 'railties',       RAILS_VERSION, :require => 'rails'
 gem 'tzinfo',         '~> 0.3.32'
 # Testing
-gem 'rspec-rails'
-gem 'rspec'
+group :development do
+  gem 'rspec-rails'
+end
+group :test do
+  gem 'rspec-rails'
+end
 gem 'autotest'
 gem 'simplecov'
 gem 'simplecov-rcov'
