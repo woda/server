@@ -3,6 +3,9 @@ require 'lib/helpers/hash_digest'
 require 'app/models/properties/sha256_hash'
 require 'app/models/base/woda_resource'
 
+##
+# The User model. represents a user with login, first name, last name, email and password.
+# Also links to the folders and files of the user.
 class User
   include DataMapper::Resource
   include WodaResource
@@ -21,15 +24,25 @@ class User
   has n, :folders
   has n, :x_files
 
+  ##
+  # Always use this function to test for password
   def has_password? pass
     WodaHash.digest(self.pass_salt + pass).to_hex.downcase == pass_hash.downcase
   end
 
+  ##
+  # Always use this function to set password. Never set it by hand
   def set_password pass
     self.pass_salt = SHA256Salt.generate_random
     self.pass_hash = WodaHash.digest(self.pass_salt + pass).to_hex
   end
 
+  ##
+  # Gets the file for a given paths. This is two versions in one:
+  # The first version, with no options, tries to get an existing file and returns nil if it doesn't find it
+  # The second version, with :create => true tries to get a file and creates all the folders and the file itself
+  #   if they do not exit.
+  # /!\ Both version create a root folder if it doesn't exist!
   def get_file(path, options = {})
     folder = Folder.first user: self, name: nil
     if folder.nil? then

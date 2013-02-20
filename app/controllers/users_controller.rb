@@ -7,10 +7,15 @@ class UsersController < ApplicationController
   before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
 
+  ##
+  # Returns the model, useful for ApplicationController.
   def model
     User
   end
 
+  ##
+  # Create a new user.
+  # params: email, first_name, last_name, login, password
   def create
     raise RequestError.new(:login_taken, "Login already taken") if User.first login: params['login']
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params['email']
@@ -22,13 +27,14 @@ class UsersController < ApplicationController
     @result = user
   end
   
+  ##
+  # Sends the confirmation email. Currently deactivated.
   def send_confirmation_email
     mail = MailFactory.new
     mail.to = session[:user].email
     mail.from = EMAIL_SETTINGS['user_name']
     mail.subject = 'Welcome to Woda!'
     mail.text = "Welcome to Woda #{session[:user].login}!"
-    # TODO: actually send the email!!!!!!!
     # email = EM::P::SmtpClient.send(domain: EMAIL_SETTINGS['domain'],
     #                                host: EMAIL_SETTINGS['address'],
     #                                starttls: true,
@@ -42,6 +48,7 @@ class UsersController < ApplicationController
     # email.errback { } # TODO: failure log
   end
 
+  ##
   # Method which returns the full user's files list
   def files
     aim_folder = params[:folder] if params[:folder]
@@ -96,12 +103,16 @@ class UsersController < ApplicationController
     @result = list_infos
   end
 
+  ##
+  # Deletes the current user
   def delete
   	session[:user].destroy
   	session[:user] = nil
     @result = {success: true}
   end
 
+  ##
+  # Modifies the current user. Takes any of the parameters of create, but not necessarily all.
   def update
   	session[:user].set_password params['password'] if params['password']
     set_properties session[:user]
@@ -109,10 +120,15 @@ class UsersController < ApplicationController
     @result = session[:user]
   end
 
+  ##
+  # Returns self.
   def index
   	@result = session[:user]
   end
 
+  ##
+  # Log in to the server.
+  # params: login, password
   def login
   	user = User.first login: params['login']
   	raise RequestError.new(:user_not_found, "User not found") unless user
@@ -121,6 +137,8 @@ class UsersController < ApplicationController
     @result = user
   end
 
+  ##
+  # Log out of the server
   def logout
     session[:user] = nil
     @result = {success: true}
