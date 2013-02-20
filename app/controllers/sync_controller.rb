@@ -2,6 +2,8 @@ require 'time'
 require 'openssl'
 require 'digest/sha1'
 
+BASE_URL='https://ec2-54-242-98-168.compute-1.amazonaws.com:3000'
+
 class SyncController < ApplicationController
  	before_filter :require_login
  	before_filter { |c| c.check_params :filename }
@@ -32,7 +34,7 @@ class SyncController < ApplicationController
 					{'bucket' => 'woda-files'},
 					{'key' => params['content_hash']},
 					{'acl' => 'private'},
-					{'success_action_redirect' => '#{BASE_URL}/sync/upload_success'},
+					{'success_action_redirect' => "#{BASE_URL}/sync/upload_success"},
 					['content-length-range', params['size'], params['size']],
 					{'Content-Type' => 'application/octet-stream'},
 				]
