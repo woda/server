@@ -1,3 +1,3 @@
 collection @result
 
-attributes :name, :full_path, :last_modification, :files, :type
+attributes :folder_name, :full_path, :last_modification, :files, :type

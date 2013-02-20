@@ -14,7 +14,7 @@ class Folder
   has n, :access_rights
   belongs_to :user, :child_key => :user_id, index: true
   has n, :children, self, :child_key => :parent_id
-  belongs_to :parent, self, :required => false, index: true
+  belongs_to :parent, self, :required => false
   has n, :x_files
 end
 
