@@ -64,8 +64,8 @@ Server::Application.routes.draw do
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
 
-  match 'sync/:filename' => 'sync#put', via: :put
-  match 'sync/:filename' => 'sync#change', via: :post
-  match 'sync/:filename' => 'sync#delete', via: :delete
-  match 'sync/:filename' => 'sync#get2', via: :get
+  match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
+  match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
+  match 'sync/:filename' => 'sync#delete', via: :delete, constraints: {filename: /.*/}
+  match 'sync/:filename' => 'sync#get2', via: :get, constraints: {filename: /.*/}
 end
