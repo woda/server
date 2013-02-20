@@ -72,7 +72,7 @@ class SyncController < ApplicationController
 		f = session[:user].get_file(params['filename'].split('/'))
 		raise RequestError.new(:file_not_found, "File not found") unless f
 		destroy_content = nil
-		if WFile.count(content: f.content) <= 1 then
+		if XFile.count(content: f.content) <= 1 then
                   destroy_content = f.content
 		end
 		f.destroy!
