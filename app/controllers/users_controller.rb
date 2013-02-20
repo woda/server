@@ -44,12 +44,14 @@ class UsersController < ApplicationController
 
   # Method which returns the full user's files list
   def files
+    aim_folder = params[:folder] if params[:folder]
     user = session[:user]
     
     list_infos = []
 
     # We search in each folder
     user.folders.each do | folder |
+      next if aim_folder.nil? == false && folder.name != aim_folder
       folder_infos = {}
       # We get the full path folder
       tmp = folder.parent
