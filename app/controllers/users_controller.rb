@@ -46,18 +46,15 @@ class UsersController < ApplicationController
   def files
     user = session[:user]
     
-    folder_infos = {}
-    file_infos = {}
     list_infos = []
 
     # We search in each folder
     user.folders.each do | folder |
-
+      folder_infos = {}
       # We get the full path folder
       tmp = folder.parent
-      full_path = tmp.name + '/' if !tmp.nil? == false
       
-      while !tmp.parent.nil?
+      while tmp.nil? == false && !tmp.parent.nil?
         full_path = tmp.name + '/'+ full_path
         tmp = tmp.parent
       end
@@ -69,21 +66,20 @@ class UsersController < ApplicationController
       files_list = []
 
       # We get all files from the current folder
-      folder.x_files do | file |
+      folder.x_files.each do | file |
+        file_infos = {}
         # We put files infos in the hash too
         file_infos[:name] = file.name
         file_infos[:type] = File.extname(file.name)
         file_infos[:last_modification] = file.last_modification_time
+        
         files_list.push file_infos
       end
       folder_infos[:files] = files_list
       list_infos.push folder_infos
     end
-    list_infos = [{name: "folder1", full_path: "/full/path/to/folder1", last_modification: "01/02/2013 23:10",
-                    files: [{name: "File1", type: ".avi", last_modification: "01/02/2013 23:10"},
-                            {name: "File2", type: ".txt", last_modification: "01/02/2013 23:10"}]}]
     puts list_infos
-    @result = {succes: "lol"}
+    @result = list_infos
   end
 
   def delete

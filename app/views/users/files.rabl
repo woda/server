@@ -1,3 +1,3 @@
-object @result
+collection @result
 
 attributes :name, :full_path, :last_modification, :files, :type
