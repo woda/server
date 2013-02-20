@@ -8,6 +8,11 @@ require 'rspec/autorun'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+def db_clear
+  DataMapper::Model.descendants.each {|model| model.destroy}
+end
+
+
 RSpec.configure do |config|
   # ## Mock Framework
   #
@@ -37,14 +42,5 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = "random"
 
-  config.before(:each) do
-    DataMapper.auto_migrate!
-  end
-
-  config.around(:each) do |example|
-    User.transaction do |t|
-      example.run
-      t.rollback
-    end
-  end
+  config.before(:suite) { DataMapper.auto_migrate! }
 end
