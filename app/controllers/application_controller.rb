@@ -42,7 +42,7 @@ class ApplicationController < ActionController::Base
     end
     if @result.class == Array
       @result = @result.map do |elem|
-        elem.class == Hash ? OpenStruct.new elem : elem
+        (elem.class == Hash) ? OpenStruct.new(elem) : elem
       end
     end
     super
