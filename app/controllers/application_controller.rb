@@ -12,7 +12,7 @@ end
 class ApplicationController < ActionController::Base
   use Rails::DataMapper::Middleware::IdentityMap
   if Rails.env.to_sym == :production
-    protect_from_forgery
+#    protect_from_forgery
   end
 
   respond_to :json, :xml
