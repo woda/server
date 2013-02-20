@@ -53,30 +53,42 @@ class UsersController < ApplicationController
       folder_infos = {}
       # We get the full path folder
       tmp = folder.parent
-      
+      full_path = folder.name
       while tmp.nil? == false && !tmp.parent.nil?
-        full_path = tmp.name + '/'+ full_path
+        full_path = tmp.name + "\/" + full_path
         tmp = tmp.parent
       end
-
-      # We put folders infos in the hash
-      folder_infos[:name] = folder.name
-      folder_infos[:full_path] = full_path
-      folder_infos[:last_modification] = folder.last_modification_time
-      files_list = []
-
-      # We get all files from the current folder
-      folder.x_files.each do | file |
-        file_infos = {}
-        # We put files infos in the hash too
-        file_infos[:name] = file.name
-        file_infos[:type] = File.extname(file.name)
-        file_infos[:last_modification] = file.last_modification_time
+      
+      # We put folders infos in the hash ONLY IF the folders contains files
+      if folder.x_files.size > 0 then
+        if !folder.name.nil? then
+          folder_infos[:folder_name] = folder.name
+        else
+          folder_infos[:folder_name] = ""
+        end
         
-        files_list.push file_infos
+        if !full_path.nil? then
+          folder_infos[:full_path] = full_path
+        else
+          folder_infos[:full_path] = "/"
+        end
+        
+        folder_infos[:last_modification] = folder.last_modification_time
+        files_list = []
+        
+        # We get all files from the current folder
+        folder.x_files.each do | file |
+          file_infos = {}
+          # We put files infos in the hash too
+          file_infos[:name] = file.name
+          file_infos[:type] = File.extname(file.name)
+          file_infos[:last_modification] = file.last_modification_time
+          
+          files_list.push file_infos
+        end
+        folder_infos[:files] = files_list
+        list_infos.push folder_infos
       end
-      folder_infos[:files] = files_list
-      list_infos.push folder_infos
     end
     puts list_infos
     @result = list_infos
