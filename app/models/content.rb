@@ -23,5 +23,6 @@ class Content
   updatable_property :crypt_key, AES256Key
   updatable_property :init_vector, AES256Iv
   updatable_property :size, Integer
+  updatable_property :file_type, String
   property :start_upload, Integer
 end
