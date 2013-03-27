@@ -73,13 +73,13 @@ class UsersController < ApplicationController
         if !folder.name.nil? then
           folder_infos[:folder_name] = folder.name
         else
-          folder_infos[:folder_name] = ""
+          folder_infos[:folder_name] = "" # Root folder
         end
         
         if !full_path.nil? then
           folder_infos[:full_path] = full_path
         else
-          folder_infos[:full_path] = "/"
+          folder_infos[:full_path] = "/" # Root folder
         end
         
         folder_infos[:last_update] = folder.last_modification_time
