@@ -82,7 +82,7 @@ class UsersController < ApplicationController
           folder_infos[:full_path] = "/"
         end
         
-        folder_infos[:last_modification] = folder.last_modification_time
+        folder_infos[:last_update] = folder.last_modification_time
         files_list = []
         
         # We get all files from the current folder
@@ -91,7 +91,7 @@ class UsersController < ApplicationController
           # We put files infos in the hash too
           file_infos[:name] = file.name
           file_infos[:type] = File.extname(file.name)
-          file_infos[:last_modification] = file.last_modification_time
+          file_infos[:last_update] = file.last_modification_time
           
           files_list.push file_infos
         end

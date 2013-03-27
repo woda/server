@@ -64,6 +64,8 @@ Server::Application.routes.draw do
   match 'users' => 'users#update', via: :post
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
+  
+  match 'api/files' => 'api#list'
 
   match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
