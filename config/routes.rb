@@ -60,6 +60,9 @@ Server::Application.routes.draw do
   match 'users/logout' => 'users#logout'
   match 'users/files' => 'users#files'
   match 'users/files/:folder' => 'users#files'
+  match 'users/files/recents' => 'users#recents'
+  match 'users/files/favorites' => 'users#favorites'
+  match 'users/files/favorites/:id' => 'users#favorites'
   match 'users' => 'users#index', via: :get
   match 'users' => 'users#update', via: :post
   match 'users' => 'users#delete', via: :delete

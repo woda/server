@@ -104,6 +104,46 @@ class UsersController < ApplicationController
   end
 
   ##
+  # Get the first 20 last updated files
+  def recents
+    user = session[:user]
+    now = Time.now
+    20_days_back = Time.now - 20.days
+    files = user.x_files.all(:last_modification_time => (now..20_days_back), :limit => 20)
+    files_list = []
+    
+    files.each do | file |
+      f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time}
+      files_list.push f
+    end
+
+    @result = files_list
+  end
+
+  ##
+  # Get all the favorites files
+  # Two version without an id: Return all the favorites files
+  # With and id: Make file refered by id favorite or delete from favorite
+  def favorites
+    user = session[:user]
+
+    if param[:id]
+      id = param[:id]
+      f = user.x_files.get id 
+      f.update :favorite => !f.favorite, :last_modification_time => Time.now
+      @result = [{:id => f.id, :name => f.name, :last_update => f.last_modification_time}]
+    else
+      files_list = []
+      files = user.x_files.all :favorite => true
+      files.each do | file |
+        f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time}
+        files_list.push f
+      end
+      @result = files_list
+    end
+  end
+
+  ##
   # Deletes the current user
   def delete
   	session[:user].destroy
