@@ -108,8 +108,8 @@ class UsersController < ApplicationController
   def recents
     user = session[:user]
     now = Time.now
-    20_days_back = Time.now - 20.days
-    files = user.x_files.all(:last_modification_time => (now..20_days_back), :limit => 20)
+    twenty_days_back = Time.now - 20.days
+    files = user.x_files.all(:last_modification_time => (now..twenty_days_back), :limit => 20)
     files_list = []
     
     files.each do | file |
