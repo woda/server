@@ -8,6 +8,8 @@ class SyncController < ApplicationController
  	before_filter :require_login
  	before_filter { |c| c.check_params :filename }
  	before_filter Proc.new { |c| c.check_params :content_hash, :size }, :only => [:put, :change]
+ 	before_filter Proc.new { |c| c.check_params :part, :data }, :only => [:upload_part]
+ 	before_filter Proc.new { |c| c.check_params :part }, :only => [:get2]
 
  	def put
  		current_content = Content.first content_hash: params['content_hash']
@@ -28,30 +30,29 @@ class SyncController < ApplicationController
  				crypt_key: WodaCrypt.new.random_key.to_hex,
  				init_vector: WodaCrypt.new.random_iv.to_hex,
  				start_upload: Time.now.utc.to_i)
-			policy = {
-				'expiration' => (Time.now.utc + 1800).iso8601,
-				'conditions' => [
-					{'bucket' => 'woda-files'},
-					{'key' => params['content_hash']},
-					{'acl' => 'private'},
-					{'success_action_redirect' => "#{BASE_URL}/sync/upload_success"},
-					['content-length-range', params['size'], params['size']],
-					{'Content-Type' => 'application/octet-stream'},
-				]
-			}
-			policy_64 = Base64.encode64(policy.to_json).gsub("\n","")
-			signature = Base64.encode64(
-    			OpenSSL::HMAC.digest(
-    			    OpenSSL::Digest::Digest.new('sha1'), 
-        			AWS_SECRET, policy_64)
-			    ).gsub("\n","")
-			@result = {success: true, need_upload: true, file: f, policy: policy,
-				signature: signature, key: current_content.crypt_key,
-				iv: current_content.init_vector}
+ 			# TODO: not hardcode part size
+			@result = {success: true, need_upload: true, file: f, part_size: 5 * 1024 * 1024}
 		end
 		set_content_files.each { |file| file.content = current_content }
  		session[:user].save
  		set_content_files.each { |file| file.save }
+	end
+
+	# TODO: more security checks
+	def upload_part
+		f = session[:user].get_file(params['filename'].split('/'), create: false)
+		raise RequestError.new(:file_not_found, "File not found") unless f
+		part = params['part'].to_i
+		cypher = WodaCrypt.new
+		cypher.encrypt
+		cypher.iv = f.content.init_vector
+		cypher.key = f.content.crypt_key
+		s3 = AWS::S3.new
+		bucket = s3.buckets['woda-files']
+		obj = bucket.objects.create("#{f.content.content_hash}/#{params['part']}",
+			:data => cypher.update(params['data']) + cypher.final,
+			:content_type => 'octet-stream')
+		@result = {success:true}
 	end
 
 	def upload_success
@@ -86,7 +87,11 @@ class SyncController < ApplicationController
 		f = session[:user].get_file(params['filename'].split('/'))
 		raise RequestError.new(:file_not_found, "File not found") unless f
 		s3 = AWS::S3.new
-		@result = {url: s3.buckets['woda-files'].objects[f.content.content_hash].url_for(:read).to_s,
-		  key: f.content.crypt_key, iv: f.content.init_vector}
+		file = s3.buckets['woda-files'].objects["#{f.content.content_hash}/#{params['part']}"].read
+		cypher = WodaCrypt.new
+		cypher.decrypt
+		cypher.iv = f.content.init_vector
+		cypher.key = f.content.crypt_key
+		@result = cypher.update(file) + cypher.final
 	end
 end

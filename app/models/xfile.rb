@@ -1,6 +1,8 @@
 require 'data_mapper'
 require 'app/models/base/woda_resource'
 
+##
+# A model representing a file belonging to a user.
 class XFile
   include DataMapper::Resource
   include WodaResource

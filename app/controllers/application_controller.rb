@@ -36,14 +36,22 @@ class ApplicationController < ActionController::Base
   end
 
   def render *args, &block
+    status = 200
     session[:user] = session[:user].id if session[:user]
     if @result.class == Hash
+      if !@result[:success].nil? and !@result[:success]
+        status = 500
+      end
       @result = OpenStruct.new @result
     end
     if @result.class == Array
       @result = @result.map do |elem|
         (elem.class == Hash) ? OpenStruct.new(elem) : elem
       end
+    end
+    if @result.class == String
+      super text: @result
+      return
     end
     super
   end
