@@ -42,7 +42,11 @@ class SyncController < ApplicationController
 	def upload_part
 		f = session[:user].get_file(params['filename'].split('/'), create: false)
 		raise RequestError.new(:file_not_found, "File not found") unless f
+		raise RequestError.new(:bad_part, "\"#{params['part']}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params['part']
 		part = params['part'].to_i
+		raise RequestError.new(:bad_part, "Part number too high") if part > f.content.size / (5*1024*1024)
+		part_size = (part == f.content.size / (5*1024*1024) ? f.content.size % (5*1024*1024) : (5*1024*1024))
+		raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == params['data'].length
 		cypher = WodaCrypt.new
 		cypher.encrypt
 		cypher.iv = f.content.init_vector
