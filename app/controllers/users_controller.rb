@@ -51,56 +51,57 @@ class UsersController < ApplicationController
   ##
   # Method which returns the full user's files list
   def files
-    aim_folder = params[:folder] if params[:folder]
     user = session[:user]
-    
-    list_infos = []
+    aim = params[:folder] if params[:folder]
+    folder = nil
 
-    # We search in each folder
-    user.folders.each do | folder |
-      next if aim_folder.nil? == false && folder.name != aim_folder
-      folder_infos = {}
-      # We get the full path folder
-      tmp = folder.parent
-      full_path = folder.name
-      while tmp.nil? == false && !tmp.parent.nil?
-        full_path = tmp.name + "\/" + full_path
-        tmp = tmp.parent
-      end
-      
-      # We put folders infos in the hash ONLY IF the folders contains files
-      if folder.x_files.size > 0 then
-        if !folder.name.nil? then
-          folder_infos[:folder_name] = folder.name
-        else
-          folder_infos[:folder_name] = "" # Root folder
-        end
-        
-        if !full_path.nil? then
-          folder_infos[:full_path] = full_path
-        else
-          folder_infos[:full_path] = "/" # Root folder
-        end
-        
-        folder_infos[:last_update] = folder.last_modification_time
-        files_list = []
-        
-        # We get all files from the current folder
-        folder.x_files.each do | file |
-          file_infos = {}
-          # We put files infos in the hash too
-          file_infos[:name] = file.name
-          file_infos[:type] = File.extname(file.name)
-          file_infos[:last_update] = file.last_modification_time
-          
-          files_list.push file_infos
-        end
-        folder_infos[:files] = files_list
-        list_infos.push folder_infos
+    # We search the root folder in case this one is not the first in the list
+    user.folders.each do | f |
+      if f.name.nil? || f.name == aim then
+        folder = f
+        break
       end
     end
-    puts list_infos
-    @result = list_infos
+
+    hierarchy = crawl_folder folder
+    @result = hierarchy
+  end
+
+  # Crawl a folder
+  def crawl_folder(folder, recur = true)
+    list = []
+    folders = []
+
+    # Folder infos
+    folder_infos = []
+    if folder.name.nil? == true
+      folder_infos[:name] = "/" 
+    else
+      folder_infos[:name] = folder.name
+    end
+    folder_infos[:last_update] = folder.last_modification_time
+
+    if recur then
+      # We recall craw_folder() method recursively for crawling each child folder if recur = true
+      folder.children.each do | child |
+        folders.push(crawl_folder(child))
+      end
+      folder_infos[:folders] = folders
+    end
+
+    files_list = []
+    # We get all files from the current folder
+    folder.x_files.each do | file |
+      file_infos = {}
+      
+      file_infos[:name] = file.name
+      file_infos[:type] = File.extname file.name
+      file_infos[:last_update] = file.last_modification_time
+      files_list.push file_infos
+    end
+    folder_infos[:files] = files_list
+    
+    folder_infos
   end
 
   ##
