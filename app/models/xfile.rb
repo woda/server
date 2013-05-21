@@ -7,7 +7,7 @@ class XFile
   include DataMapper::Resource
   include WodaResource
   
-  storage_names[:default] = "XFile"
+  storage_names[:default] = "xfile"
 
   property :id, Serial, key: true
   updatable_property :name, String, index: true

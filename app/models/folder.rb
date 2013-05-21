@@ -5,7 +5,7 @@ class Folder
   include DataMapper::Resource
   include WodaResource
   
-  storage_names[:default] = "Folder"
+  storage_names[:default] = "folder"
 
   property :id, Serial, key: true
   updatable_property :name, String, index: true, required: false

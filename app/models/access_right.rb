@@ -4,7 +4,7 @@ require 'app/models/base/woda_resource'
 class AccessRight
   include DataMapper::Resource
 
-  storage_names[:default] = "AccessRight"
+  storage_names[:default] = "access_right"
 
   property :access, Flag[:read, :write, :execute]
 

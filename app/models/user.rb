@@ -10,7 +10,7 @@ class User
   include DataMapper::Resource
   include WodaResource
   
-  storage_names[:default] = "User"
+  storage_names[:default] = "user"
 
   property :id, Serial, key: true
   updatable_property :login, String, unique: true, unique_index: true, required: true

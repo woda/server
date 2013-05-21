@@ -10,7 +10,7 @@ class Content
   include DataMapper::Resource
   include WodaResource
   
-  storage_names[:default] = "Content"
+  storage_names[:default] = "content"
 
   updatable_property :content_hash, SHA256Hash, key: true
   # Note: right now the policy is to forbid people who announce the same hash
