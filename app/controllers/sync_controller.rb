@@ -90,6 +90,10 @@ class SyncController < ApplicationController
 		raise RequestError.new(:file_not_found, "File not found") unless f
 		s3 = AWS::S3.new
 		file = s3.buckets['woda-files'].objects["#{f.content.content_hash}/#{params['part']}"].read(:encryption_key => f.content.crypt_key.from_hex)
+                if params['part'].to_i == 0 then
+                  f.downloads += 1
+                  f.save
+                end
 		@result = file
 	end
 end
