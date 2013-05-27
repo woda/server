@@ -18,4 +18,5 @@ class XFile
   belongs_to :folder, :child_key => :parent_id, index: true
   has 1, :content
   updatable_property :downloads, Integer , :default => 0
+  updatable_property :public, Boolean, :default => false
 end
