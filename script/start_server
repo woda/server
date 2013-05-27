@@ -1,4 +1,5 @@
 #!/bin/bash
+cd /var/serv/current
 RAILS_ENV=production nohup /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rails server -p 3000 > log.out 2>&1 &
 echo $! > last_pid
 

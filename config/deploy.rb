@@ -28,7 +28,7 @@ set :deploy_via, :copy
 set :copy_strategy, :export
 set :deploy_group, "rvm"
 
-server "ec2-54-242-98-168.compute-1.amazonaws.com", :app, :db, :primary => true
+server "ec2-54-242-50-191.compute-1.amazonaws.com", :app, :db, :primary => true
 
 set :use_sudo, true
 
