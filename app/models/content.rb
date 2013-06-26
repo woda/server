@@ -25,4 +25,6 @@ class Content
   updatable_property :size, Integer
   updatable_property :file_type, String
   property :start_upload, Integer
+
+  belongs_to :x_file, :index => true, :required => false
 end

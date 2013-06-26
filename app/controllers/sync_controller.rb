@@ -11,6 +11,7 @@ class SyncController < ApplicationController
  	before_filter Proc.new { |c| c.check_params :part, :data }, :only => [:upload_part]
  	before_filter Proc.new { |c| c.check_params :part }, :only => [:get2]
  	before_filter Proc.new { |c| c.check_params :status }, :only => [:set_public_status]
+ 	before_filter Proc.new { |c| c.check_params :user, :foreign_filename }, :only => [:sync_public]
 
  	def put
  		current_content = Content.first content_hash: params['content_hash']
@@ -70,6 +71,11 @@ class SyncController < ApplicationController
 	end
 
 	def change
+		f = session[:user].get_file(params['filename'].split('/'))
+		if f.read_only
+			@result = {success: false}
+			return
+		end
 		delete
 		put
 	end
@@ -100,8 +106,24 @@ class SyncController < ApplicationController
 		@result = {success: true, status: f.is_public}
 	end
 
+	def sync_public
+		u2 = User.first login: params['user']
+		raise RequestError.new(:bad_user, "User not found") unless u2
+		f2 = u2.get_file(params['foreign_filename'].split('/'))
+		raise RequestError.new(:file_not_found, "File not found") unless f2 && f2.is_public
+		f = session[:user].get_file(params['filename'].split('/'), :create => true)
+		f.x_file = f2
+		f.last_modification_time = DateTime.now
+		session[:user].save
+		f.save
+		@result = {success: true}
+	end
+
 	def get2
 		f = session[:user].get_file(params['filename'].split('/'))
+		while !f.content do
+			f = f.x_file
+		end
 		raise RequestError.new(:file_not_found, "File not found") unless f
 		s3 = AWS::S3.new
 		file = s3.buckets['woda-files'].objects["#{f.content.content_hash}/#{params['part']}"].read(:encryption_key => f.content.crypt_key.from_hex)
