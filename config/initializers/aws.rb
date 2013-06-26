@@ -7,4 +7,3 @@ AWS.config(:access_key_id => AWS_ACCESS,
 EMAIL_SETTINGS = YAML::load(File.read("#{Rails.root}/config/mail.yml"))[Rails.env]
 raise "Error: no email settings, create file config/mail.yml" unless EMAIL_SETTINGS
 
-ActionController::Base.default_charset = "ISO-8859-1"

@@ -1,6 +1,7 @@
 require 'time'
 require 'openssl'
 require 'digest/sha1'
+require 'tempfile'
 
 BASE_URL='https://ec2-54-242-98-168.compute-1.amazonaws.com:3000'
 
@@ -8,7 +9,7 @@ class SyncController < ApplicationController
  	before_filter :require_login
  	before_filter { |c| c.check_params :filename }
  	before_filter Proc.new { |c| c.check_params :content_hash, :size }, :only => [:put, :change]
- 	before_filter Proc.new { |c| c.check_params :part, :data }, :only => [:upload_part]
+ 	before_filter Proc.new { |c| c.check_params :part }, :only => [:upload_part]
  	before_filter Proc.new { |c| c.check_params :part }, :only => [:get2]
  	before_filter Proc.new { |c| c.check_params :status }, :only => [:set_public_status]
 
@@ -46,12 +47,13 @@ class SyncController < ApplicationController
 		raise RequestError.new(:bad_part, "\"#{params['part']}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params['part']
 		part = params['part'].to_i
 		raise RequestError.new(:bad_part, "Part number too high") if part > f.content.size / (5*1024*1024)
+                data = request.body.read
 		part_size = (part == f.content.size / (5*1024*1024) ? f.content.size % (5*1024*1024) : (5*1024*1024))
-		raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == params['data'].length
+		raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == data.length
 		s3 = AWS::S3.new
 		bucket = s3.buckets['woda-files']
 		obj = bucket.objects.create("#{f.content.content_hash}/#{params['part']}",
-			:data => params['data'],
+			:data => data,
 			:content_type => 'octet-stream',
                         :server_side_encryption => :aes256,
                         :encryption_key => f.content.crypt_key.from_hex)
