@@ -50,7 +50,7 @@ class ApplicationController < ActionController::Base
       end
     end
     if @result.class == String
-      super text: @result
+      super text: @result, content_type: 'application/octet-stream'
       return
     end
     super
