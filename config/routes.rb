@@ -72,7 +72,6 @@ Server::Application.routes.draw do
 
   match 'sync/public/:filename' => 'sync#set_public_status', via: :post, constraints: {filename: /.*/}
   match 'sync/public/:filename' => 'sync#public_status', via: :get, constraints: {filename: /.*/}
-  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
   match 'partsync/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
