@@ -1,15 +1,5 @@
 require 'spec_helper'
 
-##
-##
-## /!\ To call a method from the controller without using REST method (PUT, DELETE, POST...)
-## rspec create a "subject" object you can use for that purpose.
-## ex: Logout => subject.logout call the logout method from UsersController
-## Kevin.G ( Sorry for my bad english :P )
-##
-##
-
-
 describe UsersController do
 
   before do
