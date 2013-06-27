@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
-class UsersController < ApplicationController
+require 'json'
 
+class UsersController < ApplicationController
+  
   before_filter :require_login, :only => [:delete, :update, :index, :logout, :files]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
   before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
-
+  
   ##
   # Returns the model, useful for ApplicationController.
   def model
     User
   end
-
+  
   ##
   # Create a new user.
   # params: email, first_name, last_name, login, password
@@ -47,14 +49,14 @@ class UsersController < ApplicationController
     # email.callback { } # TODO: success log
     # email.errback { } # TODO: failure log
   end
-
+  
   ##
   # Method which returns the full user's files list
   def files
     user = session[:user]
     aim = params[:folder] if params[:folder]
     folder = nil
-
+    
     # We search the root folder in case this one is not the first in the list
     user.folders.each do | f |
       if f.name.nil? || f.name == aim then
@@ -62,16 +64,16 @@ class UsersController < ApplicationController
         break
       end
     end
-
-    hierarchy = crawl_folder folder
+    
+    hierarchy = crawl_folder folder if !folder.nil?
     @result = hierarchy
   end
-
+  
   # Crawl a folder
   def crawl_folder(folder, recur = true)
     list = []
     folders = []
-
+    
     # Folder infos
     folder_infos = []
     if folder.name.nil? == true
@@ -80,7 +82,7 @@ class UsersController < ApplicationController
       folder_infos[:name] = folder.name
     end
     folder_infos[:last_update] = folder.last_modification_time
-
+    
     if recur then
       # We recall craw_folder() method recursively for crawling each child folder if recur = true
       folder.children.each do | child |
@@ -88,22 +90,24 @@ class UsersController < ApplicationController
       end
       folder_infos[:folders] = folders
     end
-
+    
     files_list = []
     # We get all files from the current folder
     folder.x_files.each do | file |
       file_infos = {}
       
       file_infos[:name] = file.name
-      file_infos[:type] = File.extname file.name
+      file_infos[:type] = File.extname file.name,
       file_infos[:last_update] = file.last_modification_time
+      file_infos[:favorite] = file.favorite
+      file_infos[:publicness] = file.is_public
       files_list.push file_infos
     end
     folder_infos[:files] = files_list
     
     folder_infos
   end
-
+  
   ##
   # Get the first 20 last updated files
   def recents
@@ -117,22 +121,26 @@ class UsersController < ApplicationController
       f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time}
       files_list.push f
     end
-
+    
     @result = files_list
   end
-
+  
   ##
   # Get all the favorites files
   # Two version without an id: Return all the favorites files
   # With and id: Make file refered by id favorite or delete from favorite
   def favorites
     user = session[:user]
-
-    if param[:id]
-      id = param[:id]
+    
+    if params[:id]
+      id = params[:id]
       f = user.x_files.get id 
-      f.update :favorite => !f.favorite, :last_modification_time => Time.now
-      @result = [{:id => f.id, :name => f.name, :last_update => f.last_modification_time}]
+      if !f.nil?
+        f.update :favorite => !f.favorite, :last_modification_time => Time.now 
+        @result = [{:id => f.id, :name => f.name, :last_update => f.last_modification_time}]
+      else
+        @result = []
+      end
     else
       files_list = []
       files = user.x_files.all :favorite => true
@@ -143,45 +151,45 @@ class UsersController < ApplicationController
       @result = files_list
     end
   end
-
+  
   ##
   # Deletes the current user
   def delete
-  	session[:user].destroy
-  	session[:user] = nil
+    session[:user].destroy
+    session[:user] = nil
     @result = {success: true}
   end
-
+  
   ##
   # Modifies the current user. Takes any of the parameters of create, but not necessarily all.
   def update
-  	session[:user].set_password params['password'] if params['password']
+    session[:user].set_password params['password'] if params['password']
     set_properties session[:user]
-  	session[:user].save
+    session[:user].save
     @result = session[:user]
   end
-
+  
   ##
   # Returns self.
   def index
-  	@result = session[:user]
+    @result = session[:user]
   end
-
+  
   ##
   # Log in to the server.
   # params: login, password
   def login
-  	user = User.first login: params['login']
-  	raise RequestError.new(:user_not_found, "User not found") unless user
-  	raise RequestError.new(:bad_password, "Bad password") unless user.has_password? params['password']
-  	session[:user] = user
+    user = User.first login: params['login']
+    raise RequestError.new(:user_not_found, "User not found") unless user
+    raise RequestError.new(:bad_password, "Bad password") unless user.has_password? params['password']
+    session[:user] = user
     @result = user
   end
-
+  
   ##
   # Log out of the server
   def logout
     session[:user] = nil
-    @result = {success: true}
+    @result = {:success => true}
   end
 end

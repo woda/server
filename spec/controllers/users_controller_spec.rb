@@ -1,26 +1,54 @@
 require 'spec_helper'
 
+##
+##
+## /!\ To call a method from the controller without using REST method (PUT, DELETE, POST...)
+## rspec create a "subject" object you can use for that purpose.
+## ex: Logout => subject.logout call the logout method from UsersController
+## Kevin.G ( Sorry for my bad english :P )
+##
+##
+
+
 describe UsersController do
 
   before do
-  	db_clear
-  	session[:user] = User.new({login: 'lol', last_name: 'Ecoffet', first_name: 'Adrien', email: 'aec@gmail.com'})
-  	session[:user].set_password 'hello'
-  	session[:user].save
+    db_clear
+    session[:user] = User.new({login: 'lol', last_name: 'Ecoffet', first_name: 'Adrien', email: 'aec@gmail.com'})
+    session[:user].set_password 'hello'
+    session[:user].save
     @controller = UsersController.new
   end
 
-  it "shoud allow file listing" do
-    # TODO: Create test to do file listing
+  def login_user
+    user = session[:user]
+    resp = post :login, login: user.login, password: "hello"
+    resp.message.should match /OK/
+    user
   end
 
-  it "show allow a file listing from specific directory" do
-  
+  it "should allow file listing" do
+    user = login_user
+    resp = post :files
   end
 
+  it "should allow listing recent file" do
+    user = login_user
+    resp = post :recents
+  end
+
+  it "should allow listing favorites file" do
+    user = login_user
+    resp = post :favorites
+  end
+
+  it "should favorite a file -> File not found" do 
+    user = login_user
+    resp = post :favorites, id: 42
+  end
 
   it "should create a user" do
-	session[:user] = nil    
+    session[:user] = nil    
     session[:user].should be_nil
     put :create, login: 'lool', last_name: 'Ecoffet', first_name: 'Adrien', email: 'aec@gmal.com', password: 'omg'
     session[:user].should_not be_nil
@@ -56,23 +84,7 @@ describe UsersController do
   #   lambda { @controller.create }.should raise_error
   end
 
-  # def create_user
-  #   @u = User.new login: "test", email: 'a@b.com', first_name: 'hello', last_name: 'world'
-  #   @u.set_password "lol"
-  #   @u.save
-  # end
-
-  # def test_read method_name
-  #   create_user
-  #   lambda { @connection.call_request method_name, @controller }.should raise_error
-
-  #   @controller.params['login'] = 'ok'
-  #   @controller.params['password'] = 'a'
-  #   @controller.params['email'] = 'b@a.com'
-  #   @controller.params['first_name'] = 'adrien'
-  #   @controller.params['last_name'] = 'ecoffet'
-  #   lambda { @connection.call_request method_name, @controller }.should raise_error
-  # end
+  
 
   it "should update users" do
   #   create_user
@@ -128,32 +140,41 @@ describe UsersController do
   end
 
   it "should be able to show user" do
-  #   create_user
-
-  #   session[:user] = User.first login: 'test'
-    
-  #   # Now the actual proper case
-  #   expected = User.first(login: "test").attributes
-  #   expected.delete :pass_hash
-  #   expected.delete :pass_salt
-  #   @connection.should_receive(:send_object).with({ status: "ok", type: "user_infos", data: expected})
-  #   @controller.show
+    user = login_user
+    resp = post :index
   end
 
-  it "should allow login" do
-  #   # Testing errors first
-  #   test_read :login
-
-  #   @controller.params['login'] = 'test'
-  #   @controller.params['password'] = 'lil'
-  #   @connection.should_receive(:send_error).with(:bad_password)
-  #   lambda { @controller.login }.should raise_error
-
-  #   # Now the "normal" case
-  #   @controller.params['password'] = 'lol'
-  #   @connection.should_receive(:send_message).with(:login_successful)
-  #   session[:user].should be_nil
-  #   @controller.login
-  #   session[:user].should_not be_nil
+  it "should allow user login" do
+    login_user
   end
+
+  it "should destroy ther user" do 
+    user = login_user
+    resp = post :delete
+    User.first(login: "lol").should be_nil
+  end
+
+  it "should update user" do
+    user = login_user
+    post :update, login: "plop"
+    User.first(login: "plop").should_not be_nil
+  end
+
+  it "should not allow user login" do    
+    user = session[:user]
+    resp = post :login, login: user.login, password: "FAIL_PASSWORD"
+    resp.message.should_not match /OK/
+  end
+
+  ## LOGOUT THE USER
+  it "should logout user" do
+
+    # LOGIN
+    user = login_user
+
+    # NOW LOGOUT
+    resp = subject.logout
+
+  end
+
 end
