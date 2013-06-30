@@ -54,19 +54,24 @@ class UsersController < ApplicationController
   # Method which returns the full user's files list
   def files
     user = session[:user]
-    aim = params[:folder] if params[:folder]
+    aim = params[:folder]
     folder = nil
     
     # We search the root folder in case this one is not the first in the list
     user.folders.each do | f |
-      if f.name.nil? || f.name == aim then
+      if (f.name.nil? && aim.nil?) || f.name == aim then
         folder = f
         break
       end
     end
+    if !folder && aim
+      @result = {:success => false, :message => "Folder not found"}
+      return
+    end
     
     hierarchy = crawl_folder folder if !folder.nil?
     @result = hierarchy
+    @result[:success] = true
   end
   
   # Crawl a folder
@@ -75,7 +80,7 @@ class UsersController < ApplicationController
     folders = []
     
     # Folder infos
-    folder_infos = []
+    folder_infos = {}
     if folder.name.nil? == true
       folder_infos[:name] = "/" 
     else
@@ -96,8 +101,9 @@ class UsersController < ApplicationController
     folder.x_files.each do | file |
       file_infos = {}
       
+      file_infos[:id] = file.id
       file_infos[:name] = file.name
-      file_infos[:type] = File.extname file.name,
+      file_infos[:type] = File.extname file.name
       file_infos[:last_update] = file.last_modification_time
       file_infos[:favorite] = file.favorite
       file_infos[:publicness] = file.is_public
@@ -112,9 +118,9 @@ class UsersController < ApplicationController
   # Get the first 20 last updated files
   def recents
     user = session[:user]
-    now = Time.now
-    twenty_days_back = Time.now - 20.days
-    files = user.x_files.all(:last_modification_time => (now..twenty_days_back), :limit => 20)
+    twenty_days_back = DateTime.now - 20.days
+    puts user.x_files.all
+    files = user.x_files.all(:last_modification_time.gte => twenty_days_back, :limit => 20)
     files_list = []
     
     files.each do | file |
