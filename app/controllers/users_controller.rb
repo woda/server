@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
   before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
+  before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   
   ##
   # Returns the model, useful for ApplicationController.
@@ -132,31 +133,34 @@ class UsersController < ApplicationController
   end
   
   ##
+  # With id: Make file refered by id favorite or delete from favorite
+  def set_favorite
+    user = session[:user]
+
+    id = params[:id]
+    f = user.x_files.get id 
+    if !f.nil?
+      f.update :favorite => (params[:favorite] == "true"), :last_modification_time => Time.now 
+      @result = {success: true, :id => f.id, :name => f.name, :last_update => f.last_modification_time, favorite: f.favorite}
+    else
+      @result = {success: false}
+    end
+      puts @result
+  end
+
+  ##
   # Get all the favorites files
   # Two version without an id: Return all the favorites files
-  # With and id: Make file refered by id favorite or delete from favorite
   def favorites
     user = session[:user]
     
-    if params[:id]
-      id = params[:id]
-      f = user.x_files.get id 
-      if !f.nil?
-        f.update :favorite => !f.favorite, :last_modification_time => Time.now 
-        @result = [{:id => f.id, :name => f.name, :last_update => f.last_modification_time, favorite: f.favorite}]
-        puts @result
-      else
-        @result = []
-      end
-    else
-      files_list = []
-      files = user.x_files.all :favorite => true
-      files.each do | file |
-        f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time, favorite: file.favorite}
-        files_list.push f
-      end
-      @result = files_list
+    files_list = []
+    files = user.x_files.all :favorite => true
+    files.each do | file |
+      f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time, favorite: file.favorite}
+      files_list.push f
     end
+    @result = files_list
   end
   
   ##

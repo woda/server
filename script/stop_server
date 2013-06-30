@@ -1,6 +1,9 @@
 #!/bin/bash
+
 if [ -e last_pid ]
 then
     kill -USR1 `cat last_pid`
     rm last_pid
 fi
+
+killall -9 ruby
