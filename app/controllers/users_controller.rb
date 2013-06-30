@@ -69,8 +69,8 @@ class UsersController < ApplicationController
       return
     end
     
-    hierarchy = crawl_folder folder if !folder.nil?
-    @result = hierarchy
+    hierarchy = crawl_folder folder unless folder.nil?
+    @result = hierarchy ? hierarchy : {}
     @result[:success] = true
   end
   
