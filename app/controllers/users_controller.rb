@@ -143,7 +143,8 @@ class UsersController < ApplicationController
       f = user.x_files.get id 
       if !f.nil?
         f.update :favorite => !f.favorite, :last_modification_time => Time.now 
-        @result = [{:id => f.id, :name => f.name, :last_update => f.last_modification_time}]
+        @result = [{:id => f.id, :name => f.name, :last_update => f.last_modification_time, favorite: f.favorite}]
+        puts @result
       else
         @result = []
       end
@@ -151,7 +152,7 @@ class UsersController < ApplicationController
       files_list = []
       files = user.x_files.all :favorite => true
       files.each do | file |
-        f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time}
+        f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time, favorite: file.favorite}
         files_list.push f
       end
       @result = files_list
