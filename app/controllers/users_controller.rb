@@ -133,7 +133,7 @@ class UsersController < ApplicationController
   end
   
   ##
-  # With id: Make file refered by id favorite or delete from favorite
+  # Set the file's favorite status based on parameter "favorite"
   def set_favorite
     user = session[:user]
 
@@ -150,7 +150,6 @@ class UsersController < ApplicationController
 
   ##
   # Get all the favorites files
-  # Two version without an id: Return all the favorites files
   def favorites
     user = session[:user]
     
