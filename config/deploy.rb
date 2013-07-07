@@ -43,10 +43,10 @@ set :runner, nil
 DIST_PATH = '/var/serv/current'
 
 namespace :deploy do
-  task :migrate do run "cd #{DIST_PATH}; /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rake db:autoupgrade" end
-  task :start do run "cd #{DIST_PATH}; script/start_server" end
+  task :migrate do run "cd #{DIST_PATH}; cp config/database.yml.example config/database.yml; /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rake db:autoupgrade" end
+  task :start do run "cd #{DIST_PATH}; cp config/database.yml.example config/database.yml; script/start_server" end
   task :stop do run "cd #{DIST_PATH}; script/stop_server" end
-  task :restart do run "cd #{DIST_PATH}; script/stop_server; script/start_server" end
+  task :restart do run "cd #{DIST_PATH}; script/stop_server; cp config/database.yml.example config/database.yml; script/start_server" end
 end
 
 # If you are using Passenger mod_rails uncomment this:
