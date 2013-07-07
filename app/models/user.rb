@@ -38,12 +38,10 @@ class User
   end
 
   ##
-  # Gets the file for a given paths. This is two versions in one:
-  # The first version, with no options, tries to get an existing file and returns nil if it doesn't find it
-  # The second version, with :create => true tries to get a file and creates all the folders and the file itself
-  #   if they do not exit.
-  # /!\ Both version create a root folder if it doesn't exist!
-  def get_file(path, options = {})
+  # Gets the folder and creates the root folder if it does not exist. The path must
+  # already be split.
+  # If you send create: true the folder will be created.
+  def get_folder(path, options = {})
     folder = Folder.first user: self, name: nil
     if folder.nil? then
       folder = Folder.new name: nil, last_modification_time: DateTime.now, user: self
@@ -64,6 +62,18 @@ class User
       end
       folder = folder2
     end
+    folder
+  end
+
+  ##
+  # Gets the file for a given paths. This is two versions in one:
+  # The first version, with no options, tries to get an existing file and
+  #  returns nil if it doesn't find it.
+  # The second version, with :create => true tries to get a file and creates
+  #  all the folders and the file itsel if they do not exit.
+  # /!\ Both versions create a root folder if it doesn't exist!
+  def get_file(path, options = {})
+    folder = get_folder(path[0...path.size-1], options)
     f = folder.x_files.first(name: path[-1])
     if f.nil? then
       if options[:create] then

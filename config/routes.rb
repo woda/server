@@ -58,11 +58,11 @@ Server::Application.routes.draw do
 
   match 'users/:login/login' => 'users#login'
   match 'users/logout' => 'users#logout'
-  match 'users/files' => 'users#files'
+  match 'users/files/:folder' => 'users#files', via: :get, constraints: {folder: /.*/}
+  match 'users/files' => 'users#files', via: :get
   match 'users/recents' => 'users#recents'
   match 'users/favorites' => 'users#favorites'
   match 'users/favorites/:id' => 'users#set_favorite'
-  match 'users/files/:folder' => 'users#files'
   match 'users' => 'users#index', via: :get
   match 'users' => 'users#update', via: :post
   match 'users' => 'users#delete', via: :delete

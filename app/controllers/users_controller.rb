@@ -59,22 +59,14 @@ class UsersController < ApplicationController
     folder = nil
     
     # We search the root folder in case this one is not the first in the list
-    user.folders.each do | f |
-      if (f.name.nil? && aim.nil?) || f.name == aim then
-        folder = f
-        break
-      end
-    end
-    if !folder && aim
-      @result = {:success => false, :message => "Folder not found"}
-      return
-    end
+    folder = user.get_folder((aim.nil? ? '' : aim).split('/'))
     
     hierarchy = crawl_folder folder unless folder.nil?
     @result = hierarchy ? hierarchy : {}
     @result[:success] = true
   end
-  
+
+  ##
   # Crawl a folder
   def crawl_folder(folder, recur = true)
     list = []
