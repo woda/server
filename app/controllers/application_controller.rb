@@ -63,7 +63,7 @@ class ApplicationController < ActionController::Base
 
   def rescue_db_error expt
     @error_occured = true
-    render :json => {error: :db_error, message: expt.to_s}
+    render :json => {error: :db_error, message: expt.to_s + " (" + expt.resource.errors.map { |e| e.to_s }.join(' ') + ")"}
   end
 
     ##
