@@ -67,8 +67,8 @@ Server::Application.routes.draw do
   match 'users' => 'users#update', via: :post
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
-  
-  match 'api/files' => 'api#list'
+
+  match 'admin/cleanup' => 'admin#cleanup'
 
   match 'sync/public/:filename' => 'sync#set_public_status', via: :post, constraints: {filename: /.*/}
   match 'sync/public/:filename' => 'sync#public_status', via: :get, constraints: {filename: /.*/}
