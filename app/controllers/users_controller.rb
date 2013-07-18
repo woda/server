@@ -3,11 +3,12 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_pfiles]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
   before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
+  before_filter Proc.new { |c| c.check_params :folder }, :only => [:files]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   
   ##
@@ -51,6 +52,35 @@ class UsersController < ApplicationController
     # email.errback { } # TODO: failure log
   end
   
+  ##
+  # Method which returns user's public files
+  def public_files
+    user = session[:user]
+    public_files = []
+    files = user.x_files.all :is_public => true
+    
+    files.each do | file |
+      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, publicness: file.is_public, downloaded: file.downloads}
+      public_files.push f
+    end
+    
+    @result = public_files
+  end
+
+  ##
+  # Return all the public file downloaded at least one time
+  def downloaded_public_files
+    user = session[:user]
+    dpf = []
+    files = user.x_files.all :is_public => true, :downloads.gte => 1
+    files.each do | file |
+      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, publicness: file.is_public, downloaded: file.downloads}
+      dpf.push f
+    end
+
+    @result = dpf
+  end
+
   ##
   # Method which returns the full user's files list
   def files
@@ -112,7 +142,6 @@ class UsersController < ApplicationController
   def recents
     user = session[:user]
     twenty_days_back = DateTime.now - 20.days
-    puts user.x_files.all
     files = user.x_files.all(:last_modification_time.gte => twenty_days_back, :limit => 20)
     files_list = []
     
@@ -191,7 +220,8 @@ class UsersController < ApplicationController
   ##
   # Log out of the server
   def logout
+    ret = {success: true}
     session[:user] = nil
-    @result = {:success => true}
+    @result = ret
   end
 end

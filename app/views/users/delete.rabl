@@ -1,3 +1,3 @@
 object @result
 
-attributes :success
+attributes :success, :error
