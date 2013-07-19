@@ -19,6 +19,7 @@ class SyncController < ApplicationController
     f = session[:user].get_file(params['filename'].split('/'), create: true)
     f.last_modification_time = DateTime.now
     set_content_files = [f]
+#TODO: this needs to be uncommented
     # If it took more than 24 hours to upload the file, we just start over
 #    if current_content && current_content.start_upload != 0 && current_content.start_upload < (Time.now.utc.to_i - 24 * 3600) && XFile.find(content: current_content)
 #      set_content_files += XFile.find(content: current_content).to_a
@@ -86,9 +87,10 @@ class SyncController < ApplicationController
     f = session[:user].get_file(params['filename'].split('/'))
     raise RequestError.new(:file_not_found, "File not found") unless f
     destroy_content = nil
-    if XFile.count(content: f.content) <= 1 then
-      destroy_content = f.content
-    end
+#TODO: this needs to be uncommented
+#    if XFile.count(contents: f.contents) <= 1 then
+#      destroy_content = f.content
+#    end
     f.destroy!
     destroy_content.destroy! if destroy_content
     @result = {success: true}
