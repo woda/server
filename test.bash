@@ -1,5 +1,5 @@
 echo_run() {
-    printf '\033[90m'; echo "$@"; printf '\033[0m'; "$@"
+    printf '\033[90m'; echo "$@"; printf '\033[0m'; read; "$@"
 }
 
 title() {
@@ -38,18 +38,19 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users -d "email=${login}.2@g
 
 title 'Enter file data:'
 read -r filedata
-sha256=`echo -n "$filedata" | openssl dgst -sha256`
+sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 title 'Adding file:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync/hello/world -d "content_hash=$sha256&size=7"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/hello/world -d "content_hash=$sha256&size=3"
 
-#echo_run curl https://woda-files.s3.amazonaws.com/ -XPOST -d 'enctype=multipart/form-data&'"`ruby get_request.rb \"$results\"`"'&file='"$filedata"
+title 'Sendig part:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/partsync/0/hello/world -d "$filedata"
 
-title 'Getting file:'
-echo_run curl -k -b cookies -c cookies -XGET $base/sync/hello/world
+title 'Getting part:'
+echo_run curl -k -b cookies -c cookies -XGET $base/partsync/0/hello/world
 
 title 'Uploading same file:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync/file_2 -d "content_hash=$sha256&size=7"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/file_2 -d "content_hash=$sha256&size=3"
 
 title 'Listing files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/files
