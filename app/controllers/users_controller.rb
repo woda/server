@@ -129,6 +129,8 @@ class UsersController < ApplicationController
       file_infos[:last_update] = file.last_modification_time
       file_infos[:favorite] = file.favorite
       file_infos[:publicness] = file.is_public
+      file_infos[:size] = file.size
+      file_infos[:part_size] = file.part_size
       files_list.push file_infos
     end
     folder_infos[:files] = files_list

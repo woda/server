@@ -20,6 +20,26 @@ class XFile
  # A file either has a file or a content
   has n, :contents
   has n, :x_files
+  def part_size
+    return 5 * 1024 * 1024
+  end
+  def size
+    if contents.size > 0 then
+      return contents[0].size
+    end
+    if x_files.size > 0 then
+      return x_files[0].size
+    end
+    0
+  end
+
+  def to_json *args
+    json = super
+    h = JSON.parse json
+    h['size'] = size
+    h['part_size'] = part_size
+    JSON.generate h
+  end
 
   def multiple_accessor acc
     if send(acc).size == 1 then
