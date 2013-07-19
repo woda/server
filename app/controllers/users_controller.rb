@@ -8,7 +8,6 @@ class UsersController < ApplicationController
   before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
   before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
-  before_filter Proc.new { |c| c.check_params :folder }, :only => [:files]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   
   ##
