@@ -20,11 +20,11 @@ class SyncController < ApplicationController
     f.last_modification_time = DateTime.now
     set_content_files = [f]
     # If it took more than 24 hours to upload the file, we just start over
-    if current_content && current_content.start_upload != 0 && current_content.start_upload < (Time.now.utc.to_i - 24 * 3600) && XFile.find(content: current_content)
-      set_content_files += XFile.find(content: current_content).to_a
-      current_content = nil
-      delete_s3_file params['content_hash']
-    end
+#    if current_content && current_content.start_upload != 0 && current_content.start_upload < (Time.now.utc.to_i - 24 * 3600) && XFile.find(content: current_content)
+#      set_content_files += XFile.find(content: current_content).to_a
+#      current_content = nil
+#      delete_s3_file params['content_hash']
+#    end
     if current_content
       @result = {success: true, need_upload: false, file: f}
     else
