@@ -10,7 +10,7 @@ if [ $# == 1 ]
 then
 base=$1
 else
-base=https://ec2-54-242-98-168.compute-1.amazonaws.com:3000
+base=https://localhost:3000
 fi
 
 login=
