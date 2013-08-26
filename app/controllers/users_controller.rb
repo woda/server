@@ -3,14 +3,17 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_pfiles]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_pfiles, :set_public, :share]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
   before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
   before_filter Proc.new { |c| c.check_params :folder }, :only => [:files]
+  before_filter Proc.new { |c| c.check_params :id }, :only => [:download_sf]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
-  
+  before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
+  before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
+
   ##
   # Returns the model, useful for ApplicationController.
   def model
@@ -60,7 +63,7 @@ class UsersController < ApplicationController
     files = user.x_files.all :is_public => true
     
     files.each do | file |
-      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, publicness: file.is_public, downloaded: file.downloads}
+      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, is_public: file.is_public, downloaded: file.downloads}
       public_files.push f
     end
     
@@ -74,7 +77,7 @@ class UsersController < ApplicationController
     dpf = []
     files = user.x_files.all :is_public => true, :downloads.gte => 1
     files.each do | file |
-      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, publicness: file.is_public, downloaded: file.downloads}
+      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, is_public: file.is_public, downloaded: file.downloads}
       dpf.push f
     end
 
@@ -183,6 +186,49 @@ class UsersController < ApplicationController
     @result = files_list
   end
   
+  ##
+  # Set/Unset a public status file
+  def set_public
+    user = session[:user]
+    
+    f = user.x_files.first :id
+    if !f.nil?
+      f.update :is_public => (params[:public] == "true"), :shared => (params[:public] == "true"), :last_modification_time => Time.now
+      @result = {success: true, id => f.id, :name => f.name, :last_update => f.last_modification_time, :publicness => f.is_public}
+    else
+      @result = {success: false}
+    end
+  end
+
+  ##
+  # Set/Unset a shared status file
+  def share
+    user = session[:user]
+    
+    f = user.x_files.first :id
+    if !f.nil?
+      f.update :shared => (params[:shared] == "true"), :last_modification_time => Time.now
+      @result = {success: true, id => f.id, :name => f.name, :last_update => f.last_modification_time, :shared => f.shared}
+    else
+      @result = {success: false}
+    end
+  end
+
+  ##
+  # When shared file is downloaded, this method MUST be called ! It add one to the counter
+  def download_sf
+    user = session[:user]
+
+    f = user.x_files.first :id
+    if !f.nil?
+      sc = f.shared_downloads
+      f.update :shared_downloads => (sc + 1), :last_modification_time => Time.now
+      @result = {success: true, :id => f.id, :name => f.name, :last_update => f.last_modification_time, :shared => f.shared, :shared_downloads => f.shared_downloads}
+    else
+      @result = {success: false}
+    end
+  end
+
   ##
   # Deletes the current user
   def delete
