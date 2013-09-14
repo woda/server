@@ -43,10 +43,13 @@ sha256=`echo -n "$filedata" | openssl dgst -sha256`
 title 'Adding file:'
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync/hello/world -d "content_hash=$sha256&size=7"
 
+title 'Uploading part:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/partsync/0/hello/world -d "$filedata"
+
 #echo_run curl https://woda-files.s3.amazonaws.com/ -XPOST -d 'enctype=multipart/form-data&'"`ruby get_request.rb \"$results\"`"'&file='"$filedata"
 
 title 'Getting file:'
-echo_run curl -k -b cookies -c cookies -XGET $base/sync/hello/world
+echo_run curl -k -b cookies -c cookies -XGET $base/partsync/0/hello/world
 
 title 'Uploading same file:'
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync/file_2 -d "content_hash=$sha256&size=7"

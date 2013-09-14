@@ -14,9 +14,7 @@ class AdminController < ApplicationController
   def cleanup
     puts XFile.all.destroy
     puts Content.all.destroy
-    s3 = AWS::S3.new
-    bucket = s3.buckets['woda-files']
-    bucket.clear!
+    Storage.clear 'woda-files'
     @result = {success: true}
   end
 end

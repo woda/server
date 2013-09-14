@@ -16,5 +16,13 @@ class Folder
   has n, :children, self, :child_key => :parent_id
   belongs_to :parent, self, :required => false
   has n, :x_files
+
+#  has n, :folders
+#  belongs_to :folder, index: true, require: false
+
+  updatable_property :favorite, Boolean, :default => false
+  updatable_property :is_public, Boolean, :default => false
+
+  property :read_only, Boolean, :default => false
 end
 
