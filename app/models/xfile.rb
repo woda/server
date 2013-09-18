@@ -18,14 +18,16 @@ class XFile
   belongs_to :folder, :child_key => :parent_id, index: true
   belongs_to :x_file, index: true, required: false
  # A file either has a file or a content
-  has n, :contents
   has n, :x_files
+
+  property :content_hash, SHA256Hash, index: true
+
   def part_size
     return 5 * 1024 * 1024
   end
   def size
-    if contents.size > 0 then
-      return contents[0].size
+    if !content.nil? then
+      return content.size
     end
     if x_files.size > 0 then
       return x_files[0].size
@@ -66,11 +68,20 @@ class XFile
   end
 
   def content
-    multiple_accessor :contents
+    puts "getting content #{content_hash}"
+    return nil if content_hash.nil?
+    puts content_hash
+    Content.first content_hash: content_hash
   end
 
   def content= arg
-    multiple_setter :contents, arg
+    if !arg.nil? then
+      self.content_hash = arg.content_hash
+      puts "setting content hash: #{content_hash}"
+    else
+      puts "unsetting content"
+      self.content_hash = nil
+    end
   end
 
   updatable_property :downloads, Integer , :default => 0

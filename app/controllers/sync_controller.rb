@@ -36,6 +36,7 @@ class SyncController < ApplicationController
                                     start_upload: Time.now.utc.to_i, file_type: 'none')
       # TODO: not hardcode part size
       @result = {success: true, need_upload: true, file: f, part_size: 5 * 1024 * 1024}
+      current_content.save
     end
     set_content_files.each { |file| file.content = current_content }
     session[:user].save
