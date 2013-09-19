@@ -21,9 +21,9 @@ class Folder
 #  has n, :folders
 #  belongs_to :folder, index: true, require: false
 
-  updatable_property :favorite, Boolean, :default => false
-  updatable_property :is_public, Boolean, :default => false
+  updatable_property :favorite, Boolean, :default => false, required: false
+  updatable_property :public, Boolean, :default => false, required: false
 
-  property :read_only, Boolean, :default => false
+  property :read_only, Boolean, :default => false, required: false
 end
 
