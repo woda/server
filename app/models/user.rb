@@ -24,6 +24,8 @@ class User
   property :active, Boolean, required: true, default: false
   property :locked, Boolean, required: true, default: false
 
+  property :roles, Text, required: true, default: 'a:1:{i:0;s:9:"ROLE_USER";}'
+
   has n, :folders
   has n, :x_files
 
