@@ -21,6 +21,9 @@ class User
   property :pass_hash, SHA256Hash, required: true
   property :pass_salt, SHA256Salt, required: true
 
+  property :active, Boolean, required: true, default: false
+  property :locked, Boolean, required: true, default: false
+
   has n, :folders
   has n, :x_files
 
