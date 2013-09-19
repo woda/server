@@ -12,8 +12,7 @@ class Content
   
   storage_names[:default] = "content"
 
-  property :id, Serial, key: true
-  updatable_property :content_hash, SHA256Hash
+  updatable_property :content_hash, SHA256Hash, key: true
   # Note: right now the policy is to forbid people who announce the same hash
   # but not the same salted hash from uploading a file. although very unlikely,
   # it is possible that those people simply have different files that have the
