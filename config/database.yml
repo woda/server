@@ -21,7 +21,7 @@ test:
   <<: *defaults
 production:
   adapter: postgres
-  database: prod
-  username: postgres
-  password: klWEbbVX49$Z
+  database: webapp
+  username: webapp
+  password: 535"&/oLJ?~t6ra
   host: localhost
