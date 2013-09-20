@@ -57,9 +57,7 @@ class SyncController < ApplicationController
     bucket = Storage['woda-files']
     obj = bucket.create("#{f.content.content_hash}/#{params['part']}",
                         :data => data,
-                        :content_type => 'octet-stream',
-                        :server_side_encryption => :aes256,
-                        :encryption_key => f.content.crypt_key.from_hex)
+                        :content_type => 'octet-stream')
     @result = {success:true}
   end
 
@@ -130,7 +128,7 @@ class SyncController < ApplicationController
       f = f.x_file
     end
     raise RequestError.new(:file_not_found, "File not found") unless f
-    file = Storage['woda-files']["#{f.content.content_hash}/#{params['part']}"].read(:encryption_key => f.content.crypt_key.from_hex)
+    file = Storage['woda-files']["#{f.content.content_hash}/#{params['part']}"].read()
     if params['part'].to_i == 0 then
       f.downloads += 1
       f.save
