@@ -2,7 +2,7 @@ require 'set'
 require 'data_mapper'
 
 ##
-# A woda resource. Defines convinience methodes
+# A woda resource. Defines convinience methods
 module WodaResource
   def self.included klass
     klass.extend ClassMethods
@@ -10,6 +10,13 @@ module WodaResource
 
   private
   module ClassMethods
+    before :save, :set_id
+
+    def set_id
+      return if id
+      id = self.class.max(:id) + 1
+    end
+
     ##
     # Is the property updatable?
     def updatable? property
