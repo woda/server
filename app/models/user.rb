@@ -21,7 +21,7 @@ class User
   property :pass_hash, SHA256Hash, required: true
   property :pass_salt, SHA256Salt, required: true
 
-  property :active, Boolean, required: true, default: false
+  property :active, Boolean, required: true, default: true
   property :locked, Boolean, required: true, default: false
 
   property :roles, Text, required: true, default: 'a:1:{i:0;s:9:"ROLE_USER";}'

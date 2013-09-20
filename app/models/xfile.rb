@@ -20,7 +20,7 @@ class XFile
  # A file either has a file or a content
   has n, :x_files
 
-  property :content_hash, SHA256Hash, index: true
+  property :content_hash, SHA256Hash, index: true, required: false
 
   def part_size
     return 5 * 1024 * 1024
