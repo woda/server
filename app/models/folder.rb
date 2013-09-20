@@ -6,13 +6,6 @@ class Folder
   include DataMapper::Resource
   include WodaResource
   
-    before :save, :set_id
-
-    def set_id
-      return if id
-      id = self.class.max(:id) + 1
-    end
-
   storage_names[:default] = "folder"
 
   property :id, Serial, key: true

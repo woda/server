@@ -49,7 +49,7 @@ class User
   def get_folder(path, options = {})
     folder = Folder.first user: self, name: nil
     if folder.nil? then
-      folder = Folder.new name: nil, last_modification_time: DateTime.now, user: self
+      folder = Folder.new name: nil, last_modification_time: DateTime.now, user: self, id: Folder.max(:id) + 1
       self.folders << folder
       self.save
       folder.save
