@@ -82,7 +82,7 @@ class User
     f = folder.x_files.first(name: path[-1])
     if f.nil? then
       if options[:create] then
-        f = XFile.new name: path[-1], last_modification_time: DateTime.now, user: self
+        f = XFile.new name: path[-1], last_modification_time: DateTime.now, user: self, id: XFile.max(:id) + 1
         folder.x_files << f
         folder.save
       else
