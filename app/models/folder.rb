@@ -22,7 +22,7 @@ class Folder
 #  belongs_to :folder, index: true, require: false
 
   updatable_property :favorite, Boolean, :default => false, required: false
-  updatable_property :public, Boolean, :default => false, required: false
+  updatable_property :public, Boolean, :default => false, required: true
 
   property :read_only, Boolean, :default => false, required: false
 end
