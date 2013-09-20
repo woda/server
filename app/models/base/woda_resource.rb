@@ -6,12 +6,11 @@ require 'data_mapper'
 module WodaResource
   def self.included klass
     klass.extend ClassMethods
+    klass.before :save, :set_id
   end
 
   private
   module ClassMethods
-    before :save, :set_id
-
     def set_id
       return if id
       id = self.class.max(:id) + 1
