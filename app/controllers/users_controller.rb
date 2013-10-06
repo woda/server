@@ -5,8 +5,8 @@ class UsersController < ApplicationController
   
   before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_pfiles]
   before_filter :check_create_params, :only => [:create]
-  before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
-  before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
+  before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
+  before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   
@@ -86,10 +86,10 @@ class UsersController < ApplicationController
     user = session[:user]
     aim = params[:folder]
     folder = nil
-    
+
     # We search the root folder in case this one is not the first in the list
     folder = user.get_folder((aim.nil? ? '' : aim).split('/'))
-    
+
     hierarchy = crawl_folder folder unless folder.nil?
     @result = hierarchy ? hierarchy : {}
     @result[:success] = true
@@ -103,11 +103,7 @@ class UsersController < ApplicationController
     
     # Folder infos
     folder_infos = {}
-    if folder.name.nil? == true
-      folder_infos[:name] = "/" 
-    else
-      folder_infos[:name] = folder.name
-    end
+    folder_infos[:name] = (folder.name.nil? ? "/" : folder.name)
     folder_infos[:last_update] = folder.last_modification_time
     
     if recur then
@@ -163,7 +159,7 @@ class UsersController < ApplicationController
     f = user.x_files.get id 
     if !f.nil?
       f.update :favorite => (params[:favorite] == "true"), :last_modification_time => Time.now 
-      @result = {success: true, :id => f.id, :name => f.name, :last_update => f.last_modification_time, favorite: f.favorite}
+      @result = {success: true, id: f.id, name: f.name, last_update: f.last_modification_time, favorite: f.favorite}
     else
       @result = {success: false}
     end
@@ -176,9 +172,9 @@ class UsersController < ApplicationController
     user = session[:user]
     
     files_list = []
-    files = user.x_files.all :favorite => true
+    files = user.x_files.all favorite: true
     files.each do | file |
-      f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time, favorite: file.favorite}
+      f = {id: file.id, name: file.name, last_update: file.last_modification_time, favorite: file.favorite}
       files_list.push f
     end
     @result = files_list
