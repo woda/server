@@ -16,10 +16,15 @@ class User
   updatable_property :login, String, unique: true, unique_index: true, required: true
   updatable_property :email, String, unique: true, unique_index: true,
     format: :email_address, required: true
-  updatable_property :first_name, String, required: true
-  updatable_property :last_name, String, required: true
+  updatable_property :first_name, String, required: false
+  updatable_property :last_name, String, required: false
   property :pass_hash, SHA256Hash, required: true
   property :pass_salt, SHA256Salt, required: true
+
+  property :active, Boolean, required: true, default: true
+  property :locked, Boolean, required: true, default: false
+
+  property :roles, Text, required: true, default: 'a:1:{i:0;s:9:"ROLE_USER";}'
 
   has n, :folders
   has n, :x_files
@@ -44,7 +49,7 @@ class User
   def get_folder(path, options = {})
     folder = Folder.first user: self, name: nil
     if folder.nil? then
-      folder = Folder.new name: nil, last_modification_time: DateTime.now, user: self
+      folder = Folder.new name: nil, last_modification_time: DateTime.now, user: self, id: Folder.max(:id) + 1
       self.folders << folder
       self.save
       folder.save
@@ -77,7 +82,7 @@ class User
     f = folder.x_files.first(name: path[-1])
     if f.nil? then
       if options[:create] then
-        f = XFile.new name: path[-1], last_modification_time: DateTime.now, user: self
+        f = XFile.new name: path[-1], last_modification_time: DateTime.now, user: self, id: XFile.max(:id) + 1
         folder.x_files << f
         folder.save
       else

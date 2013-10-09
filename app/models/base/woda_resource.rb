@@ -2,7 +2,7 @@ require 'set'
 require 'data_mapper'
 
 ##
-# A woda resource. Defines convinience methodes
+# A woda resource. Defines convinience methods
 module WodaResource
   def self.included klass
     klass.extend ClassMethods

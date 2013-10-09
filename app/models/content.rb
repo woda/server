@@ -12,7 +12,8 @@ class Content
   
   storage_names[:default] = "content"
 
-  updatable_property :content_hash, SHA256Hash, key: true
+  property :id, Serial, key: true
+  updatable_property :content_hash, SHA256Hash, unique: true
   # Note: right now the policy is to forbid people who announce the same hash
   # but not the same salted hash from uploading a file. although very unlikely,
   # it is possible that those people simply have different files that have the
@@ -25,6 +26,4 @@ class Content
   updatable_property :size, Integer
   updatable_property :file_type, String
   property :start_upload, Integer
-
-  belongs_to :x_file, :index => true, :required => false
 end

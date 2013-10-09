@@ -32,10 +32,12 @@ class SyncController < ApplicationController
       current_content = Content.new(content_hash: params['content_hash'],
                                     size: params['size'].to_i,
                                     crypt_key: WodaCrypt.new.random_key.to_hex,
-                                    init_vector: WodaCrypt.new.random_iv.to_hex,
-                                    start_upload: Time.now.utc.to_i, file_type: 'none')
+#                                    init_vector: WodaCrypt.new.random_iv.to_hex,
+                                    start_upload: Time.now.utc.to_i, file_type: 'none',
+                                    id: (Content.max(:id) || 0) + 1)
       # TODO: not hardcode part size
       @result = {success: true, need_upload: true, file: f, part_size: 5 * 1024 * 1024}
+      current_content.save
     end
     set_content_files.each { |file| file.content = current_content }
     session[:user].save
@@ -52,13 +54,10 @@ class SyncController < ApplicationController
     data = request.body.read
     part_size = (part == f.content.size / (5*1024*1024) ? f.content.size % (5*1024*1024) : (5*1024*1024))
     raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == data.length
-    s3 = AWS::S3.new
-    bucket = s3.buckets['woda-files']
-    obj = bucket.objects.create("#{f.content.content_hash}/#{params['part']}",
-                                :data => data,
-                                :content_type => 'octet-stream',
-                                :server_side_encryption => :aes256,
-                                :encryption_key => f.content.crypt_key.from_hex)
+    bucket = Storage['woda-files']
+    obj = bucket.create("#{f.content.content_hash}/#{params['part']}",
+                        :data => data,
+                        :content_type => 'octet-stream')
     @result = {success:true}
   end
 
@@ -129,8 +128,7 @@ class SyncController < ApplicationController
       f = f.x_file
     end
     raise RequestError.new(:file_not_found, "File not found") unless f
-    s3 = AWS::S3.new
-    file = s3.buckets['woda-files'].objects["#{f.content.content_hash}/#{params['part']}"].read(:encryption_key => f.content.crypt_key.from_hex)
+    file = Storage['woda-files']["#{f.content.content_hash}/#{params['part']}"].read()
     if params['part'].to_i == 0 then
       f.downloads += 1
       f.save
