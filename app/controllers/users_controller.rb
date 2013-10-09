@@ -3,16 +3,18 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_pfiles, :set_public, :share]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_pfiles, :set_public, :share, :download_sf, :shared_files]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new {|c| c.check_params(:password) }, :only => [:create]
   before_filter Proc.new {|c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
   before_filter Proc.new { |c| c.check_params :folder }, :only => [:files]
-  before_filter Proc.new { |c| c.check_params :id }, :only => [:download_sf]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
-  before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
+
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
+  before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
+  before_filter Proc.new { |c| c.check_params :id }, :only => [:download_sf]
+
 
   ##
   # Returns the model, useful for ApplicationController.
@@ -71,20 +73,6 @@ class UsersController < ApplicationController
   end
 
   ##
-  # Return all the public file downloaded at least one time
-  def downloaded_public_files
-    user = session[:user]
-    dpf = []
-    files = user.x_files.all :is_public => true, :downloads.gte => 1
-    files.each do | file |
-      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, is_public: file.is_public, downloaded: file.downloads}
-      dpf.push f
-    end
-
-    @result = dpf
-  end
-
-  ##
   # Method which returns the full user's files list
   def files
     user = session[:user]
@@ -133,6 +121,8 @@ class UsersController < ApplicationController
       file_infos[:last_update] = file.last_modification_time
       file_infos[:favorite] = file.favorite
       file_infos[:publicness] = file.is_public
+      file_infos[:size] = file.size
+      file_infos[:part_size] = file.part_size
       files_list.push file_infos
     end
     folder_infos[:files] = files_list
@@ -201,6 +191,20 @@ class UsersController < ApplicationController
   end
 
   ##
+  # Return all the public file downloaded at least one time
+  def downloaded_public_files
+    user = session[:user]
+    dpf = []
+    files = user.x_files.all :is_public => true, :downloads.gte => 1
+    files.each do | file |
+      f = {id: file.id, name: file.name, updated: file.last_modification_time, favorite: file.favorite, is_public: file.is_public, downloaded: file.downloads}
+      dpf.push f
+    end
+
+    @result = dpf
+  end
+
+  ##
   # Set/Unset a shared status file
   def share
     user = session[:user]
@@ -208,7 +212,7 @@ class UsersController < ApplicationController
     f = user.x_files.first :id
     if !f.nil?
       f.update :shared => (params[:shared] == "true"), :last_modification_time => Time.now
-      @result = {success: true, id => f.id, :name => f.name, :last_update => f.last_modification_time, :shared => f.shared}
+      @result = {success: true, id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared}
     else
       @result = {success: false}
     end
@@ -223,11 +227,25 @@ class UsersController < ApplicationController
     if !f.nil?
       sc = f.shared_downloads
       f.update :shared_downloads => (sc + 1), :last_modification_time => Time.now
-      @result = {success: true, :id => f.id, :name => f.name, :last_update => f.last_modification_time, :shared => f.shared, :shared_downloads => f.shared_downloads}
+      @result = {success: true, :id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared, :downloaded => f.shared_downloads}
     else
       @result = {success: false}
     end
   end
+
+  ##
+  # Return the list of all shared-files public or not and downloaded at least, one time
+  def shared_files
+    user = session[:user]
+
+    files_list = []
+    files = user.x_files.all :favorite => true
+    files.each do | file |
+      f = {:id => file.id, :name => file.name, :last_modification_time => file.last_modification_time, shared: file.shared, downloaded: file.shared_downloads}
+      files_list.push f
+    end
+    @result = files_list
+  end 
 
   ##
   # Deletes the current user
