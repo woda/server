@@ -1,5 +1,5 @@
 require 'openssl'
-require 'helpers/string_ext'
+require 'app/helpers/string_ext'
 
 class WodaCrypt < OpenSSL::Cipher::AES256
   def initialize
