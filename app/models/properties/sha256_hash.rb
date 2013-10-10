@@ -1,5 +1,5 @@
 require 'dm-core'
-require 'lib/helpers/hash_digest'
+require 'app/helpers/hash_digest'
 require 'securerandom'
 
 module DataMapper
