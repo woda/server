@@ -48,8 +48,11 @@ class User
   # If you send create: true the folder will be created.
   def get_folder(path, options = {})
     folder = Folder.first user: self, name: nil
+
     if folder.nil? then
-      folder = Folder.new name: nil, last_modification_time: DateTime.now, user: self, id: Folder.max(:id) + 1
+      # folder id = 1 + IF exist max folder's id
+      folder_id = ( Folder.max(:id).nil? ? 0 : Folder.max(:id) ) + 1
+      folder = Folder.new(name: nil, last_modification_time: DateTime.now, user: self, id: folder_id)
       self.folders << folder
       self.save
       folder.save
