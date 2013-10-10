@@ -36,26 +36,56 @@ describe User do
     lambda { build_user }.should raise_error
   end
 
-  it "should force presence of login, pass_hash, email, first name and last name" do
+  it "should force presence of login, pass_hash, email but with first and last name as optional" do
     u = User.new
     u.set_password "pass"
     hash = u.pass_hash
+    # missing login
     u2 = User.new pass_hash: hash, email: 'a@b.com', first_name: 'a', last_name: 'b'
     lambda { u2.save }.should raise_error
+    # missing hash/password
     u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', last_name: 'b'
     lambda { u2.save }.should raise_error
+    # missing email
     u2 = User.new login: "lol", first_name: 'a', last_name: 'b'
     u2.set_password "pass"
     lambda { u2.save }.should raise_error
+    # ok - first_name not required
     u2 = User.new login: "lol", email: 'a@b.com', last_name: 'b'
     u2.set_password "pass"
-    lambda { u2.save }.should raise_error
-    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a'
+    lambda { u2.save }.should be
+    # ok - last_name not required
+    u2 = User.new login: "lol2", email: 'a2@b.com', first_name: 'a'
     u2.set_password "pass"
-    lambda { u2.save }.should raise_error
-    u2 = User.new login: "lol", email: 'a@b.com', first_name: 'a', last_name: 'b'
+    lambda { u2.save }.should be
+    # ok without name and first name
+    u2 = User.new login: "lol3", email: 'a3@b.com'
     u2.set_password "pass"
-    u2.save
+    lambda { u2.save }.should be
+    # ok with name and first name
+    u2 = User.new login: "lol4", email: 'a4@b.com', first_name: "john", last_name: "doe"
+    u2.set_password "pass"
+    lambda { u2.save }.should be
+  end
+
+  it "should not allow to create an account with a login or email already used" do
+    build_user #login: "hello", email: 'a@b.com', first_name: 'a', last_name: 'b'
+
+    # same login
+    new_user = User.new login: "hello", email: 'a4@b.com', first_name: "aa", last_name: "bb"
+    new_user.set_password "pass"
+    lambda { u2.save }.should raise_error
+
+    # same email
+    new_user = User.new login: "aloa", email: 'a@b.com', first_name: "aa", last_name: "bb"
+    new_user.set_password "pass"
+    lambda { u2.save }.should raise_error
+
+    # same first/last name -> should be ok
+    new_user = User.new login: "aloa", email: 'sac@main.fr', first_name: "a", last_name: "b"
+    new_user.set_password "pass"
+    lambda { u2.save }.should be
+
   end
 
   it "should support queries" do
