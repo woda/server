@@ -62,6 +62,9 @@ Server::Application.routes.draw do
   match 'users/files/:folder' => 'users#files', via: :get, constraints: {folder: /.*/}
   match 'users/public_files' => 'users#public_files', via: :get
   match 'users/downloaded_public_files' => 'users#downloaded_public_files', via: :get
+  match 'users/share/:id/:share' => 'users#share', via: :post
+  match 'users/download_sf/:id' => 'users#download_sf', via: :post
+  match 'users/shared_files' => 'users#shared_files', via: :get
   match 'users/recents' => 'users#recents', via: :get
   match 'users/favorites' => 'users#favorites', via: :get
   match 'users/favorites/:id' => 'users#set_favorite', via: :post
@@ -69,6 +72,8 @@ Server::Application.routes.draw do
   match 'users' => 'users#update', via: :post
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
+
+  match 'users/folder/:directory(/:public)' => 'users#create_directory', via: :put
 
   match 'admin/cleanup' => 'admin#cleanup'
 

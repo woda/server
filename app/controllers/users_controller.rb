@@ -3,7 +3,7 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_pfiles, :set_public, :share, :download_sf, :shared_files]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :create_directory]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
@@ -14,6 +14,7 @@ class UsersController < ApplicationController
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
   before_filter Proc.new { |c| c.check_params :id }, :only => [:download_sf]
+  before_filter Proc.new { |c| c.check_params :directory }, :only => [:create_directory]
 
 
   ##
@@ -241,7 +242,24 @@ class UsersController < ApplicationController
       files_list.push f
     end
     @result = files_list
-  end 
+  end
+
+  def create_directory
+    user = session[:user]
+    name = params[:directory]
+    publicness = params[:public] && params[:public] === true
+
+    folder = Folder.new
+    folder.user = user
+    folder.name = name
+    folder.public = false
+    folder.last_modification_time = Time.now
+    folder = folder.save
+    successness = folder.id ? true : false
+
+    @result = {success: true, id: folder.id, name: folder.name, publicness: folder.public, last_modification_time: folder.last_modification_time} if successness === true
+    @result = {success: false} if successness === false
+  end
 
   ##
   # Deletes the current user
