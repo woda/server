@@ -32,9 +32,7 @@ class SyncController < ApplicationController
       current_content = Content.new(content_hash: params['content_hash'],
                                     size: params['size'].to_i,
                                     crypt_key: WodaCrypt.new.random_key.to_hex,
-#                                    init_vector: WodaCrypt.new.random_iv.to_hex,
-                                    start_upload: Time.now.utc.to_i, file_type: 'none',
-                                    id: (Content.max(:id) || 0) + 1)
+                                    start_upload: Time.now.utc.to_i, file_type: 'none')
       # TODO: not hardcode part size
       @result = {success: true, need_upload: true, file: f, part_size: 5 * 1024 * 1024}
       current_content.save

@@ -50,9 +50,7 @@ class User
     folder = Folder.first user: self, name: nil
 
     if folder.nil? then
-      # folder id = 1 + IF exist max folder's id
-      folder_id = ( Folder.max(:id).nil? ? 0 : Folder.max(:id) ) + 1
-      folder = Folder.new(name: nil, last_modification_time: DateTime.now, user: self, id: folder_id)
+      folder = Folder.new(name: nil, last_modification_time: DateTime.now, user: self)
       self.folders << folder
       self.save
       folder.save
@@ -85,7 +83,7 @@ class User
     f = folder.x_files.first(name: path[-1])
     if f.nil? then
       if options[:create] then
-        f = XFile.new name: path[-1], last_modification_time: DateTime.now, user: self, id: XFile.max(:id) + 1
+        f = XFile.new(name: path[-1], last_modification_time: DateTime.now, user: self)
         folder.x_files << f
         folder.save
       else
