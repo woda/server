@@ -1,6 +1,6 @@
 require 'data_mapper'
-require 'app/helpers/hash_digest.rb'
-require 'app/helpers/crypt_helper.rb'
+require 'app/helpers/woda_hash.rb'
+require 'app/helpers/woda_crypt.rb'
 require 'app/models/base/woda_resource'
 require 'app/models/properties/sha256_hash'
 require 'app/models/properties/aes256_key'

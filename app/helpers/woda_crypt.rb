@@ -1,5 +1,9 @@
 require 'openssl'
+<<<<<<< HEAD:app/helpers/crypt_helper.rb
 require 'app/helpers/string'
+=======
+require 'app/helpers/string_ext'
+>>>>>>> 8b594bc8d4926c9cdf38993960fcd9ca656fa403:app/helpers/woda_crypt.rb
 
 class WodaCrypt < OpenSSL::Cipher::AES256
   def initialize
