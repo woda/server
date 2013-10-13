@@ -1,5 +1,5 @@
 require 'data_mapper'
-require 'app/helpers/hash_digest'
+require 'app/helpers/woda_hash'
 require 'app/models/properties/sha256_hash'
 require 'app/models/base/woda_resource'
 
