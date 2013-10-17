@@ -96,7 +96,7 @@ class SyncController < ApplicationController
   def set_public_status
     f = session[:user].get_file(params['filename'].split('/'))
     raise RequestError.new(:file_not_found, "File not found") unless f
-    f.is_public = (params['status'] == "true")
+    f.is_public = params['status']
     f.save
     @result = {success: true}
   end
