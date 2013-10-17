@@ -208,7 +208,7 @@ class UsersController < ApplicationController
     
     f = user.x_files.first :id
     if !f.nil?
-      f.update :shared => (params[:shared] == "true"), :last_modification_time => Time.now
+      f.update :shared => params[:shared], :last_modification_time => Time.now
       @result = {success: true, id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared}
     else
       @result = {success: false}
