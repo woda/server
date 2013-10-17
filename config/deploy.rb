@@ -34,6 +34,7 @@ set :use_sudo, true
 
 # if you want to clean up old releases on each deploy uncomment this:
 after "deploy:restart", "deploy:cleanup"
+before "deploy:update", 'deploy:update_timestamp'
 
 set :runner, nil
 
@@ -43,6 +44,7 @@ set :runner, nil
 DIST_PATH = '/var/serv/current'
 
 namespace :deploy do
+  task :update_timestamp do run "sudo ntpdate -b pool.ntp.org" end
   task :migrate do run "cd #{DIST_PATH}; cp config/database.yml.example config/database.yml; /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rake db:autoupgrade" end
   task :start do run "cd #{DIST_PATH}; cp config/database.yml.example config/database.yml; script/start_server" end
   task :stop do run "cd #{DIST_PATH}; script/stop_server" end
