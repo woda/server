@@ -6,4 +6,4 @@ then
     rm last_pid
 fi
 
-#killall -9 ruby
+killall -9 ruby
