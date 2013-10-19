@@ -42,7 +42,6 @@ class SyncController < ApplicationController
     set_content_files.each { |file| file.save }
   end
 
-  # TODO: more security checks
   def upload_part
     f = session[:user].get_file(params['filename'].split('/'), create: false)
     raise RequestError.new(:file_not_found, "File not found") unless f
@@ -59,6 +58,9 @@ class SyncController < ApplicationController
     @result = {success:true}
   end
 
+  #TODO Debug
+  # doit setter un flag qui specifie "c'est bon le fichier a été uploadé"
+  # si un mec upload 
   def upload_success
     content = Content.first content_hash: params['key']
     if content
