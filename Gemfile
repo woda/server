@@ -4,7 +4,7 @@ RAILS_VERSION = '~> 3.2.11'
 DM_VERSION    = '~> 1.2.0'
 gem 'mailfactory'
 
-gem 'minitest'
+gem 'minitest', '4.7.5'
 
 gem 'activesupport',  RAILS_VERSION, :require => 'active_support'
 gem 'actionpack',     RAILS_VERSION, :require => 'action_pack'

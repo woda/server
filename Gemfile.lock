@@ -196,7 +196,7 @@ GEM
       metric_fu (~> 2.1.1)
       rcov (~> 0.9)
     mime-types (1.25)
-    minitest (5.0.8)
+    minitest (4.7.5)
     multi_json (1.8.1)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
@@ -343,7 +343,7 @@ DEPENDENCIES
   map
   metric_abc
   metrical
-  minitest
+  minitest (= 4.7.5)
   rabl
   rails
   railties (~> 3.2.11)
