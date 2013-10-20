@@ -149,14 +149,14 @@ class UsersController < ApplicationController
     user = session[:user]
 
     id = params[:id]
-    f = user.x_files.get id 
+    f = user.x_files.get id
     if !f.nil?
-      f.update :favorite => (params[:favorite] == "true"), :last_modification_time => Time.now 
+      f.update :favorite => (params[:favorite] === true), :last_modification_time => Time.now 
       @result = {success: true, id: f.id, name: f.name, last_update: f.last_modification_time, favorite: f.favorite}
     else
       @result = {success: false}
     end
-      puts @result
+      @result
   end
 
   ##
@@ -178,10 +178,10 @@ class UsersController < ApplicationController
   def set_public
     user = session[:user]
     
-    f = user.x_files.first :id
+    f = user.x_files.get params[:id]
     if !f.nil?
-      f.update :is_public => (params[:public] == "true"), :shared => (params[:public] == "true"), :last_modification_time => Time.now
-      @result = {success: true, id => f.id, :name => f.name, :last_update => f.last_modification_time, :publicness => f.is_public}
+      f.update :is_public => (params[:public] === true), :last_modification_time => Time.now
+      @result = {success: true, id: f.id, name: f.name, last_update: f.last_modification_time, publicness: f.is_public}
     else
       @result = {success: false}
     end
@@ -205,38 +205,51 @@ class UsersController < ApplicationController
   # Set/Unset a shared status file
   def share
     user = session[:user]
-    
-    f = user.x_files.first :id
+
+    f = user.x_files.get params[:id]
     if !f.nil?
       f.update :shared => params[:shared], :last_modification_time => Time.now
-      @result = {success: true, id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared}
+      @result = {success: true, id: f.id, name: f.name, last_modification_time: f.last_modification_time, shared: f.shared}
     else
       @result = {success: false}
     end
   end
 
   ##
-  # When shared file is downloaded, this method MUST be called ! It add one to the counter
-  def download_sf
+  # When file is downloaded, this method MUST be called ! It add one to the counter
+  def download_file
     user = session[:user]
 
-    f = user.x_files.first :id
+    f = user.x_files.get params[:id]
     if !f.nil?
-      sc = f.shared_downloads
-      f.update :shared_downloads => (sc + 1), :last_modification_time => Time.now
-      @result = {success: true, :id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared, :downloaded => f.shared_downloads}
+      sc = f.downloads
+      f.update downloads: (sc + 1), :last_modification_time => Time.now
+      @result = {success: true, :id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, favorite: f.favorite, publicness: f.is_public, :shared => f.shared, :downloaded => f.downloads}
     else
       @result = {success: false}
     end
   end
 
+  def downloaded_files
+    user = session[:user]
+    dpf = []
+    files = user.x_files.all :downloads.gte => 1
+    files = (files.all(:is_public => true ) | files.all(:shared => true)) if params[:particular]
+    files.each do | file |
+      f = {id: file.id, name: file.name, last_update: file.last_modification_time, favorite: file.favorite, publicness: file.is_public, shared: file.shared, downloaded: file.downloads}
+      dpf.push f
+    end
+
+    @result = dpf
+  end
+
   ##
-  # Return the list of all shared-files public or not and downloaded at least, one time
+  # Return the list of all shared-files
   def shared_files
     user = session[:user]
 
     files_list = []
-    files = user.x_files.all :favorite => true
+    files = user.x_files.all shared: true
     files.each do | file |
       f = {:id => file.id, :name => file.name, :last_modification_time => file.last_modification_time, shared: file.shared, downloaded: file.shared_downloads}
       files_list.push f

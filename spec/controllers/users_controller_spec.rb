@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe UsersController do
   render_views
+  DataMapper::Model.raise_on_save_failure = true
 
   before do
     db_clear
@@ -15,36 +16,10 @@ describe UsersController do
     resp = post :login, login: user.login, password: "hello", format: :json
     j = JSON.parse resp.body
     j["login"].should match /lol/
-    j
+    user
   end
 
-  it "should raise error for file listing" do
-    user = login_user
-    resp = get :files, format: :json
-    j = JSON.parse resp.body
-    j["error"].should match /missing_params/
-  end
-
-  it "should allow listing recent file" do
-    user = login_user
-    resp = get :recents, format: :json
-    j = JSON.parse resp.body
-    j.length.should == 0
-  end
-
-  it "should allow listing favorites file" do
-    user = login_user
-    resp = get :favorites, format: :json
-    j = JSON.parse resp.body
-    j.length.should == 0
-  end
-
-  it "should favorite a file -> File not found" do 
-    user = login_user
-    resp = get :set_favorite, id: 42, format: :json
-    j = JSON.parse resp.body
-    j["success"].should be_false
-  end
+  ## USER MANAGEMENT
 
   it "should create a user" do
     session[:user] = nil    
@@ -95,18 +70,322 @@ describe UsersController do
     j["success"].should be_true
   end
 
+  ## FILE MANAGEMENT
+
+  it "should find file" do
+    user = login_user
+    file = user.get_file ["Testing.mkv"], {create: true}
+
+    found = user.get_file ["Testing.mkv"]
+    found.should_not be_nil
+  end
+
+  it "should not find file" do
+    user = login_user
+
+    lambda { 
+        user.get_file( ["Testing.mkv"], {create: false})
+      }.should raise_error
+  end
+
+  it "should should list files" do
+    user = login_user
+
+    file = user.get_file ["Testing.mkv"], {create: true}
+
+    resp = get :files, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_true
+    j["files"][0]["name"].should match /Testing.mkv/
+  end
+
+  it "should list files but with empty hash" do
+    user = login_user
+
+    resp = get :files, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_true
+    j["files"].length.should == 0
+  end
+
+  it "should allow listing recent file (last 20 days modified files)" do
+    user = login_user
+
+    file = user.get_file ["Testing.mkv"], {create: true}
+    file.last_modification_time = DateTime.now - 42.days
+    file.save
+
+    file = user.get_file ["Recent.mkv"], {create: true}
+
+    resp = get :recents, format: :json
+    j = JSON.parse resp.body
+    j.length.should == 1    
+    j[0]["name"].should match /Recent.mkv/
+  end
+
+  it "should allow listing recent file but with empty list" do
+    user = login_user
+
+    file = user.get_file ["Testing.mkv"], {create: true}
+    file.last_modification_time = DateTime.now - 42.days
+    file.save
+
+    resp = get :recents, format: :json
+    j = JSON.parse resp.body
+    j.length.should == 0
+  end
+
+  it "should favorite a file" do 
+    user = login_user
+
+    file = user.get_file ["Testing.mkv"], {create: true}
+
+    resp = get :set_favorite, id: file.id, favorite: true, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_true
+    j["favorite"].should be_true
+  end
+
+
+  it "should unset favorite a file" do 
+    user = login_user
+
+    file = user.get_file ["Testing.mkv"], {create: true}
+
+    resp = get :set_favorite, id: file.id, favorite: true, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_true
+    j["favorite"].should be_true
+
+    resp = get :set_favorite, id: file.id, favorite: false, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_true
+    j["favorite"].should be_false
+  end
+
+  it "should not find file" do
+    user = login_user
+
+    file = user.get_file ["Testing.mkv"], {create: true}
+
+    resp = get :set_favorite, id: 42, favorite: true, format: :json
+    
+    j = JSON.parse resp.body
+    j["success"].should be_false
+  end
+
+  it "should list favorites files" do
+    user = login_user
+    file1 = user.get_file ["Favorite.mkv"], {create: true}
+    file2 = user.get_file ["Favorite_2.mkv"], {create: true}
+    file3 = user.get_file ["NotFavorite.mkv"], {create: true}
+    file4 = user.get_file ["NotFavorite_2.mkv"], {create: true}
+    
+    resp = get :set_favorite, id: file1.id, favorite: true, format: :json
+    resp = get :set_favorite, id: file2.id, favorite: true, format: :json
+   
+    resp = get :favorites, format: :json
+
+    j = JSON.parse resp.body
+    j.length.should == 2
+  end
+
+  it "should not list favorites file after unsetting favorite" do
+    user = login_user
+    file = user.get_file ["Favorite.mkv"], {create: true}
+    
+    resp = get :set_favorite, id: file.id, favorite: true, format: :json
+    j = JSON.parse resp.body
+    j["favorite"].should be_true
+
+    resp = get :set_favorite, id: file.id, favorite: false, format: :json
+    j = JSON.parse resp.body
+    j["favorite"].should be_false
+
+    resp = get :favorites, format: :json
+
+    j = JSON.parse resp.body
+    j.length.should == 0
+  end
+
+  it "should set file to public" do
+    user = login_user
+    file = user.get_file ["Public.mkv"], {create: true}
+
+    resp = get :set_public, id: file.id, :public => true, format: :json
+    j = JSON.parse resp.body
+
+    j["success"].should be_true
+    j["publicness"].should be_true
+  end
+
+  it "should set file publicness to false" do
+    user = login_user
+    file = user.get_file ["Public.mkv"], {create: true}
+
+    resp = get :set_public, id: file.id, :public => true, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_true
+
+    resp = get :set_public, id: file.id, :public => false, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_false
+  end
+
   it "should get public_files" do
     user = login_user
+    file1 = user.get_file ["Public1.mkv"], {create: true}
+    file2 = user.get_file ["Public2.mkv"], {create: true}
+    file3 = user.get_file ["NotPublic1.mkv"], {create: true}
+    file4 = user.get_file ["NotPublic2.mkv"], {create: true}
+
+    resp = get :set_public, id: file1.id, :public => true, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_true
+
+    resp = get :set_public, id: file2.id, :public => true, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_true
+
+    resp = get :public_files, format: :json
+    j = JSON.parse resp.body
+    j.length.should == 2
+  end
+
+  it "should get public_files with empty list" do
+    user = login_user
+    file = user.get_file ["NotPublic.mkv"], {create: true}
+
+    resp = get :public_files, format: :json
+    j = JSON.parse resp.body
+    j.length.should == 0
+  end
+  
+  it "should get public_files with empty list after unsetting publicness" do
+    user = login_user
+    file = user.get_file ["Public.mkv"], {create: true}
+
+    resp = get :set_public, id: file.id, :public => true, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_true
+
+    resp = get :set_public, id: file.id, :public => false, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_false
+
     resp = get :public_files, format: :json
     j = JSON.parse resp.body
     j.length.should == 0
   end
 
-  it "should get public files downloaded at least one time" do
+  it "should share a file" do
     user = login_user
-    resp = get :downloaded_public_files, format: :json
+    file = user.get_file ["Shared.mkv"], {create: true}
+
+    resp = post :share, id: file.id, :shared => true, format: :json
     j = JSON.parse resp.body
-    j.length.should == 0
+    j["success"].should be_true
+    j["shared"].should be_true
   end
 
+  it "should unset shared file" do
+    user = login_user
+    file = user.get_file ["Shared.mkv"], {create: true}
+
+    resp = post :share, id: file.id, :shared => true, format: :json
+    j = JSON.parse resp.body
+    j["shared"].should be_true
+
+    resp = post :share, id: file.id, :shared => false, format: :json
+    j = JSON.parse resp.body
+    j["shared"].should be_false
+  end
+
+  it "should not find file to share" do
+    user = login_user
+    file = user.get_file ["Public.mkv"], {create: true}
+
+    resp = get :share, id: 4932, :shared => true, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_false
+  end
+
+  it "should add 1 to download counter" do
+    user = login_user
+    file1 = user.get_file ["not.mkv"], {create: true}
+
+    resp = get :download_file, id: file1.id, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_true
+    j["downloaded"].should == 1
+  end
+
+  it "should not find file to dl" do
+    user = login_user
+    file1 = user.get_file ["not.mkv"], {create: true}
+
+    resp = get :download_file, id: 3287, format: :json
+    j = JSON.parse resp.body
+    j["success"].should be_false
+  end
+
+  it "should get all downloaded files" do
+    user = login_user
+    file1 = user.get_file ["not.mkv"], {create: true}
+    file2 = user.get_file ["not2.mkv"], {create: true}
+    file3 = user.get_file ["downloaded1.mkv"], {create: true}
+    file4 = user.get_file ["downloaded2.mkv"], {create: true}
+
+    resp = get :download_file, id: file4.id, format: :json
+    j = JSON.parse resp.body
+    j["downloaded"].should == 1
+
+    resp = get :download_file, id: file3.id, format: :json
+    j = JSON.parse resp.body
+    j["downloaded"].should == 1
+
+    resp = get :downloaded_files, format: :json
+    j = JSON.parse resp.body
+    j.length.should == 2
+  end
+
+  it "should get all  public/shared downloaded files" do
+    user = login_user
+    file1 = user.get_file ["not.mkv"], {create: true}
+    file2 = user.get_file ["downloadShare.mkv"], {create: true}
+    file3 = user.get_file ["downloaded1Public.mkv"], {create: true}
+    file4 = user.get_file ["downloaded2.mkv"], {create: true}
+    file5 = user.get_file ["downloadedBOTH.mkv"], {create: true}
+
+
+    resp = get :share, id: file2.id, shared: true, format: :json
+    j = JSON.parse resp.body
+    j["shared"].should be_true
+    resp = get :download_file, id: file2.id, format: :json
+
+
+    resp = get :set_public, id: file3.id, :public => true, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_true
+    resp = get :download_file, id: file3.id, format: :json
+
+    resp = get :set_public, id: file5.id, :public => true, format: :json
+    j = JSON.parse resp.body
+    j["publicness"].should be_true
+    resp = get :share, id: file5.id, :shared => true, format: :json
+    j = JSON.parse resp.body
+    j["shared"].should be_true
+    resp = get :download_file, id: file5.id, format: :json
+
+    
+    resp = get :download_file, id: file4.id, format: :json
+
+    resp = get :downloaded_files, format: :json
+    j = JSON.parse resp.body
+    j.length.should == 4
+
+    resp = get :downloaded_files, particular: true, format: :json
+    j = JSON.parse resp.body
+    j.length.should == 3
+  end
 end

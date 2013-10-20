@@ -87,7 +87,6 @@ class XFile
   updatable_property :downloads, Integer , :default => 0
   updatable_property :is_public, Boolean, :default => false
   updatable_property :shared, Boolean, :default => false
-  updatable_property :shared_downloads, Integer, :default => 0
 
   property :read_only, Boolean, :default => false
 end
