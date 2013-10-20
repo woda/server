@@ -1,9 +1,11 @@
+set :application, "Woda server"
+
 require 'rvm/capistrano'
 require 'bundler/capistrano'
 require 'capistrano-offroad'
 require 'capistrano-offroad/modules/defaults'
 
-set :application, "Woda server"
+
 set :repository,  "git@github.com:woda/server.git"
 set :user, "ubuntu"
 server "ec2-54-242-50-191.compute-1.amazonaws.com", :app, :db, :primary => true
