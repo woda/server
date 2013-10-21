@@ -14,7 +14,7 @@ class UsersController < ApplicationController
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
   before_filter Proc.new { |c| c.check_params :id }, :only => [:download_sf]
-  before_filter Proc.new { |c| c.check_params :directory }, :only => [:create_directory]
+  before_filter Proc.new { |c| c.check_params :path }, :only => [:create_directory]
 
 
   ##
@@ -224,7 +224,7 @@ class UsersController < ApplicationController
     if !f.nil?
       sc = f.shared_downloads
       f.update :shared_downloads => (sc + 1), :last_modification_time => Time.now
-      @result = {success: true, :id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared, :downloaded => f.shared_downloads}
+      @result = {success: true, id: f.id, name: f.name, last_modification_time: f.last_modification_time, shared: f.shared, downloaded: f.shared_downloads}
     else
       @result = {success: false}
     end
@@ -236,29 +236,12 @@ class UsersController < ApplicationController
     user = session[:user]
 
     files_list = []
-    files = user.x_files.all :favorite => true
+    files = user.x_files.all favorite: true
     files.each do | file |
-      f = {:id => file.id, :name => file.name, :last_modification_time => file.last_modification_time, shared: file.shared, downloaded: file.shared_downloads}
+      f = {id: file.id, name: file.name, last_modification_time: file.last_modification_time, shared: file.shared, downloaded: file.shared_downloads}
       files_list.push f
     end
     @result = files_list
-  end
-
-  def create_directory
-    user = session[:user]
-    name = params[:directory]
-    publicness = params[:public] && params[:public] === true
-
-    folder = Folder.new
-    folder.user = user
-    folder.name = name
-    folder.public = false
-    folder.last_modification_time = Time.now
-    folder = folder.save
-    successness = folder.id ? true : false
-
-    @result = {success: true, id: folder.id, name: folder.name, publicness: folder.public, last_modification_time: folder.last_modification_time} if successness === true
-    @result = {success: false} if successness === false
   end
 
   ##

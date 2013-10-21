@@ -8,7 +8,7 @@ title() {
 
 if [ $# == 1 ]
 then
-base=$1
+base=https://woda-server.com:3000
 else
 base=https://localhost:3000
 fi
@@ -20,7 +20,7 @@ echo 'Enter login name:'
 read -r login
 done
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello&first_name=Adrien&last_name=Ecoffet"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
 
 title 'Logging out:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
