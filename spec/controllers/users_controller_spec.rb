@@ -310,25 +310,6 @@ describe UsersController do
     j["success"].should be_false
   end
 
-  it "should add 1 to download counter" do
-    user = login_user
-    file1 = user.get_file ["not.mkv"], {create: true}
-
-    resp = get :download_file, id: file1.id, format: :json
-    j = JSON.parse resp.body
-    j["success"].should be_true
-    j["downloaded"].should == 1
-  end
-
-  it "should not find file to dl" do
-    user = login_user
-    file1 = user.get_file ["not.mkv"], {create: true}
-
-    resp = get :download_file, id: 3287, format: :json
-    j = JSON.parse resp.body
-    j["success"].should be_false
-  end
-
   it "should get all downloaded files" do
     user = login_user
     file1 = user.get_file ["not.mkv"], {create: true}
@@ -336,14 +317,9 @@ describe UsersController do
     file3 = user.get_file ["downloaded1.mkv"], {create: true}
     file4 = user.get_file ["downloaded2.mkv"], {create: true}
 
-    resp = get :download_file, id: file4.id, format: :json
-    j = JSON.parse resp.body
-    j["downloaded"].should == 1
-
-    resp = get :download_file, id: file3.id, format: :json
-    j = JSON.parse resp.body
-    j["downloaded"].should == 1
-
+    file4.update :downloads => 1
+    file3.update :downloads => 1
+    
     resp = get :downloaded_files, format: :json
     j = JSON.parse resp.body
     j.length.should == 2
@@ -367,7 +343,7 @@ describe UsersController do
     resp = get :set_public, id: file3.id, :public => true, format: :json
     j = JSON.parse resp.body
     j["publicness"].should be_true
-    resp = get :download_file, id: file3.id, format: :json
+    file3.update :downloads => 1
 
     resp = get :set_public, id: file5.id, :public => true, format: :json
     j = JSON.parse resp.body
@@ -375,10 +351,9 @@ describe UsersController do
     resp = get :share, id: file5.id, :shared => true, format: :json
     j = JSON.parse resp.body
     j["shared"].should be_true
-    resp = get :download_file, id: file5.id, format: :json
 
-    
-    resp = get :download_file, id: file4.id, format: :json
+    file5.update :downloads => 1
+    file4.update :downloads => 1
 
     resp = get :downloaded_files, format: :json
     j = JSON.parse resp.body
@@ -388,4 +363,5 @@ describe UsersController do
     j = JSON.parse resp.body
     j.length.should == 3
   end
+  
 end
