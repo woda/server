@@ -215,21 +215,6 @@ class UsersController < ApplicationController
     end
   end
 
-  ##
-  # When file is downloaded, this method MUST be called ! It add one to the counter
-  def download_file
-    user = session[:user]
-
-    f = user.x_files.get params[:id]
-    if !f.nil?
-      sc = f.downloads
-      f.update downloads: (sc + 1), :last_modification_time => Time.now
-      @result = {success: true, :id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, favorite: f.favorite, publicness: f.is_public, :shared => f.shared, :downloaded => f.downloads}
-    else
-      @result = {success: false}
-    end
-  end
-
   def downloaded_files
     user = session[:user]
     dpf = []
