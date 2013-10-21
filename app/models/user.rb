@@ -54,8 +54,9 @@ class User
       self.save
       folder.save
     end
-    (path.size - 1).times do |i|
-      folder2 = folder.children.first(name: path[i])
+    path.reject! { |c| c.empty? }
+    path.size.times do |i|
+      folder2 = folder.children.first(name: path[i])    
       if folder2.nil? then
         if options[:create] then
           folder2 = Folder.new name: path[i], last_modification_time: DateTime.now, user: self

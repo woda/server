@@ -56,6 +56,7 @@ Server::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
 
+# users controller
   match 'users/:login/login' => 'users#login'
   match 'users/logout' => 'users#logout'
   match 'users/files' => 'users#files', via: :get
@@ -75,10 +76,14 @@ Server::Application.routes.draw do
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
 
-  match 'users/folder/:directory(/:public)' => 'users#create_directory', via: :put
+# files controller
+  match 'files/new_folder' => 'files#create_folder', via: :put
+  match 'files' => 'files#files', via: :get
 
+# admin controller
   match 'admin/cleanup' => 'admin#cleanup'
 
+# sync controller
   match 'sync/public/:filename' => 'sync#set_public_status', via: :post, constraints: {filename: /.*/}
   match 'sync/public/:filename' => 'sync#public_status', via: :get, constraints: {filename: /.*/}
   match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
