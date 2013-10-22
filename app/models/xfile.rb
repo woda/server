@@ -70,16 +70,16 @@ class XFile
   def content
     # puts "getting content #{content_hash}"
     return nil if content_hash.nil?
-    puts content_hash
+    # puts content_hash
     Content.first content_hash: content_hash
   end
 
   def content= arg
     if !arg.nil? then
       self.content_hash = arg.content_hash
-      puts "setting content hash: #{content_hash}"
+      # puts "setting content hash: #{content_hash}"
     else
-      puts "unsetting content"
+      # puts "unsetting content"
       self.content_hash = nil
     end
   end
