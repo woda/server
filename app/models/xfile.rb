@@ -68,7 +68,7 @@ class XFile
   end
 
   def content
-    puts "getting content #{content_hash}"
+    # puts "getting content #{content_hash}"
     return nil if content_hash.nil?
     puts content_hash
     Content.first content_hash: content_hash
