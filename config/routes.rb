@@ -76,6 +76,11 @@ Server::Application.routes.draw do
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
 
+# Folders
+  match 'users/folder/:path' => 'users#create_folder', via: :put
+  match 'users/folder/favorite/:path' => 'users#folder_favorite', via: :post
+  match 'users/folder/public/:path' => 'users#folder_public', via: :post
+
 # files controller
   match 'files/new_folder' => 'files#create_folder', via: :put
   match 'files' => 'files#files', via: :get

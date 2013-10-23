@@ -3,18 +3,19 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :create_directory]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :create_folder, :folder_favorite, :folder_public]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
-  # before_filter Proc.new { |c| c.check_params :folder }, :only => [:files] # Do not make :folder mandatory please, it can not work on the root folder
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
 
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
   before_filter Proc.new { |c| c.check_params :id }, :only => [:download_sf]
-  before_filter Proc.new { |c| c.check_params :path }, :only => [:create_directory]
+  before_filter Proc.new { |c| c.check_params :path }, :only => [:create_folder]
+  before_filter Proc.new { |c| c.check_params :path, :favorite }, :only => [:folder_favorite]
+  before_filter Proc.new { |c| c.check_params :path, :public }, :only => [:folder_public]
 
 
   ##
@@ -241,6 +242,49 @@ class UsersController < ApplicationController
       files_list.push f
     end
     @result = files_list
+  end
+
+  def create_folder
+    user = session[:user]
+    path = params[:path].split '/'
+
+    f = user.get_folder path, {create: true}
+    if !f.nil?
+      @result = f.description
+      @result["success"] = true
+    else
+      @result = {success: false, message: "Something wrong happened, did you sent a valid path ?"}
+    end
+    @result
+  end
+
+  def folder_favorite
+    user = session[:user]
+    path = params[:path].split '/'
+
+    f = user.get_folder path, {create: false}
+    if !f.nil?
+      f.update favorite: params[:favorite]
+      @result = f.description
+      @result["success"] = true
+    else
+      @result = {success: false, message: "Something wrong happened, did you sent a valid path ?"}
+    end
+    @result
+  end
+
+  def folder_public
+    user = session[:user]
+    path = params[:path].split '/'
+
+    f = user.get_folder path, {create: false}
+    if !f.nil?
+      f.update public: params[:public]
+      @result = f.description
+      @result["success"] = true
+    else
+      @result = {success: false, message: "Something wrong happened, did you sent a valid path ?"} 
+    end
   end
 
   ##

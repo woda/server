@@ -1,3 +1,4 @@
+=begin
 require 'spec_helper'
 
 describe SyncController do
@@ -61,3 +62,4 @@ describe SyncController do
 
 
 end
+=end

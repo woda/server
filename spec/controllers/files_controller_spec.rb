@@ -1,3 +1,4 @@
+=begin
 require 'spec_helper'
 
 describe FilesController do
@@ -34,3 +35,4 @@ describe FilesController do
 	end
 
 end
+=end

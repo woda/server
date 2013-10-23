@@ -337,7 +337,7 @@ describe UsersController do
     resp = get :share, id: file2.id, shared: true, format: :json
     j = JSON.parse resp.body
     j["shared"].should be_true
-    resp = get :download_file, id: file2.id, format: :json
+    file2.update :downloads => 1
 
 
     resp = get :set_public, id: file3.id, :public => true, format: :json
@@ -363,5 +363,5 @@ describe UsersController do
     j = JSON.parse resp.body
     j.length.should == 3
   end
-  
+
 end
