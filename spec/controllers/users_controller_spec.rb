@@ -371,7 +371,6 @@ describe UsersController do
     j = JSON.parse resp.body
     j["id"].should_not be_nil
     j["name"].should match /Bonjour/
-
   end
 
 

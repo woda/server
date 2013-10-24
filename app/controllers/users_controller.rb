@@ -3,7 +3,7 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :create_folder, :folder_favorite, :folder_public]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :new_folder, :folder_favorite, :folder_public]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
