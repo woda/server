@@ -77,7 +77,7 @@ Server::Application.routes.draw do
   match 'users/:login' => 'users#create', via: :put
 
 # Folders
-  match 'users/folder/:path' => 'users#create_folder', via: :put
+  match 'users/folder/:path' => 'users#new_folder', via: :put
   match 'users/folder/favorite/:path' => 'users#folder_favorite', via: :post
   match 'users/folder/public/:path' => 'users#folder_public', via: :post
 

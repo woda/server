@@ -244,7 +244,7 @@ class UsersController < ApplicationController
     @result = files_list
   end
 
-  def create_folder
+  def new_folder
     user = session[:user]
     path = params[:path].split '/'
 

@@ -364,4 +364,16 @@ describe UsersController do
     j.length.should == 3
   end
 
+  it "should create a new folder" do
+    user = login_user
+
+    resp = put :new_folder, :path => "Bonjour"
+    j = JSON.parse resp.body
+    j["id"].should_not be_nil
+    j["name"].should match /Bonjour/
+
+  end
+
+
+
 end
