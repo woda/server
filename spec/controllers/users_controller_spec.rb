@@ -363,6 +363,8 @@ describe UsersController do
     j = JSON.parse resp.body
     j.length.should == 3
   end
+  
+=begin
 
   it "should create a new folder" do
     user = login_user
@@ -372,7 +374,6 @@ describe UsersController do
     j["id"].should_not be_nil
     j["name"].should match /Bonjour/
   end
-
-
+=end
 
 end
