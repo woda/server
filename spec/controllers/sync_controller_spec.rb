@@ -31,7 +31,7 @@ describe SyncController do
 	  it "should add a file" do
 	  	resp = put :put, filename: filename,  content_hash: content_hash, size: fileDataSize
 	  	j = JSON.parse resp.body
-	  	puts j
+	  	# puts j
 	  	j["success"].should be_true
 	  	j["need_upload"].should be_true
 	  	# test everything
