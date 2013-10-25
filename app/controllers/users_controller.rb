@@ -3,18 +3,19 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :create_directory]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :files, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :new_folder, :folder_favorite, :folder_public]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
-  # before_filter Proc.new { |c| c.check_params :folder }, :only => [:files] # Do not make :folder mandatory please, it can not work on the root folder
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
 
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
   before_filter Proc.new { |c| c.check_params :id }, :only => [:download_sf]
-  before_filter Proc.new { |c| c.check_params :directory }, :only => [:create_directory]
+  before_filter Proc.new { |c| c.check_params :path }, :only => [:create_folder]
+  before_filter Proc.new { |c| c.check_params :path, :favorite }, :only => [:folder_favorite]
+  before_filter Proc.new { |c| c.check_params :path, :public }, :only => [:folder_public]
 
 
   ##
@@ -149,14 +150,14 @@ class UsersController < ApplicationController
     user = session[:user]
 
     id = params[:id]
-    f = user.x_files.get id 
+    f = user.x_files.get id
     if !f.nil?
-      f.update :favorite => (params[:favorite] == "true"), :last_modification_time => Time.now 
+      f.update :favorite => (params[:favorite] === true), :last_modification_time => Time.now 
       @result = {success: true, id: f.id, name: f.name, last_update: f.last_modification_time, favorite: f.favorite}
     else
       @result = {success: false}
     end
-      puts @result
+      @result
   end
 
   ##
@@ -178,10 +179,10 @@ class UsersController < ApplicationController
   def set_public
     user = session[:user]
     
-    f = user.x_files.first :id
+    f = user.x_files.get params[:id]
     if !f.nil?
-      f.update :is_public => (params[:public] == "true"), :shared => (params[:public] == "true"), :last_modification_time => Time.now
-      @result = {success: true, id => f.id, :name => f.name, :last_update => f.last_modification_time, :publicness => f.is_public}
+      f.update :is_public => (params[:public] === true), :last_modification_time => Time.now
+      @result = {success: true, id: f.id, name: f.name, last_update: f.last_modification_time, publicness: f.is_public}
     else
       @result = {success: false}
     end
@@ -205,60 +206,85 @@ class UsersController < ApplicationController
   # Set/Unset a shared status file
   def share
     user = session[:user]
-    
-    f = user.x_files.first :id
+
+    f = user.x_files.get params[:id]
     if !f.nil?
       f.update :shared => params[:shared], :last_modification_time => Time.now
-      @result = {success: true, id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared}
+      @result = {success: true, id: f.id, name: f.name, last_modification_time: f.last_modification_time, shared: f.shared}
     else
       @result = {success: false}
     end
   end
 
-  ##
-  # When shared file is downloaded, this method MUST be called ! It add one to the counter
-  def download_sf
+  def downloaded_files
     user = session[:user]
-
-    f = user.x_files.first :id
-    if !f.nil?
-      sc = f.shared_downloads
-      f.update :shared_downloads => (sc + 1), :last_modification_time => Time.now
-      @result = {success: true, :id => f.id, :name => f.name, :last_modification_time => f.last_modification_time, :shared => f.shared, :downloaded => f.shared_downloads}
-    else
-      @result = {success: false}
+    
+    dpf = []
+    files = user.x_files.all :downloads.gte => 1
+    files = (files.all(:is_public => true ) | files.all(:shared => true)) if params[:particular]
+    files.each do | file |
+      f = {id: file.id, name: file.name, last_update: file.last_modification_time, favorite: file.favorite, publicness: file.is_public, shared: file.shared, downloaded: file.downloads}
+      dpf.push f
     end
+
+    @result = dpf
   end
 
   ##
-  # Return the list of all shared-files public or not and downloaded at least, one time
+  # Return the list of all shared-files
   def shared_files
     user = session[:user]
 
     files_list = []
-    files = user.x_files.all :favorite => true
+    files = user.x_files.all shared: true
     files.each do | file |
-      f = {:id => file.id, :name => file.name, :last_modification_time => file.last_modification_time, shared: file.shared, downloaded: file.shared_downloads}
+      f = {id: file.id, name: file.name, last_modification_time: file.last_modification_time, shared: file.shared, downloaded: file.shared_downloads}
       files_list.push f
     end
     @result = files_list
   end
 
-  def create_directory
+  def new_folder
     user = session[:user]
-    name = params[:directory]
-    publicness = params[:public] && params[:public] === true
+    path = params[:path].split '/'
 
-    folder = Folder.new
-    folder.user = user
-    folder.name = name
-    folder.public = false
-    folder.last_modification_time = Time.now
-    folder = folder.save
-    successness = folder.id ? true : false
+    f = user.get_folder path, {create: true}
+    if !f.nil?
+      @result = f.description
+      @result["success"] = true
+    else
+      @result = {success: false, message: "Something wrong happened, did you sent a valid path ?"}
+    end
+    @result
+  end
 
-    @result = {success: true, id: folder.id, name: folder.name, publicness: folder.public, last_modification_time: folder.last_modification_time} if successness === true
-    @result = {success: false} if successness === false
+  def folder_favorite
+    user = session[:user]
+    path = params[:path].split '/'
+
+    f = user.get_folder path, {create: false}
+    if !f.nil?
+      f.update favorite: params[:favorite]
+      @result = f.description
+      @result["success"] = true
+    else
+      @result = {success: false, message: "Something wrong happened, did you sent a valid path ?"}
+    end
+    @result
+  end
+
+  def folder_public
+    user = session[:user]
+    path = params[:path].split '/'
+
+    f = user.get_folder path, {create: false}
+    if !f.nil?
+      f.update public: params[:public]
+      @result = f.description
+      @result["success"] = true
+    else
+      @result = {success: false, message: "Something wrong happened, did you sent a valid path ?"} 
+    end
   end
 
   ##

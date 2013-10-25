@@ -70,16 +70,16 @@ class XFile
   def content
     # puts "getting content #{content_hash}"
     return nil if content_hash.nil?
-    puts content_hash
+    # puts content_hash
     Content.first content_hash: content_hash
   end
 
   def content= arg
     if !arg.nil? then
       self.content_hash = arg.content_hash
-      puts "setting content hash: #{content_hash}"
+      # puts "setting content hash: #{content_hash}"
     else
-      puts "unsetting content"
+      # puts "unsetting content"
       self.content_hash = nil
     end
   end
@@ -87,7 +87,6 @@ class XFile
   updatable_property :downloads, Integer , :default => 0
   updatable_property :is_public, Boolean, :default => false
   updatable_property :shared, Boolean, :default => false
-  updatable_property :shared_downloads, Integer, :default => 0
 
   property :read_only, Boolean, :default => false
 end
