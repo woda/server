@@ -32,20 +32,6 @@ class UsersController < ApplicationController
     @result = user
   end
     
-  def downloaded_files
-    user = session[:user]
-    
-    dpf = []
-    files = user.x_files.all :downloads.gte => 1
-    files = (files.all(:is_public => true ) | files.all(:shared => true)) if params[:particular]
-    files.each do | file |
-      f = {id: file.id, name: file.name, last_update: file.last_modification_time, favorite: file.favorite, publicness: file.is_public, shared: file.shared, downloaded: file.downloads}
-      dpf.push f
-    end
-
-    @result = dpf
-  end
-
   def new_folder
     user = session[:user]
     path = params[:path].split '/'

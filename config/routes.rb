@@ -56,7 +56,7 @@ Server::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
 
-# users controller
+# Users Controller
   match 'users/:login/login' => 'users#login'
   match 'users/logout' => 'users#logout'
   match 'users' => 'users#index', via: :get
@@ -64,28 +64,26 @@ Server::Application.routes.draw do
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
 
-  
-  match 'users/files/:id/download' => 'users#download_file', via: :post
-  match 'users/files/downloaded' => 'users#downloaded_files', via: :get
-  
-# Folders
+# Folders Controller
   match 'users/folder/:path' => 'users#new_folder', via: :put
   match 'users/folder/favorite/:path' => 'users#folder_favorite', via: :post
   match 'users/folder/public/:path' => 'users#folder_public', via: :post
   match 'files/new_folder' => 'files#create_folder', via: :put
 
-# files controller
+# Files Controller
   match 'files' => 'files#files', via: :get
-  # TODO Dafuq ?
+  # TODO Dafuq is the next line ?
   # match 'files/:folder' => 'files#files', via: :get, constraints: {folder: /.*/}
-  match 'files/recent' => 'files#recent', via: :get
+  match 'files/recents' => 'files#recents', via: :get
   match 'files/favorites' => 'files#favorites', via: :get
   match 'files/favorite/:id' => 'files#set_favorite', via: :post
   match 'files/public/:id' => 'files#set_public', via: :post
-  match 'files/public_files' => 'files#public_files', via: :get
+  match 'files/public' => 'files#public_files', via: :get
   match 'files/share/:id' => 'files#share', via: :post
-  match 'files/shared_files' => 'files#shared_files', via: :get
+  match 'files/shared' => 'files#shared_files', via: :get
 
+#useless
+  match 'files/downloaded' => 'files#downloaded_files', via: :get
   match 'files/downloaded_public_files' => 'files#downloaded_public_files', via: :get
   
 # admin controller

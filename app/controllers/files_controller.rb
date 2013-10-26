@@ -63,7 +63,7 @@ class FilesController < ApplicationController
   
   ##
   # Get the first 20 last updated files
-  def recent
+  def recents
     files = session[:user].x_files.all(:last_modification_time.gte => (DateTime.now - 20.days), limit: 20)
 
     files_list = []
@@ -139,13 +139,28 @@ class FilesController < ApplicationController
   ##
   # Return all the public file downloaded at least one time
   #
-  # Useless
+  # Useless method
   #
   def downloaded_public_files
     files_list = []
     files = session[:user].x_files.all is_public: true, :downloads.gte => 1
     files.each do | file |
       files_list.push file.description
+    end
+    @result = { files: files_list, success: true }
+  end
+
+  ##
+  # Return all the public file downloaded at least one time
+  #
+  # Useless method
+  #
+  def downloaded_files
+    files_list = []
+    files = session[:user].x_files.all :downloads.gte => 1
+    files = (files.all(is_public: true ) | files.all(shared: true)) if params[:particular]
+    files.each do | file |
+      files_list.push file
     end
     @result = { files: files_list, success: true }
   end
