@@ -3,7 +3,7 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :set_favorite, :recents, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :new_folder, :folder_favorite, :folder_public]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :set_favorite, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :new_folder, :folder_favorite, :folder_public]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
@@ -72,22 +72,6 @@ class UsersController < ApplicationController
     end
     
     @result = public_files
-  end
-
-  ##
-  # Get the first 20 last updated files
-  def recents
-    user = session[:user]
-    twenty_days_back = DateTime.now - 20.days
-    files = user.x_files.all(:last_modification_time.gte => twenty_days_back, :limit => 20)
-    files_list = []
-    
-    files.each do | file |
-      f = {:id => file.id, :name => file.name, :last_update => file.last_modification_time}
-      files_list.push f
-    end
-    
-    @result = files_list
   end
   
   ##

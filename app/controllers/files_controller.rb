@@ -3,7 +3,7 @@ require 'json'
 
 class FilesController < ApplicationController
 
-	before_filter :require_login, :only => [:create_folder, :files]
+	before_filter :require_login, :only => [:create_folder, :files, :recent]
   before_filter Proc.new { |c| c.check_params :path }, :only => [:create_folder]
 
 	##
@@ -25,6 +25,7 @@ class FilesController < ApplicationController
     # We search the root folder in case this one is not the first in the list
     folder = user.get_folder((aim.nil? ? '' : aim).split('/'))
 
+#TODO change that it's stupid
     hierarchy = crawl_folder folder unless folder.nil?
     @result = hierarchy ? hierarchy : {}
     @result[:success] = true
@@ -52,22 +53,25 @@ class FilesController < ApplicationController
     files_list = []
     # We get all files from the current folder
     folder.x_files.each do | file |
-      file_infos = {}
-      
-      file_infos[:id] = file.id
-      file_infos[:name] = file.name
-      file_infos[:type] = File.extname file.name
-      file_infos[:last_update] = file.last_modification_time
-      file_infos[:favorite] = file.favorite
-      file_infos[:publicness] = file.is_public
-      file_infos[:size] = file.size
-      file_infos[:part_size] = file.part_size
-      files_list.push file_infos
+      files_list.push file.description
     end
     folder_infos[:files] = files_list
     
     folder_infos
   end
   
+  ##
+  # Get the first 20 last updated files
+  def recent
+    user = session[:user]
+    twenty_days_back = DateTime.now - 20.days
+    files = user.x_files.all(:last_modification_time.gte => twenty_days_back, :limit => 20)
+    files_list = []
+    
+    files.each do | file |
+      files_list.push file.description
+    end
+    @result = files_list
+  end
 
 end

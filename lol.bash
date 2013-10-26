@@ -88,6 +88,10 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files
 title 'Listing files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files
 
+title 'Listing recent files:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/recent
+
+
 # title 'Making file public:'
 # echo_run curl -k -b cookies -c cookies -XPOST $base/sync/public/hello/world -d 'status=true'
 

@@ -22,6 +22,12 @@ class XFile
 
   property :content_hash, SHA256Hash, index: true, required: false
 
+
+  def description
+    {id: self.id, name: self.name, last_update: self.last_modification_time, favorite: self.favorite, 
+      public: self.is_public, type: File.extname(self.name), size: self.size, part_size: self.part_size }
+  end
+
   def part_size
     return 5 * 1024 * 1024
   end
