@@ -16,7 +16,7 @@ class SyncController < ApplicationController
   def put
     current_content = Content.first content_hash: params['content_hash']
     f = session[:user].get_file(params['filename'].split('/'), create: true)
-    f.last_modification_time = DateTime.now
+    f.last_update = DateTime.now
     set_content_files = [f]
 #TODO: this needs to be uncommented
     # If it took more than 24 hours to upload the file, we just start over
@@ -101,7 +101,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless f2 && f2.is_public
     f = session[:user].get_file(params['filename'].split('/'), :create => true)
     f.x_file = f2
-    f.last_modification_time = DateTime.now
+    f.last_update = DateTime.now
     session[:user].save
     f.save
     @result = {success: true}

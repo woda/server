@@ -112,7 +112,7 @@ describe UsersController do
     user = login_user
 
     file = user.get_file ["Testing.mkv"], {create: true}
-    file.last_modification_time = DateTime.now - 42.days
+    file.last_update = DateTime.now - 42.days
     file.save
 
     file = user.get_file ["Recent.mkv"], {create: true}
@@ -127,7 +127,7 @@ describe UsersController do
     user = login_user
 
     file = user.get_file ["Testing.mkv"], {create: true}
-    file.last_modification_time = DateTime.now - 42.days
+    file.last_update = DateTime.now - 42.days
     file.save
 
     resp = get :recents, format: :json

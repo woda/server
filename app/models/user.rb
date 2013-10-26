@@ -49,7 +49,7 @@ class User
     folder = Folder.first user: self, name: nil
 
     if folder.nil? then
-      folder = Folder.new(name: nil, last_modification_time: DateTime.now, user: self)
+      folder = Folder.new(name: nil, last_update: DateTime.now, user: self)
       self.folders << folder
       self.save
       folder.save
@@ -59,7 +59,7 @@ class User
       folder2 = folder.children.first(name: path[i])    
       if folder2.nil? then
         if options[:create] then
-          folder2 = Folder.new name: path[i], last_modification_time: DateTime.now, user: self
+          folder2 = Folder.new name: path[i], last_update: DateTime.now, user: self
           folder.children << folder2
           folder.save
         else
@@ -83,7 +83,7 @@ class User
     f = folder.x_files.first(name: path[-1])
     if f.nil? then
       if options[:create] then
-        f = XFile.new(name: path[-1], last_modification_time: DateTime.now, user: self)
+        f = XFile.new(name: path[-1], last_update: DateTime.now, user: self)
         folder.x_files << f
         folder.save
       else

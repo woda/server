@@ -14,16 +14,11 @@ class FilesController < ApplicationController
   def files
     aim = params[:folder]
     folder = nil
-    # We search the root folder in case this one is not the first in the list
+    # Look for the root folder in case it is not the first in the list
     folder = session[:user].get_folder((aim.nil? ? '' : aim).split('/'))
-
-    unless folder.nil? then
-      @result = crawl_folder folder
-      @result[:success] = true
-    else
-      @result[:success] = false
-    end
-    @result
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    @result = crawl_folder folder
+    @result[:success] = true
   end
 
   ##
@@ -33,36 +28,29 @@ class FilesController < ApplicationController
     folders = []
     
     # Folder infos
-    folder_infos = {}
+    folder_infos = folder.description
     folder_infos[:name] = (folder.name.nil? ? "/" : folder.name)
-    folder_infos[:last_update] = folder.last_modification_time
-    
+
+    # We recall craw_folder() method recursively for crawling each child folder if recur = true
     if recur then
-      # We recall craw_folder() method recursively for crawling each child folder if recur = true
-      folder.children.each do | child |
-        folders.push(crawl_folder(child))
-      end
+      folder.children.each { |child| folders.push(crawl_folder(child)) }
       folder_infos[:folders] = folders
     end
     
-    files_list = []
     # We get all files from the current folder
-    folder.x_files.each do | file |
-      files_list.push file.description
-    end
+    files_list = []
+    folder.x_files.each { |file| files_list.push file.description }
     folder_infos[:files] = files_list
+    
     folder_infos
   end
   
   ##
   # Get the first 20 last updated files
   def recents
-    files = session[:user].x_files.all(:last_modification_time.gte => (DateTime.now - 20.days), limit: 20)
-
+    files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), limit: 20)
     files_list = []
-    files.each do | file |
-      files_list.push file.description
-    end
+    files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
 
@@ -81,9 +69,7 @@ class FilesController < ApplicationController
   def favorites
     files_list = []
     files = session[:user].x_files.all favorite: true
-    files.each do | file |
-      files_list.push file.description
-    end
+    files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
 
@@ -92,9 +78,7 @@ class FilesController < ApplicationController
   def public
     public_files = []
     files = session[:user].x_files.all :is_public => true
-    files.each do | file |
-      public_files.push file.description
-    end
+    files.each { |file| public_files.push file.description }
     @result = { files: public_files, success: true }
   end
   
@@ -113,9 +97,7 @@ class FilesController < ApplicationController
   def shared
     files_list = []
     files = session[:user].x_files.all shared: true
-    files.each do | file |
-      files_list.push file.description
-    end
+    files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
 
@@ -137,9 +119,7 @@ class FilesController < ApplicationController
   def downloaded_public
     files_list = []
     files = session[:user].x_files.all is_public: true, :downloads.gte => 1
-    files.each do | file |
-      files_list.push file.description
-    end
+    files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
 
@@ -152,9 +132,7 @@ class FilesController < ApplicationController
     files_list = []
     files = session[:user].x_files.all :downloads.gte => 1
     files = (files.all(is_public: true ) | files.all(shared: true)) if params[:particular]
-    files.each do | file |
-      files_list.push file
-    end
+    files.each { |file| files_list.push file }
     @result = { files: files_list, success: true }
   end
 

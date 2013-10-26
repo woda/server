@@ -10,7 +10,7 @@ class Folder
 
   property :id, Serial, key: true
   updatable_property :name, String, index: true, required: false
-  updatable_property :last_modification_time, DateTime, :default => Time.now
+  updatable_property :last_update, DateTime, :default => Time.now
 
   has n, :access_rights
   belongs_to :user, :child_key => :user_id, index: true
@@ -24,7 +24,7 @@ class Folder
   property :read_only, Boolean, :default => false, required: false
 
   def description
-    {id: self.id, name: self.name, public: self.public, favorite: self.favorite, read_only: self.read_only, last_modification_time: self.last_modification_time}
+    { id: self.id, name: self.name, public: self.public, favorite: self.favorite, read_only: self.read_only, last_update: self.last_update }
   end
 
 end

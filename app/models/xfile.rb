@@ -11,7 +11,7 @@ class XFile
 
   property :id, Serial, key: true
   updatable_property :name, String, index: true
-  updatable_property :last_modification_time, DateTime
+  updatable_property :last_update, DateTime
   updatable_property :favorite, Boolean, default: false
   has n, :access_rights
   belongs_to :user, child_key: :user_id, index: true
@@ -33,7 +33,7 @@ class XFile
 
   def description
     {
-      id: self.id, name: self.name, last_update: self.last_modification_time, type: File.extname(self.name),
+      id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
       size: self.size, part_size: self.part_size, public: self.is_public, 
       shared: self.shared, downloads: self.downloads, favorite: self.favorite
     }
