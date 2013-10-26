@@ -59,7 +59,12 @@ Server::Application.routes.draw do
 # users controller
   match 'users/:login/login' => 'users#login'
   match 'users/logout' => 'users#logout'
-  match 'users/files' => 'users#files', via: :get
+  match 'users' => 'users#index', via: :get
+  match 'users' => 'users#update', via: :post
+  match 'users' => 'users#delete', via: :delete
+  match 'users/:login' => 'users#create', via: :put
+
+  # match 'users/files' => 'users#files', via: :get
   match 'users/files/:folder' => 'users#files', via: :get, constraints: {folder: /.*/}
   match 'users/downloaded_public_files' => 'users#downloaded_public_files', via: :get
   match 'users/files/:id/download' => 'users#download_file', via: :post
@@ -71,11 +76,7 @@ Server::Application.routes.draw do
   match 'users/public_files' => 'users#public_files', via: :get
   match 'users/favorites' => 'users#favorites', via: :get
   match 'users/favorite/:id' => 'users#set_favorite', via: :post
-  match 'users' => 'users#index', via: :get
-  match 'users' => 'users#update', via: :post
-  match 'users' => 'users#delete', via: :delete
-  match 'users/:login' => 'users#create', via: :put
-
+  
 # Folders
   match 'users/folder/:path' => 'users#new_folder', via: :put
   match 'users/folder/favorite/:path' => 'users#folder_favorite', via: :post
@@ -84,6 +85,7 @@ Server::Application.routes.draw do
 # files controller
   match 'files/new_folder' => 'files#create_folder', via: :put
   match 'files' => 'files#files', via: :get
+  match 'files/:folder' => 'files#files', via: :get, constraints: {folder: /.*/}
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

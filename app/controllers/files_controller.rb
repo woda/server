@@ -3,7 +3,7 @@ require 'json'
 
 class FilesController < ApplicationController
 
-	before_filter :require_login, :only => [:create_folder]
+	before_filter :require_login, :only => [:create_folder, :files]
   before_filter Proc.new { |c| c.check_params :path }, :only => [:create_folder]
 
 	##
