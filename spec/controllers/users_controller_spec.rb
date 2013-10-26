@@ -216,20 +216,20 @@ describe UsersController do
     j = JSON.parse resp.body
 
     j["success"].should be_true
-    j["publicness"].should be_true
+    j["public"].should be_true
   end
 
-  it "should set file publicness to false" do
+  it "should set file public to false" do
     user = login_user
     file = user.get_file ["Public.mkv"], {create: true}
 
     resp = get :set_public, id: file.id, :public => true, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_true
+    j["public"].should be_true
 
     resp = get :set_public, id: file.id, :public => false, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_false
+    j["public"].should be_false
   end
 
   it "should get public_files" do
@@ -241,11 +241,11 @@ describe UsersController do
 
     resp = get :set_public, id: file1.id, :public => true, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_true
+    j["public"].should be_true
 
     resp = get :set_public, id: file2.id, :public => true, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_true
+    j["public"].should be_true
 
     resp = get :public_files, format: :json
     j = JSON.parse resp.body
@@ -261,17 +261,17 @@ describe UsersController do
     j.length.should == 0
   end
   
-  it "should get public_files with empty list after unsetting publicness" do
+  it "should get public_files with empty list after unsetting public" do
     user = login_user
     file = user.get_file ["Public.mkv"], {create: true}
 
     resp = get :set_public, id: file.id, :public => true, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_true
+    j["public"].should be_true
 
     resp = get :set_public, id: file.id, :public => false, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_false
+    j["public"].should be_false
 
     resp = get :public_files, format: :json
     j = JSON.parse resp.body
@@ -342,12 +342,12 @@ describe UsersController do
 
     resp = get :set_public, id: file3.id, :public => true, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_true
+    j["public"].should be_true
     file3.update :downloads => 1
 
     resp = get :set_public, id: file5.id, :public => true, format: :json
     j = JSON.parse resp.body
-    j["publicness"].should be_true
+    j["public"].should be_true
     resp = get :share, id: file5.id, :shared => true, format: :json
     j = JSON.parse resp.body
     j["shared"].should be_true
