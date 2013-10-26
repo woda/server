@@ -1,3 +1,3 @@
 object @result
 
-attributes :login, :email, :first_name, :last_name, :error
+attributes :login, :email, :success, :error, :message

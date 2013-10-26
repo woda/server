@@ -5,19 +5,12 @@ class FilesController < ApplicationController
 
 	before_filter :require_login#, :only => [:create_folder, :files, :recent, :set_favorite, :favorites]
   
-  before_filter Proc.new { |c| c.check_params :path }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
-	before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
+	before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:set_shared]
 
   ##
-  # create a new folder at the given path
-  def create_folder
-    path = params[:path]
-    folder = session[:user].get_folder((path.nil? ? '' : path).split('/'), { create: true } )
-    @result = folder.description.merge({success: true})
-  end
-
+  # get user's files
   def files
     aim = params[:folder]
     folder = nil
@@ -96,7 +89,7 @@ class FilesController < ApplicationController
 
   ##
   # Method which returns user's public files
-  def public_files
+  def public
     public_files = []
     files = session[:user].x_files.all :is_public => true
     files.each do | file |
@@ -117,7 +110,7 @@ class FilesController < ApplicationController
 
   ##
   # Return the list of all shared-files
-  def shared_files
+  def shared
     files_list = []
     files = session[:user].x_files.all shared: true
     files.each do | file |
@@ -128,7 +121,7 @@ class FilesController < ApplicationController
 
   ##
   # Set/Unset a shared status file
-  def share
+  def set_shared
     file = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "File not found") unless file
     file.shared = params[:shared]
@@ -141,7 +134,7 @@ class FilesController < ApplicationController
   #
   # Useless method
   #
-  def downloaded_public_files
+  def downloaded_public
     files_list = []
     files = session[:user].x_files.all is_public: true, :downloads.gte => 1
     files.each do | file |
@@ -155,7 +148,7 @@ class FilesController < ApplicationController
   #
   # Useless method
   #
-  def downloaded_files
+  def downloaded
     files_list = []
     files = session[:user].x_files.all :downloads.gte => 1
     files = (files.all(is_public: true ) | files.all(shared: true)) if params[:particular]

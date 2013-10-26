@@ -65,26 +65,25 @@ Server::Application.routes.draw do
   match 'users/:login' => 'users#create', via: :put
 
 # Folders Controller
-  match 'users/folder/:path' => 'users#new_folder', via: :put
-  match 'users/folder/favorite/:path' => 'users#folder_favorite', via: :post
-  match 'users/folder/public/:path' => 'users#folder_public', via: :post
-  match 'files/new_folder' => 'files#create_folder', via: :put
+  # TODO should we do a get for a folder?
+  # match 'folders/:folder' => 'folders#get', via: :get
+  match 'folders/new/:path' => 'folders#new', via: :post
+  match 'folders/favorite/:path' => 'folders#favorite', via: :post
+  match 'folders/public/:path' => 'folders#public', via: :post
 
 # Files Controller
   match 'files' => 'files#files', via: :get
-  # TODO Dafuq is the next line ?
-  # match 'files/:folder' => 'files#files', via: :get, constraints: {folder: /.*/}
   match 'files/recents' => 'files#recents', via: :get
   match 'files/favorites' => 'files#favorites', via: :get
+  match 'files/public' => 'files#public', via: :get
+  match 'files/shared' => 'files#shared', via: :get
+  match 'files/share/:id' => 'files#set_shared', via: :post
   match 'files/favorite/:id' => 'files#set_favorite', via: :post
   match 'files/public/:id' => 'files#set_public', via: :post
-  match 'files/public' => 'files#public_files', via: :get
-  match 'files/share/:id' => 'files#share', via: :post
-  match 'files/shared' => 'files#shared_files', via: :get
-
+  
 #useless
-  match 'files/downloaded' => 'files#downloaded_files', via: :get
-  match 'files/downloaded_public_files' => 'files#downloaded_public_files', via: :get
+  match 'files/downloaded' => 'files#downloaded', via: :get
+  match 'files/downloaded_public' => 'files#downloaded_public', via: :get
   
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
