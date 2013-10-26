@@ -12,20 +12,31 @@ class XFile
   property :id, Serial, key: true
   updatable_property :name, String, index: true
   updatable_property :last_modification_time, DateTime
-  updatable_property :favorite, Boolean, :default => false
+  updatable_property :favorite, Boolean, default: false
   has n, :access_rights
-  belongs_to :user, :child_key => :user_id, index: true
-  belongs_to :folder, :child_key => :parent_id, index: true
+  belongs_to :user, child_key: :user_id, index: true
+  belongs_to :folder, child_key: :parent_id, index: true
   belongs_to :x_file, index: true, required: false
  # A file either has a file or a content
   has n, :x_files
 
+# TODO when I'm supposed to send the content_hash ?
   property :content_hash, SHA256Hash, index: true, required: false
+
+  updatable_property :downloads, Integer , default: 0
+  updatable_property :is_public, Boolean, default: false
+  updatable_property :shared, Boolean, default: false
+
+# TODO understand that
+  property :read_only, Boolean, default: false
 
 
   def description
-    {id: self.id, name: self.name, last_update: self.last_modification_time, favorite: self.favorite, 
-      public: self.is_public, type: File.extname(self.name), size: self.size, part_size: self.part_size }
+    {
+      id: self.id, name: self.name, last_update: self.last_modification_time, type: File.extname(self.name),
+      size: self.size, part_size: self.part_size, public: self.is_public, 
+      shared: self.shared, downloads: self.downloads, favorite: self.favorite
+    }
   end
 
   def part_size
@@ -89,10 +100,4 @@ class XFile
       self.content_hash = nil
     end
   end
-
-  updatable_property :downloads, Integer , :default => 0
-  updatable_property :is_public, Boolean, :default => false
-  updatable_property :shared, Boolean, :default => false
-
-  property :read_only, Boolean, :default => false
 end

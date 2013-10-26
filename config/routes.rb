@@ -64,14 +64,11 @@ Server::Application.routes.draw do
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
 
-  match 'users/downloaded_public_files' => 'users#downloaded_public_files', via: :get
+  
   match 'users/files/:id/download' => 'users#download_file', via: :post
   match 'users/files/downloaded' => 'users#downloaded_files', via: :get
   match 'users/share/:id' => 'users#share', via: :post
   match 'users/shared_files' => 'users#shared_files', via: :get
-  
-  match 'users/public/:id' => 'users#set_public', via: :post
-  match 'users/public_files' => 'users#public_files', via: :get
   
 # Folders
   match 'users/folder/:path' => 'users#new_folder', via: :put
@@ -86,14 +83,14 @@ Server::Application.routes.draw do
   match 'files/recent' => 'files#recent', via: :get
   match 'files/favorites' => 'files#favorites', via: :get
   match 'files/favorite/:id' => 'files#set_favorite', via: :post
-  
+  match 'files/public/:id' => 'files#set_public', via: :post
+  match 'files/public_files' => 'files#public_files', via: :get
+  match 'files/downloaded_public_files' => 'files#downloaded_public_files', via: :get
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
 
 # sync controller
-  match 'sync/public/:filename' => 'sync#set_public_status', via: :post, constraints: {filename: /.*/}
-  match 'sync/public/:filename' => 'sync#public_status', via: :get, constraints: {filename: /.*/}
   match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}

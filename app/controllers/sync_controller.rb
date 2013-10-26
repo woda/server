@@ -11,7 +11,6 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :part }, :only => [:upload_part]
   before_filter Proc.new { |c| c.check_params :part }, :only => [:get2]
-  before_filter Proc.new { |c| c.check_params :status }, :only => [:set_public_status]
   before_filter Proc.new { |c| c.check_params :user, :foreign_filename }, :only => [:sync_public]
 
   def put
@@ -93,20 +92,6 @@ class SyncController < ApplicationController
     f.destroy!
     destroy_content.destroy! if destroy_content
     @result = {success: true}
-  end
-
-  def set_public_status
-    f = session[:user].get_file(params['filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    f.is_public = params['status']
-    f.save
-    @result = {success: true}
-  end
-
-  def public_status
-    f = session[:user].get_file(params['filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    @result = {success: true, status: f.is_public}
   end
 
   def sync_public
