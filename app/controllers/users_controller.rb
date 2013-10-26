@@ -34,31 +34,9 @@ class UsersController < ApplicationController
     user.set_password params['password']
     user.save
     session[:user] = user
-    send_confirmation_email
     @result = user
   end
-  
-  ##
-  # Sends the confirmation email. Currently deactivated.
-  def send_confirmation_email
-    mail = MailFactory.new
-    mail.to = session[:user].email
-    mail.from = EMAIL_SETTINGS['user_name']
-    mail.subject = 'Welcome to Woda!'
-    mail.text = "Welcome to Woda #{session[:user].login}!"
-    # email = EM::P::SmtpClient.send(domain: EMAIL_SETTINGS['domain'],
-    #                                host: EMAIL_SETTINGS['address'],
-    #                                starttls: true,
-    #                                port: EMAIL_SETTINGS['port'],
-    #                                auth: {:type => :plain,
-    #                                  :username => EMAIL_SETTINGS['user_name'],
-    #                                  :password => EMAIL_SETTINGS['password']},
-    #                                from: mail.from, to: mail.to,
-    #                                content: "#{mail.to_s}\r\n.\r\n",)
-    # email.callback { } # TODO: success log
-    # email.errback { } # TODO: failure log
-  end
-  
+    
   ##
   # Method which returns user's public files
   def public_files

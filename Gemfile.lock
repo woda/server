@@ -165,8 +165,6 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mailfactory (1.4.0)
-      mime-types (>= 1.13.1)
     main (5.2.0)
       arrayfields (>= 4.7.4)
       chronic (>= 0.6.2)
@@ -312,7 +310,6 @@ PLATFORMS
 
 DEPENDENCIES
   ZenTest (= 4.9.4)
-  actionmailer (~> 3.2.11)
   actionpack (~> 3.2.11)
   activeresource (~> 3.2.11)
   activesupport (~> 3.2.11)
@@ -339,7 +336,6 @@ DEPENDENCIES
   fattr
   highline
   jquery-rails (~> 2.0.1)
-  mailfactory
   map
   metric_abc
   metrical

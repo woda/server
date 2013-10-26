@@ -6,7 +6,6 @@ require File.expand_path('../boot', __FILE__)
 require 'action_controller/railtie'
 require 'dm-rails/railtie'
 require 'sprockets/railtie'
-require 'action_mailer/railtie'
 require 'active_resource/railtie'
 require 'rails/test_unit/railtie'
 
