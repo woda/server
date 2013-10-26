@@ -3,17 +3,15 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :share, :shared_files, :new_folder, :folder_favorite, :folder_public]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :new_folder, :folder_favorite, :folder_public]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
 
-  before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
   before_filter Proc.new { |c| c.check_params :path }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :path, :favorite }, :only => [:folder_favorite]
   before_filter Proc.new { |c| c.check_params :path, :public }, :only => [:folder_public]
-
 
   ##
   # Returns the model, useful for ApplicationController.
@@ -34,20 +32,6 @@ class UsersController < ApplicationController
     @result = user
   end
     
-  ##
-  # Set/Unset a shared status file
-  def share
-    user = session[:user]
-
-    f = user.x_files.get params[:id]
-    if !f.nil?
-      f.update :shared => params[:shared], :last_modification_time => Time.now
-      @result = {success: true, id: f.id, name: f.name, last_modification_time: f.last_modification_time, shared: f.shared}
-    else
-      @result = {success: false}
-    end
-  end
-
   def downloaded_files
     user = session[:user]
     
@@ -60,20 +44,6 @@ class UsersController < ApplicationController
     end
 
     @result = dpf
-  end
-
-  ##
-  # Return the list of all shared-files
-  def shared_files
-    user = session[:user]
-
-    files_list = []
-    files = user.x_files.all shared: true
-    files.each do | file |
-      f = {id: file.id, name: file.name, last_modification_time: file.last_modification_time, shared: file.shared, downloaded: file.shared_downloads}
-      files_list.push f
-    end
-    @result = files_list
   end
 
   def new_folder

@@ -8,7 +8,8 @@ class FilesController < ApplicationController
   before_filter Proc.new { |c| c.check_params :path }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
-	
+	before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
+
   ##
   # create a new folder at the given path
   def create_folder
@@ -63,9 +64,8 @@ class FilesController < ApplicationController
   ##
   # Get the first 20 last updated files
   def recent
-    twenty_days_back = DateTime.now - 20.days
-    files = session[:user].x_files.all(:last_modification_time.gte => twenty_days_back, :limit => 20)
-    
+    files = session[:user].x_files.all(:last_modification_time.gte => (DateTime.now - 20.days), limit: 20)
+
     files_list = []
     files.each do | file |
       files_list.push file.description
@@ -116,13 +116,34 @@ class FilesController < ApplicationController
   end
 
   ##
+  # Return the list of all shared-files
+  def shared_files
+    files_list = []
+    files = session[:user].x_files.all shared: true
+    files.each do | file |
+      files_list.push file.description
+    end
+    @result = { files: files_list, success: true }
+  end
+
+  ##
+  # Set/Unset a shared status file
+  def share
+    file = session[:user].x_files.get params[:id]
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    file.shared = params[:shared]
+    file.save
+    @result = { file: file, success: true }    
+  end
+
+  ##
   # Return all the public file downloaded at least one time
   #
   # Useless
   #
   def downloaded_public_files
     files_list = []
-    files = session[:user].x_files.all :is_public => true, :downloads.gte => 1
+    files = session[:user].x_files.all is_public: true, :downloads.gte => 1
     files.each do | file |
       files_list.push file.description
     end

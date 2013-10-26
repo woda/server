@@ -52,8 +52,8 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 # done
 # sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
-title 'Listing files:'
-echo_run curl -k -b cookies -c cookies -XGET $base/files
+# title 'Listing files:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files
 
 
 # title 'Adding file:'
@@ -77,31 +77,38 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files
 # id=
 # while [ "$id" == '' ]
 # do
-title 'Setting favorite file (input ID):'
+# title 'Setting favorite file (input ID):'
 # read -r id
 # done
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/35 -d 'favorite=true'
+# echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'favorite=true'
 
-title 'Listing favorite files:'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
+# title 'Listing favorite files:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
 
 title 'Listing files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files
+
+title 'Making files shared'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/share/36789 -d 'shared=false'
+
+title 'Listing shared files'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/shared_files
+
 
 # title 'Listing recent files:'
 # echo_run curl -k -b cookies -c cookies -XGET $base/files/recent
 
-title 'Listing public files'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/public_files
+# title 'Listing public files'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/public_files
 
-title 'Making file public:'
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/35 -d 'public=true'
+# title 'Making file public:'
+# echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/35 -d 'public=true'
 
 # title 'Synchronizing public file:'
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync/foreign_public/wo -d "user=$login&foreign_filename=hello/world"
 
-title 'Listing files:'
-echo_run curl -k -b cookies -c cookies -XGET $base/files
+# title 'Listing files:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files
 
 # title 'Deleting file:'
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/hello/world

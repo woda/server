@@ -67,8 +67,6 @@ Server::Application.routes.draw do
   
   match 'users/files/:id/download' => 'users#download_file', via: :post
   match 'users/files/downloaded' => 'users#downloaded_files', via: :get
-  match 'users/share/:id' => 'users#share', via: :post
-  match 'users/shared_files' => 'users#shared_files', via: :get
   
 # Folders
   match 'users/folder/:path' => 'users#new_folder', via: :put
@@ -85,8 +83,11 @@ Server::Application.routes.draw do
   match 'files/favorite/:id' => 'files#set_favorite', via: :post
   match 'files/public/:id' => 'files#set_public', via: :post
   match 'files/public_files' => 'files#public_files', via: :get
-  match 'files/downloaded_public_files' => 'files#downloaded_public_files', via: :get
+  match 'files/share/:id' => 'files#share', via: :post
+  match 'files/shared_files' => 'files#shared_files', via: :get
 
+  match 'files/downloaded_public_files' => 'files#downloaded_public_files', via: :get
+  
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
 
