@@ -72,8 +72,6 @@ Server::Application.routes.draw do
   
   match 'users/public/:id' => 'users#set_public', via: :post
   match 'users/public_files' => 'users#public_files', via: :get
-  match 'users/favorites' => 'users#favorites', via: :get
-  match 'users/favorite/:id' => 'users#set_favorite', via: :post
   
 # Folders
   match 'users/folder/:path' => 'users#new_folder', via: :put
@@ -82,10 +80,13 @@ Server::Application.routes.draw do
   match 'files/new_folder' => 'files#create_folder', via: :put
 
 # files controller
-  
   match 'files' => 'files#files', via: :get
+  # TODO Dafuq ?
   # match 'files/:folder' => 'files#files', via: :get, constraints: {folder: /.*/}
   match 'files/recent' => 'files#recent', via: :get
+  match 'files/favorites' => 'files#favorites', via: :get
+  match 'files/favorite/:id' => 'files#set_favorite', via: :post
+  
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

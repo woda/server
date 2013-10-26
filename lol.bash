@@ -74,16 +74,16 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files
 # title 'Listing favorite files:'
 # echo_run curl -k -b cookies -c cookies -XGET $base/users/favorites
 
-# id=
-# while [ "$id" == '' ]
-# do
-# title 'Setting favorite file (input ID):'
-# read -r id
-# done
-# echo_run curl -k -b cookies -c cookies -XPOST $base/users/favorites/$id -d 'favorite=true'
+id=
+while [ "$id" == '' ]
+do
+title 'Setting favorite file (input ID):'
+read -r id
+done
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'favorite=false'
 
-# title 'Listing favorite files:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users/favorites
+title 'Listing favorite files:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
 
 title 'Listing files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files

@@ -3,12 +3,11 @@ require 'json'
 
 class UsersController < ApplicationController
   
-  before_filter :require_login, :only => [:delete, :update, :index, :logout, :set_favorite, :favorites, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :new_folder, :folder_favorite, :folder_public]
+  before_filter :require_login, :only => [:delete, :update, :index, :logout, :public_files, :downloaded_public_files, :set_public, :share, :download_sf, :shared_files, :new_folder, :folder_favorite, :folder_public]
   before_filter :check_create_params, :only => [:create]
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
-  before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
 
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:share]
@@ -50,36 +49,6 @@ class UsersController < ApplicationController
     end
     
     @result = public_files
-  end
-  
-  ##
-  # Set the file's favorite status based on parameter "favorite"
-  def set_favorite
-    user = session[:user]
-
-    id = params[:id]
-    f = user.x_files.get id
-    if !f.nil?
-      f.update :favorite => (params[:favorite] === true), :last_modification_time => Time.now 
-      @result = {success: true, id: f.id, name: f.name, last_update: f.last_modification_time, favorite: f.favorite}
-    else
-      @result = {success: false}
-    end
-      @result
-  end
-
-  ##
-  # Get all the favorites files
-  def favorites
-    user = session[:user]
-    
-    files_list = []
-    files = user.x_files.all favorite: true
-    files.each do | file |
-      f = {id: file.id, name: file.name, last_update: file.last_modification_time, favorite: file.favorite}
-      files_list.push f
-    end
-    @result = files_list
   end
   
   ##
