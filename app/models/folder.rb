@@ -9,19 +9,18 @@ class Folder
   storage_names[:default] = "folder"
 
   property :id, Serial, key: true
+  property :read_only, Boolean, :default => false, required: false
+
   updatable_property :name, String, index: true, required: false
   updatable_property :last_update, DateTime, :default => Time.now
+  updatable_property :favorite, Boolean, :default => false, required: false
+  updatable_property :public, Boolean, :default => false, required: true
 
   has n, :access_rights
   belongs_to :user, :child_key => :user_id, index: true
   has n, :children, self, :child_key => :parent_id
   belongs_to :parent, self, :required => false
   has n, :x_files, XFile, :child_key => :parent_id
-
-  updatable_property :favorite, Boolean, :default => false, required: false
-  updatable_property :public, Boolean, :default => false, required: true
-
-  property :read_only, Boolean, :default => false, required: false
 
   def description
     { id: self.id, name: self.name, public: self.public, favorite: self.favorite, read_only: self.read_only, last_update: self.last_update }

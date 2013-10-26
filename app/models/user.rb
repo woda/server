@@ -13,18 +13,17 @@ class User
   storage_names[:default] = "user"
 
   property :id, Serial, key: true
+  property :pass_hash, SHA256Hash, required: true
+  property :pass_salt, SHA256Salt, required: true
+  property :active, Boolean, required: true, default: true
+  property :locked, Boolean, required: true, default: false
+  property :roles, Text, required: true, default: 'a:1:{i:0;s:9:"ROLE_USER";}'
+
   updatable_property :login, String, unique: true, unique_index: true, required: true
   updatable_property :email, String, unique: true, unique_index: true, format: :email_address, required: true
   updatable_property :first_name, String, required: false
   updatable_property :last_name, String, required: false
-  property :pass_hash, SHA256Hash, required: true
-  property :pass_salt, SHA256Salt, required: true
-
-  property :active, Boolean, required: true, default: true
-  property :locked, Boolean, required: true, default: false
-
-  property :roles, Text, required: true, default: 'a:1:{i:0;s:9:"ROLE_USER";}'
-
+  
   has n, :folders
   has n, :x_files
 

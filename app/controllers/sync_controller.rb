@@ -33,7 +33,7 @@ class SyncController < ApplicationController
                                     crypt_key: WodaCrypt.new.random_key.to_hex,
                                     start_upload: Time.now.utc.to_i, file_type: 'none')
       # TODO: not hardcode part size
-      @result = {success: true, need_upload: true, file: f, part_size: 5 * 1024 * 1024}
+      @result = {success: true, need_upload: true, file: f, part_size: XFile.part_size }
       current_content.save
     end
     set_content_files.each { |file| file.content = current_content }
@@ -46,9 +46,9 @@ class SyncController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless f
     raise RequestError.new(:bad_part, "\"#{params['part']}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params['part']
     part = params['part'].to_i
-    raise RequestError.new(:bad_part, "Part number too high") if part > f.content.size / (5*1024*1024)
+    raise RequestError.new(:bad_part, "Part number too high") if part > f.content.size / XFile.part_size
     data = request.body.read
-    part_size = (part == f.content.size / (5*1024*1024) ? f.content.size % (5*1024*1024) : (5*1024*1024))
+    part_size = (part == f.content.size / XFile.part_size ? f.content.size % XFile.part_size : XFile.part_size)
     raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == data.length
     bucket = Storage['woda-files']
     obj = bucket.create("#{f.content.content_hash}/#{params['part']}",

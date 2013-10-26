@@ -10,27 +10,23 @@ class XFile
   storage_names[:default] = "xfile"
 
   property :id, Serial, key: true
+  property :read_only, Boolean, default: false
+# TODO when I'm supposed to send the content_hash ?
+  property :content_hash, SHA256Hash, index: true, required: false
+
   updatable_property :name, String, index: true
-  updatable_property :last_update, DateTime
+  updatable_property :last_update, DateTime, default: Time.now
   updatable_property :favorite, Boolean, default: false
+  updatable_property :downloads, Integer, default: 0
+  updatable_property :is_public, Boolean, default: false
+  updatable_property :shared, Boolean, default: false
+
   has n, :access_rights
   belongs_to :user, child_key: :user_id, index: true
   belongs_to :folder, child_key: :parent_id, index: true
   belongs_to :x_file, index: true, required: false
- # A file either has a file or a content
   has n, :x_files
-
-# TODO when I'm supposed to send the content_hash ?
-  property :content_hash, SHA256Hash, index: true, required: false
-
-  updatable_property :downloads, Integer , default: 0
-  updatable_property :is_public, Boolean, default: false
-  updatable_property :shared, Boolean, default: false
-
-# TODO understand that
-  property :read_only, Boolean, default: false
-
-
+  
   def description
     {
       id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
@@ -40,16 +36,17 @@ class XFile
   end
 
   def part_size
-    return 5 * 1024 * 1024
+    return 5242880 # 5 * 1024 * 1024
   end
+
   def size
+    size = 0
     if !content.nil? then
-      return content.size
+      size = content.size
+    elsif x_files.size > 0 then
+      size = x_files[0].size
     end
-    if x_files.size > 0 then
-      return x_files[0].size
-    end
-    0
+    size
   end
 
   def to_json *args

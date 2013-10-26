@@ -17,7 +17,7 @@ class UsersController < ApplicationController
   
   ##
   # Create a new user.
-  # params: email, first_name, last_name, login, password
+  # params: email, login, password
   def create
     raise RequestError.new(:login_taken, "Login already taken") if User.first login: params['login']
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params['email']
