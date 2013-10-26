@@ -67,9 +67,10 @@ Server::Application.routes.draw do
 # Folders Controller
   # TODO should we do a get for a folder?
   # match 'folders/:folder' => 'folders#get', via: :get
-  match 'folders/new/:path' => 'folders#new', via: :post
-  match 'folders/favorite/:path' => 'folders#favorite', via: :post
-  match 'folders/public/:path' => 'folders#public', via: :post
+  match 'folders/create' => 'folders#create', via: :post
+  match 'folders/favorite' => 'folders#favorite', via: :post
+  match 'folders/public' => 'folders#public', via: :post
+  match 'folders/delete' => 'folders#delete', via: :delete
 
 # Files Controller
   match 'files' => 'files#files', via: :get
@@ -81,7 +82,7 @@ Server::Application.routes.draw do
   match 'files/favorite/:id' => 'files#set_favorite', via: :post
   match 'files/public/:id' => 'files#set_public', via: :post
   
-#useless
+# Useless methods
   match 'files/downloaded' => 'files#downloaded', via: :get
   match 'files/downloaded_public' => 'files#downloaded_public', via: :get
   

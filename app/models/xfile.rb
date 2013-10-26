@@ -18,7 +18,7 @@ class XFile
   updatable_property :last_update, DateTime, default: Time.now
   updatable_property :favorite, Boolean, default: false
   updatable_property :downloads, Integer, default: 0
-  updatable_property :is_public, Boolean, default: false
+  updatable_property :public, Boolean, default: false
   updatable_property :shared, Boolean, default: false
 
   has n, :access_rights
@@ -30,7 +30,7 @@ class XFile
   def description
     {
       id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-      size: self.size, part_size: self.part_size, public: self.is_public, 
+      size: self.size, part_size: self.part_size, public: self.public, 
       shared: self.shared, downloads: self.downloads, favorite: self.favorite
     }
   end

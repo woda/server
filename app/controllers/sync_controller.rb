@@ -3,7 +3,7 @@ require 'openssl'
 require 'digest/sha1'
 require 'tempfile'
 
-BASE_URL='https://ec2-54-242-98-168.compute-1.amazonaws.com:3000'
+# BASE_URL='https://ec2-54-242-98-168.compute-1.amazonaws.com:3000'
 
 class SyncController < ApplicationController
   before_filter :require_login
@@ -98,7 +98,7 @@ class SyncController < ApplicationController
     u2 = User.first login: params['user']
     raise RequestError.new(:bad_user, "User not found") unless u2
     f2 = u2.get_file(params['foreign_filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f2 && f2.is_public
+    raise RequestError.new(:file_not_found, "File not found") unless f2 && f2.public
     f = session[:user].get_file(params['filename'].split('/'), :create => true)
     f.x_file = f2
     f.last_update = DateTime.now

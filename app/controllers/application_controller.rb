@@ -66,50 +66,50 @@ class ApplicationController < ActionController::Base
     render :json => {error: :db_error, message: expt.to_s + " (" + expt.resource.errors.map { |e| e.to_s }.join(' ') + ")"}
   end
 
-    ##
-    # A before action for create CRUD functions: checks that all the necessary
-    # members of the model are indeed in the parameters
-    def check_create_params
-      check_params(*(model.properties.find_all { |p| model.updatable?(p.name) && p.required? }.map(&:name)))
-    end
+  ##
+  # A before action for create CRUD functions: checks that all the necessary
+  # members of the model are indeed in the parameters
+  def check_create_params
+    check_params(*(model.properties.find_all { |p| model.updatable?(p.name) && p.required? }.map(&:name)))
+  end
 
-    ##
-    # A before action for update CRUD functions: checks that any updatable
-    # member of the model is indeed in the parameters
-    def check_update_params *args
-      check_any_params(*(model.properties.find_all { |p| model.updatable?(p.name) }.map(&:name) + args))
-    end
+  ##
+  # A before action for update CRUD functions: checks that any updatable
+  # member of the model is indeed in the parameters
+  def check_update_params *args
+    check_any_params(*(model.properties.find_all { |p| model.updatable?(p.name) }.map(&:name) + args))
+  end
 
-    ##
-    # Checks is p (which can be a string or a symbol) is in the request.
-    def has_param? p
-      params.has_key? p.to_s
-    end
+  ##
+  # Checks is p (which can be a string or a symbol) is in the request.
+  def has_param? p
+    params.has_key? p.to_s
+  end
 
-    ##
-    # Checks whether a set of params is in the request
-    def check_params *param
-      raise RequestError.new(:missing_params, "Missing parameters, need all of #{param}") unless param.all? { |p| has_param? p }
-    end
+  ##
+  # Checks whether a set of params is in the request
+  def check_params *param
+    raise RequestError.new(:missing_params, "Missing parameters, need all of #{param}") unless param.all? { |p| has_param? p }
+  end
 
-    ##
-    # Checks whether any param of a set of params is in the request
-    def check_any_params *param
-      raise RequestError.new(:missing_params, "Missing parameters, need any of #{param}") unless param.any? { |p| has_param? p }
-    end
+  ##
+  # Checks whether any param of a set of params is in the request
+  def check_any_params *param
+    raise RequestError.new(:missing_params, "Missing parameters, need any of #{param}") unless param.any? { |p| has_param? p }
+  end
 
-    ##
-    # Automatically sets the properties of an instance (inst) of the model
-    # according to the params.
-    def set_properties inst
-      model.properties.find_all { |p| model.updatable?(p.name) }.each do |p|
-        inst.send("#{p.name}=".to_sym, params[p.name.to_s]) if params.has_key?(p.name.to_s)
-      end
-      inst
+  ##
+  # Automatically sets the properties of an instance (inst) of the model
+  # according to the params.
+  def set_properties inst
+    model.properties.find_all { |p| model.updatable?(p.name) }.each do |p|
+      inst.send("#{p.name}=".to_sym, params[p.name.to_s]) if params.has_key?(p.name.to_s)
     end
+    inst
+  end
 
-    def require_login
-      raise RequestError.new(:not_logged_in, "Not logged in") unless session[:user]
-    end
+  def require_login
+    raise RequestError.new(:not_logged_in, "Not logged in") unless session[:user]
+  end
 
 end

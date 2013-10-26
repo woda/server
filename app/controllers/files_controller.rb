@@ -3,11 +3,17 @@ require 'json'
 
 class FilesController < ApplicationController
 
-	before_filter :require_login#, :only => [:create_folder, :files, :recent, :set_favorite, :favorites]
+	before_filter :require_login
   
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
 	before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:set_shared]
+
+  ##
+  # Returns the model, useful for ApplicationController.
+  def model
+    XFile 
+  end
 
   ##
   # get user's files
@@ -76,7 +82,7 @@ class FilesController < ApplicationController
   # Method which returns user's public files
   def public
     public_files = []
-    files = session[:user].x_files.all :is_public => true
+    files = session[:user].x_files.all :public => true
     files.each { |file| public_files.push file.description }
     @result = { files: public_files, success: true }
   end
@@ -86,7 +92,7 @@ class FilesController < ApplicationController
   def set_public
     file = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "File not found") unless file
-    file.is_public = params[:public]
+    file.public = params[:public]
     file.save
     @result = { file: file, success: true }
   end
@@ -117,7 +123,7 @@ class FilesController < ApplicationController
   #
   def downloaded_public
     files_list = []
-    files = session[:user].x_files.all is_public: true, :downloads.gte => 1
+    files = session[:user].x_files.all public: true, :downloads.gte => 1
     files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
@@ -130,7 +136,7 @@ class FilesController < ApplicationController
   def downloaded
     files_list = []
     files = session[:user].x_files.all :downloads.gte => 1
-    files = (files.all(is_public: true ) | files.all(shared: true)) if params[:particular]
+    files = (files.all(public: true ) | files.all(shared: true)) if params[:particular]
     files.each { |file| files_list.push file }
     @result = { files: files_list, success: true }
   end

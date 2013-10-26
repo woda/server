@@ -13,7 +13,7 @@ title() {
 base=https://localhost:3000
 # fi
 
-login=pltrgjhnjgl
+login=pltrflol
 
 # login=
 # while [ "$login" == '' ]
@@ -21,6 +21,9 @@ login=pltrgjhnjgl
 # echo 'Enter login name:'
 # read -r login
 # done
+
+title 'Logout:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 
 # title 'Creating user:'
@@ -53,8 +56,8 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 # filedata = "ertyehjnroferbfhjebfer"
 # sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
-# title 'Listing files:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/files
+title 'Listing files:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files
 
 # title 'Adding file:'
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync/helloworld -d "content_hash=$sha256&size=23"
@@ -68,12 +71,6 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 # title 'Uploading same file:'
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync/file_2 -d "content_hash=$sha256&size=5"
 
-# title 'Listing recent files:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users/recents
-
-# title 'Listing favorite files:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users/favorites
-
 # id=
 # while [ "$id" == '' ]
 # do
@@ -82,33 +79,32 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 # done
 # echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'favorite=true'
 
+# title 'Listing files:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files
 
-title 'Listing files:'
-echo_run curl -k -b cookies -c cookies -XGET $base/files
+# title 'set_shared'
+# echo_run curl -k -b cookies -c cookies -XPOST $base/files/share/38 -d 'shared=true'
 
-title 'set_shared'
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/share/38 -d 'shared=true'
+# title 'Shared files'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
 
-title 'Shared files'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
+# title 'Recent files'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
 
-title 'Recent files'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
+# title 'set_public'
+# echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/38 -d 'public=true'
 
-title 'set_public'
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/38 -d 'public=true'
+# title 'public files'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/public
 
-title 'public files'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/public
+# title 'set_favorite'
+# echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/38 -d 'favorite=true'
 
-title 'set_favorite'
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/38 -d 'favorite=true'
+# title 'favorite files:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
 
-title 'favorite files:'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
-
-title 'Listing files:'
-echo_run curl -k -b cookies -c cookies -XGET $base/files
+# title 'Listing files:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/files
 
 
 # title 'Synchronizing public file:'
