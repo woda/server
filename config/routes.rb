@@ -65,12 +65,12 @@ Server::Application.routes.draw do
   match 'users/:login' => 'users#create', via: :put
 
 # Folders Controller
-  # TODO should we do a get for a folder?
-  # match 'folders/:folder' => 'folders#get', via: :get
-  match 'folders/create' => 'folders#create', via: :post
+  # TODO - files list dans folders controller 
+  # match 'folders/:path' => 'files#files', via: :get, constraints: {filename: /.*/}
+  match 'folders/:path' => 'folders#create', via: :put, constraints: {filename: /.*/}
   match 'folders/favorite' => 'folders#favorite', via: :post
   match 'folders/public' => 'folders#public', via: :post
-  match 'folders/delete' => 'folders#delete', via: :delete
+  match 'folders/:path' => 'folders#delete', via: :delete, constraints: {filename: /.*/}
 
 # Files Controller
   match 'files' => 'files#files', via: :get
@@ -87,18 +87,16 @@ Server::Application.routes.draw do
   match 'files/downloaded_public' => 'files#downloaded_public', via: :get
   match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
 
-# admin controller
-  match 'admin/cleanup' => 'admin#cleanup'
-
 # sync controller
   match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#delete', via: :delete, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
-  
-  match 'partsync/:part/:filename' => 'sync#get', via: :get, constraints: {filename: /.*/}
-  match 'partsync/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
+  match 'sync_part/:part/:filename' => 'sync#get', via: :get, constraints: {filename: /.*/}
+  match 'sync_part/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
+  match 'sync_success/:filename' => 'sync#upload_success', via: :post, constraints: {filename: /.*/}
 
-  # TODO make it work with a post
-  match 'sync/success/:filename' => 'sync#upload_success', via: :get, constraints: {filename: /.*/}
+# admin controller
+  match 'admin/cleanup' => 'admin#cleanup'
+  match '*path' => 'admin#wrong_route'
   
 end
