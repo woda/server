@@ -18,7 +18,6 @@ class FoldersController < ApplicationController
   ##
   # delete the folder at the given path
   def delete
-    # path = params[:path]
     path = (params[:path].nil? ? '' : params[:path]).split('/')
 
     folder = session[:user].get_folder( path, { create: true } )
@@ -30,7 +29,6 @@ class FoldersController < ApplicationController
   ##
   # create a new folder at the given path
   def create
-    # path = params[:path]
     path = (params[:path].nil? ? '' : params[:path]).split('/')
 
     folder = session[:user].get_folder( path, { create: true } )
@@ -39,7 +37,6 @@ class FoldersController < ApplicationController
   end
 
   def favorite
-    # path = params[:path].split '/'
     path = (params[:path].nil? ? '' : params[:path]).split('/')
 
     folder = session[:user].get_folder( path, {create: false} )
@@ -50,7 +47,6 @@ class FoldersController < ApplicationController
   end
 
   def public
-    # path = params[:path].split '/'
     path = (params[:path].nil? ? '' : params[:path]).split('/')
 
     folder = session[:user].get_folder( path, {create: false} )
