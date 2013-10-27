@@ -85,16 +85,20 @@ Server::Application.routes.draw do
 # Useless methods
   match 'files/downloaded' => 'files#downloaded', via: :get
   match 'files/downloaded_public' => 'files#downloaded_public', via: :get
-  
+  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
+
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
 
 # sync controller
-  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
-  match 'successsync/:filename' => 'sync#upload_success', via: :post, constraints: {filename: /.*/}
   match 'sync/:filename' => 'sync#delete', via: :delete, constraints: {filename: /.*/}
+  match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
+  
+  match 'partsync/:part/:filename' => 'sync#get', via: :get, constraints: {filename: /.*/}
   match 'partsync/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
-  match 'partsync/:part/:filename' => 'sync#get2', via: :get, constraints: {filename: /.*/}
+
+  # TODO make it work with a post
+  match 'sync/success/:filename' => 'sync#upload_success', via: :get, constraints: {filename: /.*/}
+  
 end

@@ -82,7 +82,7 @@ class FilesController < ApplicationController
   # Method which returns user's public files
   def public
     public_files = []
-    files = session[:user].x_files.all :public => true
+    files = session[:user].x_files.all public: true
     files.each { |file| public_files.push file.description }
     @result = { files: public_files, success: true }
   end

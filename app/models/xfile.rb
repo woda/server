@@ -13,6 +13,7 @@ class XFile
   property :read_only, Boolean, default: false
 # TODO when I'm supposed to send the content_hash ?
   property :content_hash, SHA256Hash, index: true, required: false
+  property :uploaded, Boolean, default: false
 
   updatable_property :name, String, index: true
   updatable_property :last_update, DateTime, default: Time.now
@@ -20,6 +21,7 @@ class XFile
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
   updatable_property :shared, Boolean, default: false
+
 
   has n, :access_rights
   belongs_to :user, child_key: :user_id, index: true
@@ -30,12 +32,12 @@ class XFile
   def description
     {
       id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-      size: self.size, part_size: self.part_size, public: self.public, 
+      size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
       shared: self.shared, downloads: self.downloads, favorite: self.favorite
     }
   end
 
-  def part_size
+  def self.part_size
     return 5242880 # 5 * 1024 * 1024
   end
 
@@ -53,7 +55,7 @@ class XFile
     json = super
     h = JSON.parse json
     h['size'] = size
-    h['part_size'] = part_size
+    h['part_size'] = XFile.part_size
     JSON.generate h
   end
 

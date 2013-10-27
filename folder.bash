@@ -7,9 +7,8 @@ title() {
 }
 
 list() {
-title 'Listing files:'
-echo_run curl -k -b cookies -c cookies -XGET $base/files
-
+	title 'Listing files:'
+	echo_run curl -k -b cookies -c cookies -XGET $base/files
 }
 
 base=https://localhost:3000
