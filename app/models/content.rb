@@ -4,7 +4,6 @@ require 'app/helpers/woda_crypt.rb'
 require 'app/models/base/woda_resource'
 require 'app/models/properties/sha256_hash'
 require 'app/models/properties/aes256_key'
-require 'app/models/properties/aes256_iv'
 
 class Content
   include DataMapper::Resource
@@ -13,17 +12,18 @@ class Content
   storage_names[:default] = "content"
 
   property :id, Serial, key: true
-  updatable_property :content_hash, SHA256Hash, unique: true
-  # Note: right now the policy is to forbid people who announce the same hash
-  # but not the same salted hash from uploading a file. although very unlikely,
-  # it is possible that those people simply have different files that have the
-  # same hash, in which case this is totally unfair.
-  # Note2: this is also commented for now...
-#  updatable_property :content_salt, SHA256Salt
-#  updatable_property :content_salted_hash, SHA256Hash
-  updatable_property :crypt_key, AES256Key
-  updatable_property :init_vector, AES256Iv
-  updatable_property :size, Integer
-  updatable_property :file_type, String
-  property :start_upload, Integer
+  property :content_hash, SHA256Hash, unique: true
+  property :crypt_key, AES256Key
+  property :size, Integer
+  
+  # Note: At the moment there is a security problem when a user wants to upload a file
+  # by knowing its content_hash but without having the file. As the server will tell
+  # the user to not upload the file because it's already stored, the user will be able
+  # to download a file without having it in the beginning.
+
+  # Note 2: right now the policy is to forbid people who announce the same hash
+  # but not the same salted hash from uploading a file.
+#  property :content_salt, SHA256Salt
+#  property :content_salted_hash, SHA256Hash
+
 end

@@ -11,7 +11,6 @@ class XFile
 
   property :id, Serial, key: true
   property :read_only, Boolean, default: false
-# TODO when I'm supposed to send the content_hash ?
   property :content_hash, SHA256Hash, index: true, required: false
   property :uploaded, Boolean, default: false
 
@@ -22,8 +21,6 @@ class XFile
   updatable_property :public, Boolean, default: false
   updatable_property :shared, Boolean, default: false
 
-
-  has n, :access_rights
   belongs_to :user, child_key: :user_id, index: true
   belongs_to :folder, child_key: :parent_id, index: true
   belongs_to :x_file, index: true, required: false
