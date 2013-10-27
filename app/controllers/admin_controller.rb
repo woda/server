@@ -17,4 +17,8 @@ class AdminController < ApplicationController
     Storage.clear 'woda-files'
     @result = {success: true}
   end
+
+  def wrong_route
+    raise RequestError.new(:wrong_route, "Invalid route: bad URL. See documentation for more information")
+  end
 end
