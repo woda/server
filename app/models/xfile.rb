@@ -27,9 +27,6 @@ class XFile
   belongs_to :x_file, index: true, required: false
   has n, :x_files
   
-  # TODO ?
-  # updatable_property :shared_downloads, Integer, :default => 0
- 
   def children
     x_files.select { |item| item.is_folder }
   end
