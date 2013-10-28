@@ -65,15 +65,13 @@ Server::Application.routes.draw do
   match 'users/:login' => 'users#create', via: :put
 
 # Folders Controller
-  # TODO - files list dans folders controller 
-  # match 'folders/:path' => 'files#files', via: :get, constraints: {filename: /.*/}
+  match 'folders' => 'folders#list', via: :get, constraints: {filename: /.*/}
   match 'folders/:path' => 'folders#create', via: :put, constraints: {filename: /.*/}
   match 'folders/favorite' => 'folders#favorite', via: :post
   match 'folders/public' => 'folders#public', via: :post
   match 'folders/:path' => 'folders#delete', via: :delete, constraints: {filename: /.*/}
 
 # Files Controller
-  match 'files' => 'files#files', via: :get
   match 'files/recents' => 'files#recents', via: :get
   match 'files/favorites' => 'files#favorites', via: :get
   match 'files/public' => 'files#public', via: :get

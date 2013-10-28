@@ -16,6 +16,41 @@ class FoldersController < ApplicationController
   end
 
   ##
+  # get user's files
+  def list
+    aim = params[:folder]
+    folder = nil
+    # Look for the root folder in case it is not the first in the list
+    folder = session[:user].get_folder((aim.nil? ? '' : aim).split('/'))
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    @result =  { folder: crawl_folder(folder), success: true }
+  end
+
+  ##
+  # Crawl a folder
+  def crawl_folder(folder, recur = true)
+    list = []
+    folders = []
+    
+    # Folder infos
+    folder_infos = folder.description
+    folder_infos[:name] = (folder.name.nil? ? "/" : folder.name)
+
+    # We recall craw_folder() method recursively for crawling each child folder if recur = true
+    if recur then
+      folder.children.each { |child| folders.push(crawl_folder(child)) }
+      folder_infos[:folders] = folders
+    end
+    
+    # We get all files from the current folder
+    files_list = []
+    folder.x_files.each { |file| files_list.push file.description }
+    folder_infos[:files] = files_list
+    
+    folder_infos
+  end
+
+  ##
   # delete the folder at the given path
   def delete
     path = (params[:path].nil? ? '' : params[:path]).split('/')

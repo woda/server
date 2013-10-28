@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'dm-rails/middleware/identity_map'
 require 'ostruct'
 

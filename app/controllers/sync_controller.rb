@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'time'
 require 'openssl'
 require 'digest/sha1'
@@ -23,7 +24,7 @@ class SyncController < ApplicationController
       current_content = Content.new(content_hash: params['content_hash'],
                                     size: params['size'].to_i,
                                     crypt_key: WodaCrypt.new.random_key.to_hex)
-      @result = {success: true, need_upload: true, file: f.description, part_size: XFile.part_size }
+      @result = { success: true, need_upload: true, file: f.description, part_size: XFile.part_size }
       current_content.save
     end
     f.content = current_content

@@ -8,7 +8,7 @@ title() {
 
 list() {
 	title 'Listing files:'
-	echo_run curl -k -b cookies -c cookies -XGET $base/files
+	echo_run curl -k -b cookies -c cookies -XGET $base/folders
 }
 
 base=https://localhost:3000
@@ -30,6 +30,9 @@ foldername=folder1
 
 title 'Creating folder'
 echo_run curl -k -b cookies -c cookies -XPUT $base/folders/$foldername -d ""
+
+title 'Listing created folder'
+echo_run curl -k -b cookies -c cookies -XGET $base/folders -d "folder=folder1"
 
 title 'set_favorite folder'
 echo_run curl -k -b cookies -c cookies -XPOST $base/folders/favorite -d 'path=folder1&favorite=true'
