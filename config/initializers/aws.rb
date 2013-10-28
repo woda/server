@@ -1,4 +1,4 @@
-#BASE_URL='https://woda-server.com:3000'
+BASE_URL='https://woda-server.com:3000'
 
 #Storage::path='./storage'
 Storage::use_aws = true # false
