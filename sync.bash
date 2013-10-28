@@ -56,7 +56,10 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync_part/0/$filename -d "$fi
 
 title 'success upload'
 echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$filename -d ""
- 
+
+title 'Getting link:'
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/link/$filename
+
 list
 
 title 'Getting part:'

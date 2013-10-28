@@ -3,6 +3,7 @@ require 'time'
 require 'openssl'
 require 'digest/sha1'
 require 'tempfile'
+require 'securerandom'
 
 class SyncController < ApplicationController
   before_filter :require_login
@@ -42,8 +43,12 @@ class SyncController < ApplicationController
     data = request.body.read
     part_size = (part == f.content.size / XFile.part_size ? f.content.size % XFile.part_size : XFile.part_size)
     raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == data.length
+    cypher = WodaCrypt.new
+    cypher.encrypt
+    cypher.key = f.content.crypt_key.from_hex
+    cypher.iv = WodaHash.digest(params['part']) # Note: maybe concatenate init_vector here (before WodaHash)
     bucket = Storage['woda-files']
-    obj = bucket.create("#{f.content.content_hash}/#{params['part']}", data: data, content_type: 'octet-stream')
+    obj = bucket.create("#{f.content.content_hash}/#{params['part']}", :data => cypher.update(data) + cypher.final, content_type: 'octet-stream')
     @result = { success:true }
   end
 
@@ -55,6 +60,7 @@ class SyncController < ApplicationController
     @result = { success: true }
   end
 
+  # Note: if we ever do something more sophisticated than delete+put, we need to make sure we change the random iv.
   def change
     file = session[:user].get_file(params['filename'].split('/'))
     raise RequestError.new(:read_only, "File is read-only") if file.read_only
@@ -88,7 +94,22 @@ class SyncController < ApplicationController
       f.downloads += 1
       f.save
     end
-    @result = { file: f, success: true }
+    cypher = WodaCrypt.new
+    cypher.decrypt
+    cypher.key = f.content.crypt_key.from_hex
+    cypher.iv = WodaHash.digest(params['part']) # Note: maybe concatenate init_vector here (before WodaHash
+    @result = { file: cypher.update(file) + cypher.final, success: true }
+  end
+
+  def link
+    f = session[:user].get_file(params['filename'].split('/'))
+    raise RequestError.new(:file_not_found, "File not found") unless f
+    puts "huthetuhtehtuhtethotuhetohtuhotuhtehtuhetuhtehuthetuhteuhtehuthetuhtehute"
+    puts f.uuid
+    f.uuid = SecureRandom::uuid unless f.uuid
+    f.save
+    puts f.uuid
+    @result = { success: true, link: "#{BASE_URL}/app_dev.php/fs-file/#{f.uuid}" }
   end
 
   # useless method

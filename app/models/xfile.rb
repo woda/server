@@ -13,6 +13,8 @@ class XFile
   property :read_only, Boolean, default: false
   property :content_hash, SHA256Hash, index: true, required: false
   property :uploaded, Boolean, default: false
+  property :is_folder, Boolean, default: false
+  property :uuid, String, required: false
 
   updatable_property :name, String, index: true
   updatable_property :last_update, DateTime, default: Time.now
@@ -22,16 +24,30 @@ class XFile
   updatable_property :shared, Boolean, default: false
 
   belongs_to :user, child_key: :user_id, index: true
-  belongs_to :folder, child_key: :parent_id, index: true
   belongs_to :x_file, index: true, required: false
   has n, :x_files
   
+  # TODO ?
+  # updatable_property :shared_downloads, Integer, :default => 0
+ 
+  def children
+    x_files.select { |item| item.is_folder }
+  end
+
+  def files
+    x_files.select { |item| !item.is_folder }
+  end
+ 
   def description
-    {
-      id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-      size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
-      shared: self.shared, downloads: self.downloads, favorite: self.favorite
-    }
+    if self.is_folder then
+        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, read_only: self.read_only, last_update: self.last_update }
+      else
+        { 
+          id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
+          size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
+          shared: self.shared, downloads: self.downloads, favorite: self.favorite
+        }
+      end
   end
 
   def self.part_size

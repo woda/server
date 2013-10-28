@@ -44,7 +44,7 @@ class FoldersController < ApplicationController
     
     # We get all files from the current folder
     files_list = []
-    folder.x_files.each { |file| files_list.push file.description }
+    folder.files.each { |file| files_list.push file.description }
     folder_infos[:files] = files_list
     
     folder_infos

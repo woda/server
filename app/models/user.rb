@@ -53,11 +53,11 @@ class User
     end
     path.reject! { |c| c.empty? }
     path.size.times do |i|
-      folder2 = folder.children.first(name: path[i])    
+      folder2 = folder.x_files.first(name: path[i], is_folder: true)   
       if folder2.nil? then
         if options[:create] then
           folder2 = Folder.new name: path[i], last_update: DateTime.now, user: self
-          folder.children << folder2
+          folder.x_files << folder2
           folder.save
         else
           raise RequestError.new(:folder_not_found, "Folder #{path[i]} not found")
@@ -77,10 +77,10 @@ class User
   # /!\ Both versions create a root folder if it doesn't exist!
   def get_file(path, options = {})
     folder = get_folder(path[0...path.size-1], options)
-    f = folder.x_files.first(name: path[-1])
+    f = folder.x_files.first(name: path[-1], is_folder: false)
     if f.nil? then
       if options[:create] then
-        f = XFile.new(name: path[-1], last_update: DateTime.now, user: self)
+        f = XFile.new(name: path[-1], last_update: DateTime.now, user: self, uuid: nil)
         folder.x_files << f
         folder.save
       else
