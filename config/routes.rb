@@ -93,6 +93,7 @@ Server::Application.routes.draw do
   match 'sync_part/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
   match 'sync_success/:filename' => 'sync#upload_success', via: :post, constraints: {filename: /.*/}
   match 'sync_link/:filename' => 'sync#link', via: :get, constraints: {filename: /.*/}
+  match 'last_update' => 'sync#last_update', via: :get, constraints: {filename: /.*/}
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

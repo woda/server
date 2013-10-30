@@ -5,15 +5,16 @@ require 'bundler/capistrano'
 require 'capistrano-offroad'
 require 'capistrano-offroad/modules/defaults'
 
+default_run_options[:pty] = true
 
 set :repository,  "git@github.com:woda/server.git"
-set :user, "ubuntu"
-server "ec2-54-242-50-191.compute-1.amazonaws.com", :app, :db, :primary => true
+set :user, "kevin"
+set :password, "kikoolol"
+server "kobhqlt.fr", :app, :db, :primary => true
 
 before 'deploy:setup', 'rvm:install_ruby'
 before 'deploy:setup', 'rvm:install_rvm'
 #before 'deploy', 'rvm:install_ruby'
-before "deploy:update", 'deploy:update_timestamp'
 
 after "deploy:restart", "deploy:cleanup"
 
@@ -26,13 +27,13 @@ set :rvm_type, :system
 set :rvm_install_ruby, :install
 
 set :scm, :git
-set :ssh_options, {:forward_agent => true, :keys=>["#{ENV['HOME']}/.ssh/id_rsa", './server.pem']}
-set :branch, 'master'
+# set :ssh_options, {:forward_agent => true, :keys=>["#{ENV['HOME']}/.ssh/id_rsa", './server.pem']}
+set :branch, 'new_architecture'
 
 set :port, 22
 
-set :deploy_to, "/var/serv"
-set :deploy_via, :copy
+set :deploy_to, "/home/wodaserver"
+set :deploy_via, :remote_cache
 set :copy_strategy, :export
 set :deploy_group, "rvm"
 set :use_sudo, true

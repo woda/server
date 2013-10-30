@@ -29,9 +29,9 @@ class SyncController < ApplicationController
       current_content.save
     end
     f.content = current_content
-    f.last_update = Time.now
-    session[:user].save
+    f.update_and_save
     f.save
+    session[:user].save
   end
 
   def upload_part
@@ -56,7 +56,7 @@ class SyncController < ApplicationController
     file = session[:user].get_file(params['filename'].split('/'))
     raise RequestError.new(:file_not_found, "File not found") unless file
     file.uploaded = true
-    file.save
+    file.update_and_save
     @result = { success: true }
   end
 
@@ -108,6 +108,13 @@ class SyncController < ApplicationController
     f.shared = true
     f.save
     @result = { success: true, link: "#{BASE_URL}/app_dev.php/fs-file/#{f.uuid}" }
+  end
+
+  def last_update
+    aim = params[:folder]
+    folder = session[:user].get_folder((aim.nil? ? '' : aim).split('/'))
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?    
+    @result =  { last_update: folder.last_update, success: true }
   end
 
   # useless method

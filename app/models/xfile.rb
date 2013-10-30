@@ -35,6 +35,15 @@ class XFile
     x_files.select { |item| !item.is_folder }
   end
  
+  def update_and_save
+    puts self.name
+    self.last_update = Time.now
+    self.save
+    if (self.x_file)
+      self.x_file.update_and_save
+    end
+  end
+
   def description
     if self.is_folder then
         { id: self.id, name: self.name, public: self.public, favorite: self.favorite, read_only: self.read_only, last_update: self.last_update }

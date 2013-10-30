@@ -8,7 +8,7 @@ title() {
 
 list() {
 	title 'Listing files:'
-	echo_run curl -k -b cookies -c cookies -XGET $base/files
+	echo_run curl -k -b cookies -c cookies -XGET $base/folders
 }
 
 base=https://localhost:3000
@@ -22,6 +22,21 @@ echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Logging in:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
+
+title 'last update'
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+
+
+# filename=lolilofjf
+# filedata=HJDLIPEOAM
+# size=10
+
+# sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
+
+
+# title 'Adding file:'
+# echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$filename -d "content_hash=$sha256&size=$size"
+
 
 filename=
 while [ "$filename" == '' ]
@@ -57,10 +72,10 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync_part/0/$filename -d "$fi
 title 'success upload'
 echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$filename -d ""
 
-title 'Getting link:'
-echo_run curl -k -b cookies -c cookies -XGET $base/sync_link/$filename
+# title 'Getting link:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/sync_link/$filename
 
-list
+# list
 
 title 'Getting part:'
 echo_run curl -k -b cookies -c cookies -XGET $base/sync_part/0/$filename
@@ -69,8 +84,15 @@ filedata=rth
 size=3
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
+title 'last update'
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+
 title 'Change'
 echo_run curl -k -b cookies -c cookies -XPOST $base/sync/$filename -d "content_hash=$sha256&size=$size"
+
+title 'last update'
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+
 
 list 
 
