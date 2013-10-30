@@ -103,7 +103,6 @@ class SyncController < ApplicationController
     f = session[:user].get_file(params['filename'].split('/'))
     raise RequestError.new(:file_not_found, "File not found") unless f
     f.uuid = SecureRandom::uuid unless f.uuid
-    f.shared = true
     f.save
     @result = { success: true, link: "#{BASE_URL}/app_dev.php/fs-file/#{f.uuid}" }
   end
