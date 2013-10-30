@@ -10,7 +10,6 @@ class XFile
   storage_names[:default] = "xfile"
 
   property :id, Serial, key: true
-  property :read_only, Boolean, default: false
   property :content_hash, SHA256Hash, index: true, required: false
   property :uploaded, Boolean, default: false
   property :is_folder, Boolean, default: false
@@ -36,9 +35,10 @@ class XFile
   end
  
   def update_and_save
-    puts self.name
     self.last_update = Time.now
+    # puts "------------------->  #{self.name} : #{self.last_update}"
     self.save
+    # puts "-------------------> x_file: #{self.x_file}"
     if (self.x_file)
       self.x_file.update_and_save
     end
@@ -46,7 +46,7 @@ class XFile
 
   def description
     if self.is_folder then
-        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, read_only: self.read_only, last_update: self.last_update }
+        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update }
       else
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),

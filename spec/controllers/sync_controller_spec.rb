@@ -17,15 +17,6 @@ describe SyncController do
     session[:user] = session[:user].id
   end
 
-
-#   need_upload"=>true, 
-#   "file"=>{
-#   "id"=>1, "name"=>"hello", "last_update"=>"2013-10-21T22:36:08+02:00", 
-#   "favorite"=>false, "content_hash"=>"33f3d77fb31aeea699333c3abf63f2c858cbe2898120dd313769471968e1ec08", 
-#   "downloads"=>0, "public"=>false, "shared"=>false, "read_only"=>false, "user_id"=>1, 
-#   "parent_id"=>1, "x_file_id"=>nil, "size"=>8, "part_size"=>5242880
-# }
-
   describe "routing" do 
 	  it "should add a file" do
 	  	resp = put :put, filename: filename,  content_hash: content_hash, size: fileDataSize
