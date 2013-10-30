@@ -23,6 +23,9 @@ gem 'simplecov-rcov'
 gem 'shoulda-matchers'
 gem 'colorize'
 
+gem 'execjs'
+gem 'therubyracer'
+
 # Static code analysis
 gem 'metric_abc'
 gem 'metrical'
