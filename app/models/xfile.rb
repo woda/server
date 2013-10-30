@@ -12,7 +12,7 @@ class XFile
   property :id, Serial, key: true
   property :content_hash, SHA256Hash, index: true, required: false
   property :uploaded, Boolean, default: false
-  property :is_folder, Boolean, default: false
+  property :folder, Boolean, default: false
   property :uuid, String, required: false
 
   updatable_property :name, String, index: true
@@ -26,11 +26,11 @@ class XFile
   has n, :x_files
   
   def children
-    x_files.select { |item| item.is_folder }
+    x_files.select { |item| item.folder }
   end
 
   def files
-    x_files.select { |item| !item.is_folder }
+    x_files.select { |item| !item.folder }
   end
  
   def update_and_save
@@ -44,7 +44,7 @@ class XFile
   end
 
   def description
-    if self.is_folder then
+    if self.folder then
         { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update }
       else
         { 
