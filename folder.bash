@@ -11,7 +11,13 @@ list() {
 	echo_run curl -k -b cookies -c cookies -XGET $base/folders
 }
 
+if [ $# == 1 ]
+then
+base=https://kobhqlt.fr:3000
+else
 base=https://localhost:3000
+fi
+
 login=logitech
 
 title 'Logout:'
