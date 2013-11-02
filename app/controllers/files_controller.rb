@@ -15,10 +15,16 @@ class FilesController < ApplicationController
     XFile 
   end
 
+  ##
+  # Returns the full list of files and folders
   def list
-    folder = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
-    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
-    @result =  { folder: crawl_folder(folder), success: true }
+    xfile = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
+    raise RequestError.new(:folder_not_found, "Folder not found") if xfile.nil?
+    if xfile.folder then
+      @result =  { folder: crawl_folder(xfile), success: true }
+    else  
+      @result =  { file: xfile.description, success: true }
+    end
   end
 
   ##
@@ -46,7 +52,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Create and return a new folder
+  # Creates and return a new folder
   def create_folder
     path = (params[:path].nil? ? '' : params[:path]).split('/')
     folder = session[:user].get_folder( path, { create: true } )
@@ -55,16 +61,16 @@ class FilesController < ApplicationController
   end
 
   ##
-  # delete a folder
+  # Deletes a folder
   def delete_folder
     folder = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
-    folder.destroy
+    folder.destroy!
     @result = { success: true }
   end
 
   ##
-  # Get the first 20 last updated files
+  # Gets the first 20 last updated files
   def recents
     files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), folder: false, limit: 20)
     files_list = []
@@ -73,7 +79,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Set the file's favorite status based on parameter "favorite"
+  # Sets the file's favorite status based on parameter "favorite"
   def set_favorite
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
@@ -83,7 +89,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Get all the favorites files
+  # Returns all the favorites files
   def favorites
     files_list = []
     files = session[:user].x_files.all favorite: true
@@ -92,7 +98,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Method which returns user's public files
+  # Returns user's public files
   def public
     public_files = []
     files = session[:user].x_files.all public: true
@@ -101,7 +107,7 @@ class FilesController < ApplicationController
   end
   
   ##
-  # Set/Unset a public status file
+  # Sets/Unsets a public status file
   def set_public
     file = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "File not found") unless file
@@ -111,7 +117,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Return the list of all shared-files
+  # Returns the list of all shared-files
   def shared
     files_list = []
     files = session[:user].x_files.all(:uuid.not => nil)
@@ -120,7 +126,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Return the Direct Download Link of the given file
+  # Returns the Direct Download Link of the given file
   def link
     file = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "File not found") unless file
@@ -130,7 +136,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Return all files downloaded at least one time
+  # Returns all files downloaded at least one time
   def downloaded
     files_list = []
     files = session[:user].x_files.all :downloads.gte => 1

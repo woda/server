@@ -87,6 +87,11 @@ do
 title 'Setting file (input ID):'
 read -r id
 done
+
+title 'Listing specific files:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/$id
+
+title 'Set file as favorite:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorites/$id -d 'favorite=true'
 
 title 'Listing favorite files:'

@@ -73,15 +73,11 @@ Server::Application.routes.draw do
   match 'files/shared' => 'files#shared', via: :get
   match 'files/link/:id' => 'files#link', via: :get
   match 'files/downloaded' => 'files#downloaded', via: :get  
-  match 'files' => 'files#list', via: :get
-  match 'files/:id' => 'files#list', via: :get
+  match 'files(/:id)' => 'files#list', via: :get
 
 # Files Controller::folder methods
-  match 'folder' => 'files#create_folder', via: :post
-  match 'folder/:id' => 'files#delete_folder', via: :delete
-
-# Useless methods
-  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
+  match 'folders' => 'files#create_folder', via: :post
+  match 'folders/:id' => 'files#delete_folder', via: :delete
 
 # sync controller
   match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -93,6 +89,7 @@ Server::Application.routes.draw do
   match 'sync_link/:filename' => 'sync#link', via: :get, constraints: {filename: /.*/}
   match 'last_update' => 'sync#last_update', via: :get
   match 'last_update/:id' => 'sync#last_update', via: :get
+  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

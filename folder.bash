@@ -31,10 +31,10 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 
 list 
 
-foldername=folder1
+foldername=folder1/folder2/folder3
 
 title 'Creating folder'
-echo_run curl -k -b cookies -c cookies -XPOST $base/folder -d "path=$foldername"
+echo_run curl -k -b cookies -c cookies -XPOST $base/folders -d "path=$foldername"
 
 list 
 
@@ -62,7 +62,7 @@ title 'Listing recent files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
 
 title 'delete folder'
-echo_run curl -k -b cookies -c cookies -XDELETE $base/folder/$id
+echo_run curl -k -b cookies -c cookies -XDELETE $base/folders/$id
 
 list
 

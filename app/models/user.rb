@@ -42,10 +42,12 @@ class User
   # Gets the folder and creates the root folder if it does not exist. The path must
   # already be split.
   # If you send create: true the folder will be created.
+  # TODO: remove this method
   def get_folder(path, options = {})
     folder = Folder.first user: self, name: nil
 
     if folder.nil? then
+      # TODO name:"/" instead? 
       folder = Folder.new(name: nil, last_update: DateTime.now, user: self)
       self.folders << folder
       self.save
