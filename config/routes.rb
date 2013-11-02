@@ -65,23 +65,28 @@ Server::Application.routes.draw do
   match 'users/:login' => 'users#create', via: :put
 
 # Folders Controller
-  match 'folders' => 'folders#list', via: :get, constraints: {filename: /.*/}
-  match 'folders/:path' => 'folders#create', via: :put, constraints: {filename: /.*/}
-  match 'folders/favorite' => 'folders#favorite', via: :post
-  match 'folders/public' => 'folders#public', via: :post
-  match 'folders/:path' => 'folders#delete', via: :delete, constraints: {filename: /.*/}
+  
+  # match 'folders/:path' => 'folders#create', via: :put, constraints: {filename: /.*/}
+  # match 'folders/favorite' => 'folders#favorite', via: :post
+  # match 'folders/public' => 'folders#public', via: :post
+  # match 'folders/:path' => 'folders#delete', via: :delete, constraints: {filename: /.*/}
 
 # Files Controller
+  match 'files' => 'files#list', via: :get, constraints: {filename: /.*/}
   match 'files/recents' => 'files#recents', via: :get
   match 'files/favorites' => 'files#favorites', via: :get
   match 'files/public' => 'files#public', via: :get
   match 'files/shared' => 'files#shared', via: :get
+  match 'files/link/:id' => 'files#link', via: :get
   match 'files/favorite/:id' => 'files#set_favorite', via: :post
   match 'files/public/:id' => 'files#set_public', via: :post
-  
+  match 'files/downloaded' => 'files#downloaded', via: :get  
+
+# Files Controller::folder methods
+  match 'folder' => 'files#create_folder', via: :put 
+  match 'folder' => 'files#delete_folder', via: :delete
+
 # Useless methods
-  match 'files/downloaded' => 'files#downloaded', via: :get
-  match 'files/downloaded_public' => 'files#downloaded_public', via: :get
   match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
 
 # sync controller

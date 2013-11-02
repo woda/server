@@ -8,12 +8,12 @@ title() {
 
 list() {
 	title 'Listing files:'
-	echo_run curl -k -b cookies -c cookies -XGET $base/folders
+	echo_run curl -k -b cookies -c cookies -XGET $base/files
 }
 
 if [ $# == 1 ]
 then
-base=https://kobhqlt.fr:3000
+base={BASE_URL}
 else
 base=https://localhost:3000
 fi
@@ -34,21 +34,30 @@ list
 foldername=folder1
 
 title 'Creating folder'
-echo_run curl -k -b cookies -c cookies -XPUT $base/folders/$foldername -d ""
+echo_run curl -k -b cookies -c cookies -XPUT $base/folder -d "path=$foldername"
+
+list 
 
 title 'Listing created folder'
-echo_run curl -k -b cookies -c cookies -XGET $base/folders -d "folder=folder1"
+echo_run curl -k -b cookies -c cookies -XGET $base/files -d "path=$foldername"
+
+id=
+while [ "$id" == '' ]
+do
+title 'Setting file (input ID):'
+read -r id
+done
 
 title 'set_favorite folder'
-echo_run curl -k -b cookies -c cookies -XPOST $base/folders/favorite -d 'path=folder1&favorite=true'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'path=$foldername&favorite=true'
 
 title 'set_public folder'
-echo_run curl -k -b cookies -c cookies -XPOST $base/folders/public -d 'path=folder1&public=true'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/$id -d 'path=$foldername&public=true'
 
 list 
 
 title 'delete folder'
-echo_run curl -k -b cookies -c cookies -XDELETE $base/folders/$foldername
+echo_run curl -k -b cookies -c cookies -XDELETE $base/folder -d 'id=$id'
 
 list
 

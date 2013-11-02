@@ -15,6 +15,57 @@ class FilesController < ApplicationController
     XFile 
   end
 
+  def list
+    aim = params[:path]
+    folder = nil
+    # Look for the root folder in case it is not the first in the list
+    folder = session[:user].get_folder((aim.nil? ? '' : aim).split('/'))
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    @result =  { folder: crawl_folder(folder), success: true }
+  end
+
+  ##
+  # Crawl a folder
+  def crawl_folder(folder, recur = true)
+    list = []
+    folders = []
+    
+    # Folder infos
+    folder_infos = folder.description
+    folder_infos[:name] = (folder.name.nil? ? "/" : folder.name)
+
+    # We recall craw_folder() method recursively for crawling each child folder if recur = true
+    if recur then
+      folder.children.each { |child| folders.push(crawl_folder(child)) }
+      folder_infos[:folders] = folders
+    end
+    
+    # We get all files from the current folder
+    files_list = []
+    folder.files.each { |file| files_list.push file.description }
+    folder_infos[:files] = files_list
+    
+    folder_infos
+  end
+
+  ##
+  # Create and return a new folder
+  def create_folder
+    path = (params[:path].nil? ? '' : params[:path]).split('/')
+    folder = session[:user].get_folder( path, { create: true } )
+    raise RequestError.new(:file_not_found, "Folder not created") if folder.nil?
+    @result = { folder: folder.description, success: true }
+  end
+
+  ##
+  # delete a folder
+  def delete_folder
+    folder = session[:user].x_files.get params[:id]
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    folder.destroy
+    @result = { success: true }
+  end
+
   ##
   # Get the first 20 last updated files
   def recents

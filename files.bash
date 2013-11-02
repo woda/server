@@ -18,42 +18,42 @@ else
 base=https://localhost:3000
 fi
 
-login=
-while [ "$login" == '' ]
-do
-echo 'Enter login name:'
-read -r login
-done
+login=superman
+# while [ "$login" == '' ]
+# do
+# echo 'Enter login name:'
+# read -r login
+# done
 
-title 'Logout:'
-echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
+# title 'Logout:'
+# echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
-title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
+# title 'Creating user:'
+# echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
 
 title 'Logging in:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
 
-filename=
-while [ "$filename" == '' ]
-do
-title 'Enter file name:'
-read -r filename
-done
+filename=superfile
+# while [ "$filename" == '' ]
+# do
+# title 'Enter file name:'
+# read -r filename
+# done
 
-filedata=
-while [ "$filedata" == '' ]
-do
-title 'Enter file data:'
-read -r filedata
-done
+filedata=superdata
+# while [ "$filedata" == '' ]
+# do
+# title 'Enter file data:'
+# read -r filedata
+# done
 
-size=
-while [ "$size" == '' ]
-do
-title 'Enter file data size:'
-read -r size
-done
+size=9
+# while [ "$size" == '' ]
+# do
+# title 'Enter file data size:'
+# read -r size
+# done
 
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
@@ -68,14 +68,12 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$filename -d ""
 
 list
 
-title 'list shared files'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/shared -d ""
+title 'Getting part:'
+echo_run curl -k -b cookies -c cookies -XGET $base/sync_part/0/$filename
 
-title 'Getting link:'
-echo_run curl -k -b cookies -c cookies -XGET $base/sync_link/$filename 
+title 'Downloaded list'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/downloaded
 
-title 'list shared files'
-echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
 
 title 'Listing recent files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
@@ -89,7 +87,7 @@ do
 title 'Setting file (input ID):'
 read -r id
 done
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'favorite=false'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'favorite=true'
 
 title 'Listing favorite files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
@@ -99,10 +97,19 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
 title 'Making file public:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/$id -d 'public=true'
 
-# title 'Synchronizing public file:'
-# echo_run curl -k -b cookies -c cookies -XPUT $base/sync/foreign_public/wo -d "user=$login&foreign_filename=hello/world"
+title 'Listing public file:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/public
 
-list
+title 'list shared files'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/shared 
+
+title 'Getting link:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id
+
+title 'list shared files'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
+
+# list
 
 title 'Deleting file:'
 echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$filename
