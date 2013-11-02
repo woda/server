@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'json'
+require 'securerandom'
 
 class FilesController < ApplicationController
 
@@ -58,7 +59,7 @@ class FilesController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless file
     file.public = params[:public]
     file.save
-    @result = { file: file, success: true }
+    @result = { file: file.description, success: true }
   end
 
   ##
@@ -70,31 +71,24 @@ class FilesController < ApplicationController
     @result = { files: files_list, success: true }
   end
 
-
   ##
-  # Return all the public file downloaded at least one time
-  #
-  # Useless method
-  #
-  def downloaded_public
-    files_list = []
-    files = session[:user].x_files.all public: true, :downloads.gte => 1
-    files.each { |file| files_list.push file.description }
-    @result = { files: files_list, success: true }
+  # Return the Direct Download Link of the given file
+  def link
+    file = session[:user].x_files.get params[:id]
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    file.uuid = SecureRandom::uuid unless file.uuid
+    file.save
+    @result = { file: file.description, link: "#{BASE_URL}/app_dev.php/fs-file/#{file.uuid}", success: true }
   end
 
   ##
-  # Return all the public file downloaded at least one time
-  #
-  # Useless method
-  #
+  # Return all files downloaded at least one time
   def downloaded
     files_list = []
     files = session[:user].x_files.all :downloads.gte => 1
-    files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
-    files.each { |file| files_list.push file }
+    # files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
+    files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
-
 
 end
