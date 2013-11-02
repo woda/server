@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /var/serv/current
-nohup /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rails server -p 3000 > log.out 2>&1 &
+cd /home/wodaserver
+nohup /usr/local/rvm/bin/rvm 1.9.3 do bundle exec rails s -p 3000 > log.out 2>&1 &
 echo $! > last_pid
 
