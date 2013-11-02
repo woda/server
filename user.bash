@@ -6,11 +6,16 @@ title() {
     echo; echo; printf '\033[1m' ; echo "$@"; printf '\033[0m'
 }
 
+list() {
+	title 'Listing files:'
+	echo_run curl -k -b cookies -c cookies -XGET $base/files
+}
+
 # if [ $# == 1 ]
 # then
 # base=https://woda-server.com:3000
 # else
-base={BASE_URL}
+base=https://localhost:3000
 # fi
 
 # login=suerpcool
@@ -51,10 +56,14 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users -d "password=new_passw
 title 'Showing self:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users
 
-title 'Logging out:'
-echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
+list
 
 title 'delete user:'
 echo_run curl -k -b cookies -c cookies -XDELETE $base/users
+
+list
+
+title 'Logging out:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 echo

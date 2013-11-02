@@ -34,7 +34,7 @@ list
 foldername=folder1
 
 title 'Creating folder'
-echo_run curl -k -b cookies -c cookies -XPUT $base/folder -d "path=$foldername"
+echo_run curl -k -b cookies -c cookies -XPOST $base/folder -d "path=$foldername"
 
 list 
 
@@ -49,15 +49,18 @@ read -r id
 done
 
 title 'set_favorite folder'
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'path=$foldername&favorite=true'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorites/$id -d 'path=$foldername&favorite=true'
 
 title 'set_public folder'
 echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/$id -d 'path=$foldername&public=true'
 
 list 
 
+title 'Listing recent files:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
+
 title 'delete folder'
-echo_run curl -k -b cookies -c cookies -XDELETE $base/folder -d 'id=$id'
+echo_run curl -k -b cookies -c cookies -XDELETE $base/folder/$id
 
 list
 

@@ -8,7 +8,7 @@ title() {
 
 list() {
 	title 'Listing files:'
-	echo_run curl -k -b cookies -c cookies -XGET $base/folders
+	echo_run curl -k -b cookies -c cookies -XGET $base/files
 }
 
 if [ $# == 1 ]
@@ -18,42 +18,42 @@ else
 base=https://localhost:3000
 fi
 
-login=superman
-# while [ "$login" == '' ]
-# do
-# echo 'Enter login name:'
-# read -r login
-# done
+login=
+while [ "$login" == '' ]
+do
+echo 'Enter login name:'
+read -r login
+done
 
-# title 'Logout:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
+title 'Logout:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
-# title 'Creating user:'
-# echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
+title 'Creating user:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
 
 title 'Logging in:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
 
-filename=superfile
-# while [ "$filename" == '' ]
-# do
-# title 'Enter file name:'
-# read -r filename
-# done
+filename=
+while [ "$filename" == '' ]
+do
+title 'Enter file name:'
+read -r filename
+done
 
-filedata=superdata
-# while [ "$filedata" == '' ]
-# do
-# title 'Enter file data:'
-# read -r filedata
-# done
+filedata=
+while [ "$filedata" == '' ]
+do
+title 'Enter file data:'
+read -r filedata
+done
 
-size=9
-# while [ "$size" == '' ]
-# do
-# title 'Enter file data size:'
-# read -r size
-# done
+size=
+while [ "$size" == '' ]
+do
+title 'Enter file data size:'
+read -r size
+done
 
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
@@ -87,7 +87,7 @@ do
 title 'Setting file (input ID):'
 read -r id
 done
-echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorite/$id -d 'favorite=true'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorites/$id -d 'favorite=true'
 
 title 'Listing favorite files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
@@ -109,11 +109,15 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id
 title 'list shared files'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
 
-# list
+list
 
 title 'Deleting file:'
 echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$filename
 
 list
+
+title 'delete user:'
+echo_run curl -k -b cookies -c cookies -XDELETE $base/users
+
 
 echo

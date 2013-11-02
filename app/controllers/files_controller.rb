@@ -16,10 +16,10 @@ class FilesController < ApplicationController
   end
 
   def list
-    aim = params[:path]
+    path = (params[:path].nil? ? '' : params[:path]).split('/')
     folder = nil
     # Look for the root folder in case it is not the first in the list
-    folder = session[:user].get_folder((aim.nil? ? '' : aim).split('/'))
+    folder = session[:user].get_folder( path, { create: false } )
     raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
     @result =  { folder: crawl_folder(folder), success: true }
   end
@@ -69,7 +69,7 @@ class FilesController < ApplicationController
   ##
   # Get the first 20 last updated files
   def recents
-    files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), limit: 20)
+    files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), folder: false, limit: 20)
     files_list = []
     files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
