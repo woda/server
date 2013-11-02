@@ -7,7 +7,6 @@ class FilesController < ApplicationController
   
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
-	before_filter Proc.new { |c| c.check_params :id, :shared }, :only => [:set_shared]
 
   ##
   # Returns the model, useful for ApplicationController.
@@ -66,20 +65,11 @@ class FilesController < ApplicationController
   # Return the list of all shared-files
   def shared
     files_list = []
-    files = session[:user].x_files.all shared: true
+    files = session[:user].x_files.all(:uuid.not => nil)
     files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
 
-  ##
-  # Set/Unset a shared status file
-  def set_shared
-    file = session[:user].x_files.get params[:id]
-    raise RequestError.new(:file_not_found, "File not found") unless file
-    file.shared = params[:shared]
-    file.save
-    @result = { file: file, success: true }    
-  end
 
   ##
   # Return all the public file downloaded at least one time
@@ -101,7 +91,7 @@ class FilesController < ApplicationController
   def downloaded
     files_list = []
     files = session[:user].x_files.all :downloads.gte => 1
-    files = (files.all(public: true ) | files.all(shared: true)) if params[:particular]
+    files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
     files.each { |file| files_list.push file }
     @result = { files: files_list, success: true }
   end

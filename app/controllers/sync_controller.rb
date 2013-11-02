@@ -30,7 +30,7 @@ class SyncController < ApplicationController
     end
     f.content = current_content
     f.update_and_save
-    f.save
+    # f.save
     session[:user].save
   end
 
@@ -60,10 +60,8 @@ class SyncController < ApplicationController
     @result = { success: true }
   end
 
-  # Note: if we ever do something more sophisticated than delete+put, we need to make sure we change the random iv.
   def change
     file = session[:user].get_file(params['filename'].split('/'))
-    raise RequestError.new(:read_only, "File is read-only") if file.read_only
     delete
     put
   end
@@ -105,7 +103,6 @@ class SyncController < ApplicationController
     f = session[:user].get_file(params['filename'].split('/'))
     raise RequestError.new(:file_not_found, "File not found") unless f
     f.uuid = SecureRandom::uuid unless f.uuid
-    f.shared = true
     f.save
     @result = { success: true, link: "#{BASE_URL}/app_dev.php/fs-file/#{f.uuid}" }
   end

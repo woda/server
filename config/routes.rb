@@ -76,7 +76,6 @@ Server::Application.routes.draw do
   match 'files/favorites' => 'files#favorites', via: :get
   match 'files/public' => 'files#public', via: :get
   match 'files/shared' => 'files#shared', via: :get
-  match 'files/share/:id' => 'files#set_shared', via: :post
   match 'files/favorite/:id' => 'files#set_favorite', via: :post
   match 'files/public/:id' => 'files#set_public', via: :post
   

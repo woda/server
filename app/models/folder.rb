@@ -5,6 +5,6 @@ require 'app/models/xfile'
 class Folder < XFile
   def initialize *args, &block
     super *args, &block
-    self.is_folder = true
+    self.folder = true
   end
 end

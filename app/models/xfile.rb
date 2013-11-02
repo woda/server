@@ -10,10 +10,9 @@ class XFile
   storage_names[:default] = "xfile"
 
   property :id, Serial, key: true
-  property :read_only, Boolean, default: false
   property :content_hash, SHA256Hash, index: true, required: false
   property :uploaded, Boolean, default: false
-  property :is_folder, Boolean, default: false
+  property :folder, Boolean, default: false
   property :uuid, String, required: false
 
   updatable_property :name, String, index: true
@@ -21,37 +20,37 @@ class XFile
   updatable_property :favorite, Boolean, default: false
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
-  updatable_property :shared, Boolean, default: false
 
   belongs_to :user, child_key: :user_id, index: true
   belongs_to :x_file, index: true, required: false
   has n, :x_files
   
   def children
-    x_files.select { |item| item.is_folder }
+    x_files.select { |item| item.folder }
   end
 
   def files
-    x_files.select { |item| !item.is_folder }
+    x_files.select { |item| !item.folder }
   end
  
   def update_and_save
-    puts self.name
     self.last_update = Time.now
+    # puts "------------------->  #{self.name} : #{self.last_update}"
     self.save
+    # puts "-------------------> x_file: #{self.x_file}"
     if (self.x_file)
       self.x_file.update_and_save
     end
   end
 
   def description
-    if self.is_folder then
-        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, read_only: self.read_only, last_update: self.last_update }
+    if self.folder then
+        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update }
       else
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
           size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
-          shared: self.shared, downloads: self.downloads, favorite: self.favorite
+          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite
         }
       end
   end

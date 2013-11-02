@@ -53,7 +53,7 @@ class User
     end
     path.reject! { |c| c.empty? }
     path.size.times do |i|
-      folder2 = folder.x_files.first(name: path[i], is_folder: true)   
+      folder2 = folder.x_files.first(name: path[i], folder: true)   
       if folder2.nil? then
         if options[:create] then
           folder2 = Folder.new name: path[i], last_update: DateTime.now, user: self
@@ -77,7 +77,7 @@ class User
   # /!\ Both versions create a root folder if it doesn't exist!
   def get_file(path, options = {})
     folder = get_folder(path[0...path.size-1], options)
-    f = folder.x_files.first(name: path[-1], is_folder: false)
+    f = folder.x_files.first(name: path[-1], folder: false)
     if f.nil? then
       if options[:create] then
         f = XFile.new(name: path[-1], last_update: DateTime.now, user: self, uuid: nil)
