@@ -3,7 +3,6 @@ require 'time'
 require 'openssl'
 require 'digest/sha1'
 require 'tempfile'
-require 'securerandom'
 
 class SyncController < ApplicationController
   before_filter :require_login
@@ -97,14 +96,6 @@ class SyncController < ApplicationController
     cypher.key = f.content.crypt_key.from_hex
     cypher.iv = WodaHash.digest(params['part']) # Note: maybe concatenate init_vector here (before WodaHash
     @result = { file: cypher.update(file) + cypher.final, success: true }
-  end
-
-  def link
-    f = session[:user].get_file(params['filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    f.uuid = SecureRandom::uuid unless f.uuid
-    f.save
-    @result = { success: true, link: "#{BASE_URL}/app_dev.php/fs-file/#{f.uuid}" }
   end
 
   def last_update
