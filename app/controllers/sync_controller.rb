@@ -99,8 +99,7 @@ class SyncController < ApplicationController
   end
 
   def last_update
-    aim = params[:folder]
-    folder = session[:user].get_folder((aim.nil? ? '' : aim).split('/'))
+    folder = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
     raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?    
     @result =  { last_update: folder.last_update, success: true }
   end

@@ -65,15 +65,16 @@ Server::Application.routes.draw do
   match 'users/:login' => 'users#create', via: :put
 
 # Files Controller
-  match 'files' => 'files#list', via: :get, constraints: {filename: /.*/}
   match 'files/recents' => 'files#recents', via: :get
   match 'files/favorites' => 'files#favorites', via: :get
+  match 'files/favorites/:id' => 'files#set_favorite', via: :post
   match 'files/public' => 'files#public', via: :get
+  match 'files/public/:id' => 'files#set_public', via: :post
   match 'files/shared' => 'files#shared', via: :get
   match 'files/link/:id' => 'files#link', via: :get
-  match 'files/favorites/:id' => 'files#set_favorite', via: :post
-  match 'files/public/:id' => 'files#set_public', via: :post
   match 'files/downloaded' => 'files#downloaded', via: :get  
+  match 'files' => 'files#list', via: :get
+  match 'files/:id' => 'files#list', via: :get
 
 # Files Controller::folder methods
   match 'folder' => 'files#create_folder', via: :post
@@ -90,7 +91,8 @@ Server::Application.routes.draw do
   match 'sync_part/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
   match 'sync_success/:filename' => 'sync#upload_success', via: :post, constraints: {filename: /.*/}
   match 'sync_link/:filename' => 'sync#link', via: :get, constraints: {filename: /.*/}
-  match 'last_update' => 'sync#last_update', via: :get, constraints: {filename: /.*/}
+  match 'last_update' => 'sync#last_update', via: :get
+  match 'last_update/:id' => 'sync#last_update', via: :get
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

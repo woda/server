@@ -38,15 +38,17 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/folder -d "path=$foldername"
 
 list 
 
-title 'Listing created folder'
-echo_run curl -k -b cookies -c cookies -XGET $base/files -d "path=$foldername"
-
 id=
 while [ "$id" == '' ]
 do
 title 'Setting file (input ID):'
 read -r id
 done
+
+
+title 'Listing created folder'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/$id
+
 
 title 'set_favorite folder'
 echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorites/$id -d 'path=$foldername&favorite=true'

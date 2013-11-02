@@ -16,10 +16,7 @@ class FilesController < ApplicationController
   end
 
   def list
-    path = (params[:path].nil? ? '' : params[:path]).split('/')
-    folder = nil
-    # Look for the root folder in case it is not the first in the list
-    folder = session[:user].get_folder( path, { create: false } )
+    folder = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
     raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
     @result =  { folder: crawl_folder(folder), success: true }
   end
