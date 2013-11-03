@@ -23,7 +23,8 @@ class UsersController < ApplicationController
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params['email']
     user = set_properties User.new
     user.set_password params['password']
-    user.save
+    user.create_root_folder
+    user.save    
     session[:user] = user
     @result = user
   end

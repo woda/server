@@ -38,6 +38,30 @@ class User
     self.pass_hash = WodaHash.digest(self.pass_salt + pass).to_hex
   end
 
+  def create_root_folder 
+    folder = Folder.new(name: "/", last_update: DateTime.now, user: self)
+    self.x_files << folder
+    folder.save
+  end
+
+  def create_folder path
+    raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
+    
+    path = path.split('/')
+    folder = self.x_files.first
+    path.reject! { |c| c.empty? }
+    path.size.times do |i|
+      folder2 = folder.x_files.first(name: path[i], folder: true)   
+      if folder2.nil? then
+          folder2 = Folder.new( name: path[i], last_update: DateTime.now, user: self )
+          folder.x_files << folder2
+          folder.save
+      end
+      folder = folder2
+    end
+    folder
+  end
+
   ##
   # Gets the folder and creates the root folder if it does not exist. The path must
   # already be split.

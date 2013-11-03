@@ -54,8 +54,7 @@ class FilesController < ApplicationController
   ##
   # Creates and return a new folder
   def create_folder
-    path = (params[:path].nil? ? '' : params[:path]).split('/')
-    folder = session[:user].get_folder( path, { create: true } )
+    folder = session[:user].create_folder( params[:path] )
     raise RequestError.new(:file_not_found, "Folder not created") if folder.nil?
     @result = { folder: folder.description, success: true }
   end
@@ -65,6 +64,7 @@ class FilesController < ApplicationController
   def delete_folder
     folder = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    raise RequestError.new(:bad_param, "Can't delete root folder") if folder.id == session[:user].x_files.first.id
     folder.destroy!
     @result = { success: true }
   end

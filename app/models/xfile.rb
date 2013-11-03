@@ -23,6 +23,7 @@ class XFile
 
   belongs_to :user, child_key: :user_id, index: true
   belongs_to :x_file, index: true, required: false
+  
   has n, :x_files
   
   def children

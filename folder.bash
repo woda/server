@@ -18,7 +18,7 @@ else
 base=https://localhost:3000
 fi
 
-login=logitech
+login=logit--000egg
 
 title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout

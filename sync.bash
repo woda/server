@@ -8,7 +8,7 @@ title() {
 
 list() {
 	title 'Listing files:'
-	echo_run curl -k -b cookies -c cookies -XGET $base/folders
+	echo_run curl -k -b cookies -c cookies -XGET $base/files
 }
 
 base=https://localhost:3000
@@ -17,14 +17,14 @@ login=pltrflol
 title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
-# title 'Creating user:'
-# echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
+title 'Creating user:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
 
 title 'Logging in:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
 
-title 'last update'
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# title 'last update'
+# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
 
 # filename=lolilofjf
@@ -71,9 +71,6 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync_part/0/$filename -d "$fi
 
 title 'success upload'
 echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$filename -d ""
-
-# title 'Getting link:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/sync_link/$filename
 
 # list
 
