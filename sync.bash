@@ -12,7 +12,8 @@ list() {
 }
 
 base=https://localhost:3000
-login=pltrflol
+login=pltzrgerf
+
 
 title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
@@ -25,17 +26,6 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 
 # title 'last update'
 # echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
-
-
-# filename=lolilofjf
-# filedata=HJDLIPEOAM
-# size=10
-
-# sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
-
-
-# title 'Adding file:'
-# echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$filename -d "content_hash=$sha256&size=$size"
 
 
 filename=
@@ -62,39 +52,54 @@ done
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 list
+ 
 
 title 'Adding file:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$filename -d "content_hash=$sha256&size=$size"
+# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size"
+
+id=
+while [ "$id" == '' ]
+do
+title 'Setting file (input ID):'
+read -r id
+done
 
 title 'Sending part:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync_part/0/$filename -d "$filedata"
+# match 'sync/:id/:part' => 'sync#upload_part', via: :put
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id/0 -d "$filedata"
 
 title 'success upload'
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$filename -d ""
+# match 'sync_success/:id' => 'sync#upload_success', via: :post
+echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$id -d ""
 
-# list
+list
 
 title 'Getting part:'
-echo_run curl -k -b cookies -c cookies -XGET $base/sync_part/0/$filename
+# match 'sync/:id/:part' => 'sync#get', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id/0
 
 filedata=rth
 size=3
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
 echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
 title 'Change'
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync/$filename -d "content_hash=$sha256&size=$size"
+# match 'sync/:id' => 'sync#change', via: :post
+echo_run curl -k -b cookies -c cookies -XPOST $base/sync/$id -d "filename=$filename&content_hash=$sha256&size=$size"
 
 title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
 echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
-
 
 list 
 
 title 'Deleting file:'
-echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$filename
+# match 'sync/:id' => 'sync#delete', via: :delete
+echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id
 
 list
 

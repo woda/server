@@ -35,7 +35,6 @@ class FilesController < ApplicationController
     
     # Folder infos
     folder_infos = folder.description
-    folder_infos[:name] = (folder.name.nil? ? "/" : folder.name)
 
     # We recall craw_folder() method recursively for crawling each child folder if recur = true
     if recur then

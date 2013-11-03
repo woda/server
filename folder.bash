@@ -45,7 +45,6 @@ title 'Setting file (input ID):'
 read -r id
 done
 
-
 title 'Listing created folder'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/$id
 

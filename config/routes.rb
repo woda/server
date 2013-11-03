@@ -80,16 +80,13 @@ Server::Application.routes.draw do
   match 'folders/:id' => 'files#delete_folder', via: :delete
 
 # sync controller
-  match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#delete', via: :delete, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
-  match 'sync_part/:part/:filename' => 'sync#get', via: :get, constraints: {filename: /.*/}
-  match 'sync_part/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
-  match 'sync_success/:filename' => 'sync#upload_success', via: :post, constraints: {filename: /.*/}
-  match 'sync_link/:filename' => 'sync#link', via: :get, constraints: {filename: /.*/}
-  match 'last_update' => 'sync#last_update', via: :get
-  match 'last_update/:id' => 'sync#last_update', via: :get
-  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
+  match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+  match 'sync/:id' => 'sync#delete', via: :delete
+  match 'sync/:id' => 'sync#change', via: :post
+  match 'sync/:id/:part' => 'sync#upload_part', via: :put
+  match 'sync/:id/:part' => 'sync#get', via: :get
+  match 'sync_success/:id' => 'sync#upload_success', via: :post
+  match 'last_update(/:id)' => 'sync#last_update', via: :get
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
