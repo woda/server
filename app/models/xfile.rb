@@ -36,10 +36,7 @@ class XFile
  
   def update_and_save
     self.last_update = Time.now
-    # TODO
-    # puts "------------------->  #{self.name} : #{self.last_update}"
     self.save
-    # puts "-------------------> x_file: #{self.x_file}"
     if (self.x_file)
       self.x_file.update_and_save
     end

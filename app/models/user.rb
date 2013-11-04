@@ -59,11 +59,26 @@ class User
       if folder2.nil? then
           folder2 = Folder.new( name: path[i], last_update: DateTime.now, user: self )
           folder.x_files << folder2
-          folder.save
+          folder.update_and_save
       end
       folder = folder2
     end
     folder
+  end
+
+  ##
+  # Return the parent folder of the given XFile path
+  def get_parent_folder path
+    raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
+    
+    path = path.split('/')
+    folder = self.x_files.first
+    path.reject! { |c| c.empty? }
+    # return folder if path.size == 1
+    path[0...path.size-1].size.times do |i|
+      folder2 = folder.x_files.first(name: path[i], folder: true)
+    end
+    folder    
   end
 
   ##
@@ -73,7 +88,7 @@ class User
     folder = create_folder(path[0...path.size-1].join('/'))
     file = folder.x_files.first(name: path[-1], folder: false)
     if file.nil? then
-      file = XFile.new(name: path[-1], last_update: DateTime.now, user: self)
+      file = XFile.new(name: path[-1], last_update: DateTime.now, user: self, x_file: self.get_parent_folder(path))
       folder.x_files << file
       folder.save
     end
