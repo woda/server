@@ -14,8 +14,6 @@ class XFile
   property :uploaded, Boolean, default: false
   property :folder, Boolean, default: false
   property :uuid, String, required: false
-  
-  # property :parent, XFile, default: nil, required: true
 
   updatable_property :name, String, index: true
   updatable_property :last_update, DateTime, default: Time.now
@@ -88,18 +86,14 @@ class XFile
   end
 
   def content
-    # puts "getting content #{content_hash}"
     return nil if content_hash.nil?
-    # puts content_hash
     Content.first content_hash: content_hash
   end
 
   def content= arg
     if !arg.nil? then
       self.content_hash = arg.content_hash
-      # puts "setting content hash: #{content_hash}"
     else
-      # puts "unsetting content"
       self.content_hash = nil
     end
   end
