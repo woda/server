@@ -14,6 +14,8 @@ class XFile
   property :uploaded, Boolean, default: false
   property :folder, Boolean, default: false
   property :uuid, String, required: false
+  
+  # property :parent, XFile, default: nil, required: true
 
   updatable_property :name, String, index: true
   updatable_property :last_update, DateTime, default: Time.now
@@ -21,7 +23,7 @@ class XFile
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
 
-  belongs_to :user, child_key: :user_id, index: true
+  belongs_to :user, index: true, required: true
   belongs_to :x_file, index: true, required: false
   
   has n, :x_files
@@ -34,12 +36,21 @@ class XFile
     x_files.select { |item| !item.folder }
   end
  
-  def update_and_save
-    self.last_update = Time.now
-    self.save
-    if (self.x_file)
-      self.x_file.update_and_save
+  def delete_content
+    if XFile.count(content_hash: self.content) <= 1 then
+      self.content.destroy!
     end
+  end
+
+  def delete
+    self.x_files.each do |item|      
+      if item.x_files then
+        item.delete
+      else
+        item.destroy!
+      end
+    end
+    self.destroy!
   end
 
   def description
@@ -74,30 +85,6 @@ class XFile
     h['size'] = size
     h['part_size'] = XFile.part_size
     JSON.generate h
-  end
-
-  def multiple_accessor acc
-    if send(acc).size == 1 then
-      return send(acc)[0]
-    end
-    nil
-  end
-
-  def multiple_setter acc, arg
-    if send(acc).size == 1 then
-      send(acc)[0] = arg
-    else
-      send(acc) << arg
-    end
-    arg
-  end
-
-  def x_file
-    multiple_accessor :x_files
-  end
-
-  def x_file= arg
-    multiple_setter :x_files, arg
   end
 
   def content

@@ -34,7 +34,7 @@ list
 foldername=folder1/folder2/folder3
 
 title 'Creating folder'
-echo_run curl -k -b cookies -c cookies -XPOST $base/folders -d "path=$foldername"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$foldername&content_hash=&size=&folder=true"
 
 list 
 
@@ -61,7 +61,7 @@ title 'Listing recent files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
 
 title 'delete folder'
-echo_run curl -k -b cookies -c cookies -XDELETE $base/folders/$id
+echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id
 
 list
 

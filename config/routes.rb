@@ -75,10 +75,6 @@ Server::Application.routes.draw do
   match 'files/downloaded' => 'files#downloaded', via: :get  
   match 'files(/:id)' => 'files#list', via: :get
 
-# Files Controller::folder methods
-  match 'folders' => 'files#create_folder', via: :post
-  match 'folders/:id' => 'files#delete_folder', via: :delete
-
 # sync controller
   match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
   match 'sync/:id' => 'sync#delete', via: :delete

@@ -52,11 +52,16 @@ done
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 list
+
+title 'Adding folder:'
+# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=SUPERFOLDER&content_hash=&size=&folder=true"
  
+list
 
 title 'Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size&folder=false"
 
 id=
 while [ "$id" == '' ]
@@ -79,17 +84,17 @@ title 'Getting part:'
 # match 'sync/:id/:part' => 'sync#get', via: :get
 echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id/0
 
-filedata=rth
-size=3
-sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
+# filedata=rth
+# size=3
+# sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
-title 'last update'
-# match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# title 'last update'
+# # match 'last_update(/:id)' => 'sync#last_update', via: :get
+# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
-title 'Change'
-# match 'sync/:id' => 'sync#change', via: :post
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync/$id -d "filename=$filename&content_hash=$sha256&size=$size"
+# title 'Change'
+# # match 'sync/:id' => 'sync#change', via: :post
+# echo_run curl -k -b cookies -c cookies -XPOST $base/sync/$id -d "filename=$filename&content_hash=$sha256&size=$size"
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
@@ -100,6 +105,10 @@ list
 title 'Deleting file:'
 # match 'sync/:id' => 'sync#delete', via: :delete
 echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id
+
+title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
 list
 
