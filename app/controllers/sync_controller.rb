@@ -11,11 +11,11 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
   before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :upload_success]
-  # no check_params needed for last_update
 
   ##
   # Update the given file, save it and update its parent recursively 
   def update_and_save file
+    raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
     file.last_update = Time.now
     file.save
     parent = session[:user].x_files.get file.x_file_id
@@ -25,6 +25,7 @@ class SyncController < ApplicationController
   ##
   # Update the parent of the given file and remove its children and itself
   def update_and_delete file
+    raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
     parent = session[:user].x_files.get file.x_file_id
     update_and_save parent if parent
     file.delete
@@ -67,7 +68,7 @@ class SyncController < ApplicationController
   def upload_part
     f = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless f
-    raise RequestError.new(:bad_param, "Can't modify the root folder") if f == session[:user].x_files.first
+    raise RequestError.new(:bad_param, "Can't upload data to a folder") if f.folder
     raise RequestError.new(:bad_part, "\"#{params[:part]}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params[:part]
     part = params[:part].to_i
     raise RequestError.new(:bad_part, "Content incorrect") if f.content.nil?
@@ -89,7 +90,7 @@ class SyncController < ApplicationController
   def upload_success
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_param, "Can't modify the root folder") if file == session[:user].x_files.first
+    raise RequestError.new(:bad_param, "Can't upload data to a folder") if f.folder
     file.uploaded = true
     update_and_save file
     @result = { success: true }
@@ -118,7 +119,6 @@ class SyncController < ApplicationController
   def get
     f = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless f
-    raise RequestError.new(:bad_param, "Can't get the root folder") if f == session[:user].x_files.first
     raise RequestError.new(:bad_param, "Can't get a folder") if f.folder
     raise RequestError.new(:bad_part, "Content incorrect") if f.content.nil?
     raise RequestError.new(:file_not_uploaded, "File not completely uploaded") unless f.uploaded

@@ -8,7 +8,8 @@ require 'spec_helper'
 # # # # list # # # #
 # list de fichier correctement retourné
 # liste de fichiers sans param = tous les fichiers
-# liste de fcihiers avec des sous dossiers/sous fichiers
+# liste de fichiers avec des sous dossiers/sous fichiers
+# doit fail si le param id est invalide (id: hegfruyegf)
 # si param(id) == file.id retourn la description d'un fichier
 # si param(id) == folder.id retourn la liste de fichier depuis un dossier
 # si mauvais id retourne file not found
@@ -26,7 +27,9 @@ require 'spec_helper'
 #
 # # # # set_favorite # # # #
 # doit fail si pas de param(id) || param(favorite)
-# doit fail si l'id n'existe pas, ou que le fichier n'appartient pas à l'utilisateur
+# doit fail si le param id est invalide (id: hegfruyegf)
+# doit fail si l'id n'existe pas
+# doit fail si le fichier n'appartient pas à l'utilisateur
 # doit fail si le param favorite n'est pas valide
 # ne doit pas mettre à jour le last_update du dossier racine
 # doit retourner success:true + file: file.description
@@ -39,7 +42,9 @@ require 'spec_helper'
 # 
 # # # # set_public # # # #
 # doit fail si pas de param(id) || param(public)
-# doit fail si l'id n'existe pas, ou que le fichier n'appartient pas à l'utilisateur
+# doit fail si le param id est invalide (id: hegfruyegf)
+# doit fail si l'id n'existe pas
+# doit fail si le fichier n'appartient pas à l'utilisateur
 # doit fail si le param public n'est pas valide
 # ne doit pas mettre à jour le last_update du dossier racine
 # doit retourner success:true + file: file.description
@@ -58,6 +63,7 @@ require 'spec_helper'
 #
 # # # # link # # # #
 # doit fail si pas de param(id)
+# doit fail si le param id est invalide (id: hegfruyegf)
 # doit fail si l'id n'existe pas, ou que le fichier n'appartient pas à l'utilisateur
 # ne doit pas mettre à jour le last_update du dossier racine
 # doit retourner success:true + file: file.description + link: URL
