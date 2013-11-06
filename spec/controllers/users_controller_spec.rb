@@ -1,5 +1,50 @@
 require 'spec_helper'
 
+# doit être testé
+#
+# # # # all # # # #
+# require_login sauf pour create et login
+#
+# # # # create # # # #
+# doit fail si login taken
+# doit fail si email taken
+# doit si login || password || email is missing
+# doit créer le dossier racine de l'utilisateur
+# doit login l'utilisateur
+# doit retourner { user: user.description, success: true }
+#
+# # # # delete # # # #
+# doit supprimer l'utilisateur courant
+# doit logout l'utilisateur courant
+# doit supprimer l'utilisateur courant et pas un autre 
+# doit logout l'utilisateur courant et pas un autre
+# doit être impossible de se reconnecter après 
+# doit etre possible de recreer un user avec les même id
+# doit retourner success: true
+#
+# # # # update # # # #
+# n'a pas besoin d'avoir TOUT les parametres 
+# update que les parametres passés en dans la requete
+# a faire : login / update / login / relogin 
+# doit retourner { user: user.description, success: true }
+# doit retourner l'utilisateur modifié
+#
+# # # # index # # # #
+# doit retourner user.description de l'utilisateur courant (vérifier les valeurs correctement)
+#
+# # # # login # # # # 
+# doit fail si user pas créé (user not found)
+# doit fail si bad password
+# doit fail si login incorrect (user not found)
+# doit fail si pas de params login || password
+# doit login l'utilisateur (possibilité de faire d'autre appel comme index après)
+# doit retourner { user: user.description, success: true }
+#
+# # # # logout # # # #
+# doit logout l'utilisateur courant
+# doit retourner  { success: true }
+# doit empêcher l'user de faire d'autre appel comme index apres
+
 describe UsersController do
   render_views
   DataMapper::Model.raise_on_save_failure = true

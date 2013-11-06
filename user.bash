@@ -20,7 +20,7 @@ base=https://localhost:3000
 
 # login=suerpcool
 
-password=azerty
+password=azertyzef
 
 login=
 while [ "$login" == '' ]

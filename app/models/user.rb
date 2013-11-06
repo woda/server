@@ -25,6 +25,13 @@ class User
   has n, :x_files
 
   ##
+  # User description
+  def description
+    { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked }
+
+  end
+
+  ##
   # Always use this function to test for password
   def has_password? pass
     WodaHash.digest(self.pass_salt + pass).to_hex.downcase == pass_hash.downcase
