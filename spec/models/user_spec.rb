@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+# a vérifier que tout a été fait
+
 describe User do
   before do
     db_clear
