@@ -5,6 +5,10 @@ module Storage
     @use_aws = use
   end
 
+  def self.use_aws
+    @use_aws
+  end
+
   def self.path= p
     @path = p
     puts @path
@@ -20,7 +24,7 @@ module Storage
     def create path, info = {}
       real_path = Pathname.new("#{@base}/#{path}")
       FileUtils.mkpath real_path.dirname
-      File.open real_path, "w" do |f|
+      File.open real_path, "wb" do |f|
         f.write info[:data]
       end
     end
@@ -44,13 +48,15 @@ module Storage
   end
 
   def self.[] bucket
-    puts @path
+    puts "path '#{@path}' use_aws: '#{@use_aws}' "
     @s3 = AWS::S3.new if @use_aws && !@s3
     if @use_aws
       @s3.buckets[bucket].objects
-    else
-      puts "a : #{@path}/#{bucket}"
+    elsif @path
+      puts "folder : #{@path}/#{bucket}"
       FakeObject.new @path, bucket
+    else
+      raise RequestError.new(:bad_configuration, "Nor bucket and path found")
     end
   end
 

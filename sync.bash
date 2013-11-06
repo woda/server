@@ -55,13 +55,13 @@ list
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=SUPERFOLDER&content_hash=&size=&folder=true"
+echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=SUPERFOLDER"
  
 list
 
 title 'Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size&folder=false"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size"
 
 id=
 while [ "$id" == '' ]

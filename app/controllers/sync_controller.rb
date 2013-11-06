@@ -7,8 +7,11 @@ require 'tempfile'
 class SyncController < ApplicationController
   before_filter :require_login
 
+  before_filter Proc.new { |c| c.check_params :filename }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
+  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :upload_success]
+  # no check_params needed for last_update
 
   ##
   # Update the given file, save it and update its parent recursively 
@@ -30,16 +33,20 @@ class SyncController < ApplicationController
   ##
   # Creates and return a new folder
   def create_folder
+    raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
     folder = session[:user].create_folder( params[:filename] )
     raise RequestError.new(:folder_not_created, "Folder not created") if folder.nil?
     update_and_save folder
     @result = { folder: folder.description, success: true }
   end
 
+  ##
+  # Create a file and return it. 
   def put
-    # TODO deal with: existing file not content
-    return create_folder if params[:folder] == "true"
-
+    raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
+    raise RequestError.new(:bad_param, "Parameter 'content_hash' is not valid") if params[:content_hash].nil? || params[:content_hash].empty?
+    raise RequestError.new(:bad_param, "Parameter 'size' is not valid") if params[:size].nil? || params[:size].empty?
+    
     current_content = Content.first content_hash: params[:content_hash]
     f = session[:user].create_file params[:filename]
     if current_content
@@ -55,9 +62,12 @@ class SyncController < ApplicationController
     session[:user].save
   end
 
+  ##
+  # Method to upload a part of 5mb for a specific file
   def upload_part
     f = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless f
+    raise RequestError.new(:bad_param, "Can't modify the root folder") if f == session[:user].x_files.first
     raise RequestError.new(:bad_part, "\"#{params[:part]}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params[:part]
     part = params[:part].to_i
     raise RequestError.new(:bad_part, "Content incorrect") if f.content.nil?
@@ -74,35 +84,47 @@ class SyncController < ApplicationController
     @result = { success: true }
   end
 
+  ##
+  # Method to specify that a file has been fully uploaded
   def upload_success
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_param, "Can't modify the root folder") if file == session[:user].x_files.first
     file.uploaded = true
     update_and_save file
     @result = { success: true }
   end
 
+  ##
+  # Delete and recreate a file with the given parameters
   def change
     delete
     put
   end
 
+  ##
+  # Delete a file
   def delete
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_param, "Can't delete root folder") if file.id == session[:user].x_files.first.id
+    raise RequestError.new(:bad_param, "Can't delete the root folder") if file == session[:user].x_files.first
     file.delete_content
     update_and_delete file
     @result = { success: true }
   end
 
+  ##
+  # Get the specific file corresponding to the ID given in parameters
   def get
     f = session[:user].x_files.get(params[:id])
-    raise RequestError.new(:bad_part, "Content incorrect") if f.nil?
-    key = "#{f.content.content_hash}/#{params[:part]}"
     raise RequestError.new(:file_not_found, "File not found") unless f
-    raise RequestError.new(:no_bucket, "Bucket not found") if Storage['woda-files'] == nil
-    raise RequestError.new(:no_key, "Key path not found") if Storage['woda-files'][key] == nil
+    raise RequestError.new(:bad_param, "Can't get the root folder") if f == session[:user].x_files.first
+    raise RequestError.new(:bad_param, "Can't get a folder") if f.folder
+    raise RequestError.new(:bad_part, "Content incorrect") if f.content.nil?
+    raise RequestError.new(:file_not_uploaded, "File not completely uploaded") unless f.uploaded
+    key = "#{f.content.content_hash}/#{params[:part]}"
+    raise RequestError.new(:no_bucket, "Bucket not found") if Storage['woda-files'].nil?
+    raise RequestError.new(:no_key, "Key path not found") if (Storage.use_aws ? Storage['woda-files'][key].exists? == false : Storage['woda-files'][key].nil? )
     file = Storage['woda-files'][key].read()
     if params[:part].to_i == 0 then
       f.downloads += 1
@@ -115,6 +137,8 @@ class SyncController < ApplicationController
     @result = { data: cypher.update(file) + cypher.final, success: true }
   end
 
+  ##
+  # Method to get the timestamp of the last modification of the user's file list
   def last_update
     folder = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
     raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?    
