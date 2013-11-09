@@ -5,112 +5,320 @@ require 'spec_helper'
 # # # # all # # # #
 # require_login sauf pour create et login
 #
-# # # # create # # # #
-# doit fail si login taken
-# doit fail si email taken
-# doit si login || password || email is missing
-# doit créer le dossier racine de l'utilisateur
-# doit login l'utilisateur
-# doit retourner { user: user.description, success: true }
-#
-# # # # delete # # # #
-# doit supprimer l'utilisateur courant
-# doit logout l'utilisateur courant
-# doit supprimer l'utilisateur courant et pas un autre 
-# doit logout l'utilisateur courant et pas un autre
-# doit être impossible de se reconnecter après 
-# doit etre possible de recreer un user avec les même id
-# doit retourner success: true
-#
-# # # # update # # # #
-# n'a pas besoin d'avoir TOUT les parametres 
-# update que les parametres passés en dans la requete
-# a faire : login / update / login / relogin 
-# doit retourner { user: user.description, success: true }
-# doit retourner l'utilisateur modifié
-#
-# # # # index # # # #
-# doit retourner user.description de l'utilisateur courant (vérifier les valeurs correctement)
-#
-# # # # login # # # # 
-# doit fail si user pas créé (user not found)
-# doit fail si bad password
-# doit fail si login incorrect (user not found)
-# doit fail si pas de params login || password
-# doit login l'utilisateur (possibilité de faire d'autre appel comme index après)
-# doit retourner { user: user.description, success: true }
-#
-# # # # logout # # # #
-# doit logout l'utilisateur courant
-# doit retourner  { success: true }
-# doit empêcher l'user de faire d'autre appel comme index apres
-
 describe UsersController do
   render_views
   DataMapper::Model.raise_on_save_failure = true
 
-  before do
+  before :all do
+    put_description
+  end
+
+  before :each do
     db_clear
-    session[:user] = User.new({login: 'lol', last_name: 'Ecoffet', first_name: 'Adrien', email: 'aec@gmail.com'})
-    session[:user].set_password 'hello'
-    session[:user].save
-  end
-
-  def login_user
-    user = session[:user]
-    resp = post :login, login: user.login, password: "hello", format: :json
-    j = JSON.parse resp.body
-    j["login"].should match /lol/
-    user
-  end
-
-  it "should create a user" do
-    session[:user] = nil    
-    session[:user].should be_nil
-    put :create, login: 'lool', last_name: 'Ecoffet', first_name: 'Adrien', email: 'aec@gmal.com', password: 'omg'
-    session[:user].should_not be_nil
-    User.first(login: 'lool').should_not be_nil
-  end
-
-  it "should be able to get user" do
-    user = login_user
-    resp = get :index, format: :json
-    j = JSON.parse(resp.body)
-    j["login"].should match /lol/
-  end
-
-  it "should allow user login" do
-    login_user
-  end
-
-  it "should destroy ther user" do 
-    user = login_user
-    resp = post :delete
-    User.first(login: "lol").should be_nil
-  end
-
-  it "should update user" do
-    user = login_user
-    post :update, login: "plop"
-    User.first(login: "plop").should_not be_nil
-  end
-
-  it "should not allow user login" do    
-    user = session[:user]
-    resp = post :login, login: user.login, password: "FAIL_PASSWORD"
-    j = JSON.parse resp.body
-    j["error"].should match /bad_password/
-  end
-
-  it "should logout user" do
-
-    # LOGIN
-    user = login_user
     
-    # NOW LOGOUT
-    resp = get :logout, format: :json
-    j = JSON.parse resp.body
-    j["success"].should be_true
+    # Transforme session[:user] avec l'id en instance de User
+    get_user
+  end
+
+  describe "user creation" do
+
+    it "should be successfull, send back his description, logged him and create his root folder" do
+
+      # On clear la db de tout les users pour etre sur que l'utilisateur créé et le notre seulement
+      session[:user] = nil
+      User.count.should == 0
+
+      put :create, login: "chainlist", password: "toto42", email: "chain@woda-server.com"
+
+      json = get_json
+      
+      User.count.should == 1
+
+      json['success'].should be_true
+      json['user']['id'].should_not be_nil
+      json['user']['login'].should match /chainlist/
+
+      session[:user].should == json['user']['id']
+      get_user
+
+      fs = Folder.first user: session[:user], name: '/'
+      fs.name.should match '/'
+      session[:user].x_files.destroy!
+      session[:user].destroy!
+    end
+
+    it "should not create user when login already taken" do
+      u = create_user({login: "failLogin", email: "failLogin@woda-server.com", password: "failer42"})
+      user_count = User.count
+
+      put :create, login: "failLogin", password: "loginfailed", email: "loginfailed@woda-server.com"
+
+      # on vérifie qu'il n'a pas créé l'utilisateur
+      User.count.should == user_count
+      json = get_json
+      json["error"].should match /login_taken/
+
+      u.x_files.destroy!
+      u.destroy!
+    end
+
+    it "should not create user when email already taken" do
+      u = create_user({login: "emailFail", email: "failEmail@woda-server.com", password: "emailFail"})
+
+      user_count = User.count
+      ##
+      # => On créé un utilisateur avec le même email
+      ##
+      put :create, login: "emailfailed", password: "emailFail", email: "failEmail@woda-server.com"
+
+      # on vérifie qu'il n'a pas créé l'utilisateur
+      User.count.should == user_count
+
+      json = get_json
+      json["error"].should match /email_taken/
+    end
+
+    it "should not create user when one of params is missing" do
+      user_count = User.count
+
+      ##
+      # => Sans email
+      ##
+      put :create, login: 'test', password: 'fail'
+
+      User.count.should == user_count
+      json = get_json
+      json["error"].should match /missing_params/
+
+      ##
+      # => Sans password
+      ##
+      put :create, login: 'test', email: 'withoutpassword@woda-server.com'
+
+      User.count.should == user_count
+      json = get_json
+      json["error"].should match /missing_params/
+    end
+  end
+  describe "user deletion" do
+
+    it "should delete user and logged out him" do
+      user_count = User.count
+
+      put :create, login: 'deleteuser', password: 'deleted', email: 'deleted@woda-server.com'
+      User.count.should == user_count + 1
+      userId = session[:user]
+      session[:user].should_not be_nil
+
+      delete :delete
+      User.count.should == user_count
+      json = get_json
+      session[:user].should be_nil
+
+      u = User.first id: userId
+      u.should be_nil
+    end
+
+    it "should delete user and ONLY HIM" do
+      user_count = User.count
+
+      put :create, login: 'deleteuser', password: 'deleted', email: 'deleted@woda-server.com'
+      put :create, login: 'deleteuser2', password: 'deleted', email: 'deleted2@woda-server.com'
+
+      User.count.should == user_count + 2
+      userId = session[:user]
+      session[:user].should_not be_nil
+
+      delete :delete
+      User.count.should == user_count + 1
+      json = get_json
+      json["success"].should be_true
+
+      session[:user].should be_nil
+
+      u = User.first id: userId
+      u.should be_nil
+      u = User.first login: 'deleteuser'
+      u.should_not be_nil
+      u.destroy!
+    end
+
+    it "should be able to recreate same user after deletion" do
+      user_count = User.count
+      put :create, login: 'recreate', password: 'deleted', email: 'recreate@woda-server.com'
+      User.count.should == user_count + 1
+
+      delete :delete
+      User.count.should == user_count
+
+      put :create, login: 'recreate', password: 'deleted', email: 'recreate@woda-server.com'
+      User.count.should == user_count + 1
+      delete :delete
+    end
+
+    it "should not be able de relog after deleting" do
+      user_count = User.count
+      put :create, login: 'relog', password: 'deleted', email: 'relog@woda-server.com'
+      User.count.should == user_count + 1
+
+      delete :delete
+      User.count.should == user_count
+
+      session[:user].should be_nil
+
+      post :login, login: 'relog', password: 'deleted'
+      json = get_json
+
+      json["success"].should be_false
+    end
+
+    it "should not delete when not logged" do
+      session[:user] = nil
+      delete :delete
+      json = get_json
+      json["success"].should be_false
+      json["error"].should match /not_logged_in/
+    end
+
+  end
+
+  describe "showing user description" do
+
+    it "should describe user" do
+      user_count = User.count
+      put :create, login: 'showUser', password: 'deleted', email: 'showUser@woda-server.com'
+      User.count.should == user_count + 1        
+
+      session[:user].should_not be_nil
+
+      post :index
+      json = get_json
+
+      json["success"].should be_true
+      json["user"]["login"].should match /showUser/
+      json["user"]["email"].should match /showUser@woda-server.com/
+    end
+
+    it "shod not describe user when not logged" do
+      post :index
+      json = get_json
+      json["success"].should be_false
+      json["error"].should match /not_logged_in/
+    end
+
+  end
+
+  describe "updating user" do
+
+    it "not need all parameters" do
+
+      user_count = User.count
+      put :create, login: "updateUser", password: "toto42", email: "updateUser@woda-server.com"
+      User.count.should == user_count + 1
+
+      ##
+      # => Only login
+      ##
+      post :update, login: "updatedUser"
+
+      json = json = get_json
+      json["success"].should be_true
+      json["user"]["login"].should match /updatedUser/
+
+      ##
+      # => Only password
+      ##
+      post :update, password: "toto64"
+
+      post :logout
+
+      post :login, login: "updatedUser", password: "toto64"
+      json = json = get_json
+      json["success"].should be_true
+
+      ##
+      # => Only email
+      ##
+      post :update, email: "updatedUser@woda-server.com"
+      json = json = get_json
+      json["success"].should be_true
+      json["user"]["email"].should match /updatedUser@woda-server/
+
+      ##
+      # => All
+      ##
+      post :update, login: "CocaCola", password: "Zero", email: "company@woda-server.com"
+      # => On vérifie qu'il n'a pas créé de nouveau utilisateur
+      User.count.should == user_count + 1
+      post :logout
+      post :login, login: "CocaCola", password: "Zero"
+      json = json = get_json
+      json["success"]
+      json["user"]["login"].should match /CocaCola/
+      json["user"]["email"].should match /company@woda-server.com/
+    end
+
+    it "should not update if not logged" do
+      session[:user] = nil
+      post :update, login: "NotLogged"
+      json = get_json
+      json["success"].should be_false
+      json["error"].should match /not_logged_in/
+    end
+
+  end
+
+  describe "login'user" do
+
+    it "should log the user in" do
+      u = create_user({login: "LogginUser", email: "logginUser@woda-server.com", password: "login"})
+
+      post :login, login: "LogginUser", password: "login"
+      json = get_json
+      json["success"].should be_true
+      json["user"]["login"].should match /LogginUser/
+      json["user"]["email"].should match /logginUser@woda-server.com/
+    end
+
+    it "should not log the user if user not found" do
+      post :login, login: "UserNotFound", password: "NotFound"
+      json = get_json
+
+      json["success"].should be_false
+      json["error"].should match /user_not_found/
+    end
+
+    it "should not log the user if password is incorrect" do
+      u = create_user({login: "PasswordIncorrect", email: "NotLogged@gmail.com", password: "notLogged"})
+
+      post :login, login: "PasswordIncorrect", password: "IsLogged"
+      json = get_json
+      json["success"].should be_false
+      json["error"].match /bad_password/
+    end
+
+  end
+
+  describe "login'out user" do
+
+    it "should logout the user" do
+      user_count = User.count
+      put :create, login: 'LoginOut', password: 'deleted', email: 'loginOut@woda-server.com'
+      User.count.should == user_count + 1        
+
+      session[:user].should_not be_nil
+
+      post :logout
+      json = get_json
+      json["success"].should be_true
+      session[:user].should be_nil
+
+      post :index
+      json = get_json 
+      json["success"].should be_false
+      json["error"].should match /not_logged_in/
+    end
+
   end
 
 end

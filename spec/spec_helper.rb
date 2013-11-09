@@ -17,9 +17,39 @@ require 'rspec/autorun'
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
 def db_clear
-  DataMapper::Model.descendants.each {|model| model.destroy}
+  # => DataMapper::Model.descendants.each {|model| model.destroy!}
+  Folder.destroy!
+  XFile.destroy!
+  User.destroy!
 end
 
+def put_description
+  puts "\nTesting #{self.class.description}\n"
+end
+
+def get_user
+  session[:user] = User.first id: session[:user] if session[:user]
+end
+
+def create_user(params)
+  return nil unless params.is_a? Hash
+
+  pwd = params[:password]
+  params.delete :password
+  user =  User.new(params)
+  user.set_password pwd
+  user.save
+  session[:user] = user.id
+  user
+end
+
+def require_login
+  session[:user].should_not be_nil
+end
+
+def get_json
+  JSON.parse response.body
+end
 
 RSpec.configure do |config|
   # ## Mock Framework

@@ -18,13 +18,6 @@ require 'spec_helper'
 # doit retourner la description d'un ficheir dans { file: ici, success: true }
 # si pas de fichiers doit juste retourner le dossier racine et rien d'autre du coup
 #
-# # # # recent # # # #
-# doit retourner success: true  + array of files
-# doit retourner uniquement les fichiers récents et non les dossiers favoris
-# doit retourner les fichiers récent de moins de 20 jours et pas plus
-# doit retourner les fichiers dans un tableau
-# doit retourner un array vide + success:true si pas de fichiers
-#
 # # # # set_favorite # # # #
 # doit fail si pas de param(id) || param(favorite)
 # doit fail si le param id est invalide (id: hegfruyegf)
@@ -76,5 +69,27 @@ require 'spec_helper'
 # doit retourner un array vide + success:true si pas de fichiers
 
 describe FilesController do
-end
 
+	before :all do
+		put_description
+	end
+
+	before :each do
+		
+	end
+
+	# # # # recent # # # #
+# doit retourner success: true  + array of files
+# doit retourner uniquement les fichiers récents et non les dossiers favoris
+# doit retourner les fichiers récent de moins de 20 jours et pas plus
+# doit retourner les fichiers dans un tableau
+# doit retourner un array vide + success:true si pas de fichiers
+#
+	describe "listing recent file" do
+
+		it "should list recents file" do
+		end
+
+	end
+
+end
