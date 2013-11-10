@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'json'
+require 'securerandom'
 
 class FilesController < ApplicationController
 
@@ -15,16 +16,51 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Get the first 20 last updated files
+  # Returns the full list of files and folders
+  def list
+    xfile = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
+    raise RequestError.new(:folder_not_found, "Folder not found") if xfile.nil?
+    if xfile.folder then
+      @result =  { folder: crawl_folder(xfile), success: true }
+    else  
+      @result =  { file: xfile.description, success: true }
+    end
+  end
+
+  ##
+  # Crawl a folder
+  def crawl_folder(folder, recur = true)
+    list = []
+    folders = []
+    
+    # Folder infos
+    folder_infos = folder.description
+
+    # We recall craw_folder() method recursively for crawling each child folder if recur = true
+    if recur then
+      folder.children.each { |child| folders.push(crawl_folder(child)) }
+      folder_infos[:folders] = folders
+    end
+    
+    # We get all files from the current folder
+    files_list = []
+    folder.files.each { |file| files_list.push file.description }
+    folder_infos[:files] = files_list
+    
+    folder_infos
+  end
+
+  ##
+  # Gets the first 20 last updated files
   def recents
-    files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), limit: 20)
+    files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), folder: false, limit: 20)
     files_list = []
     files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
 
   ##
-  # Set the file's favorite status based on parameter "favorite"
+  # Sets the file's favorite status based on parameter "favorite"
   def set_favorite
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
@@ -34,7 +70,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Get all the favorites files
+  # Returns all the favorites files
   def favorites
     files_list = []
     files = session[:user].x_files.all favorite: true
@@ -43,7 +79,7 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Method which returns user's public files
+  # Returns user's public files
   def public
     public_files = []
     files = session[:user].x_files.all public: true
@@ -52,17 +88,17 @@ class FilesController < ApplicationController
   end
   
   ##
-  # Set/Unset a public status file
+  # Sets/Unsets a public status file
   def set_public
     file = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "File not found") unless file
     file.public = params[:public]
     file.save
-    @result = { file: file, success: true }
+    @result = { file: file.description, success: true }
   end
 
   ##
-  # Return the list of all shared-files
+  # Returns the list of all shared-files
   def shared
     files_list = []
     files = session[:user].x_files.all(:uuid.not => nil)
@@ -70,31 +106,24 @@ class FilesController < ApplicationController
     @result = { files: files_list, success: true }
   end
 
-
   ##
-  # Return all the public file downloaded at least one time
-  #
-  # Useless method
-  #
-  def downloaded_public
-    files_list = []
-    files = session[:user].x_files.all public: true, :downloads.gte => 1
-    files.each { |file| files_list.push file.description }
-    @result = { files: files_list, success: true }
+  # Returns the Direct Download Link of the given file
+  def link
+    file = session[:user].x_files.get params[:id]
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    file.uuid = SecureRandom::uuid unless file.uuid
+    file.save
+    @result = { file: file.description, link: "#{BASE_URL}/app_dev.php/fs-file/#{file.uuid}", success: true }
   end
 
   ##
-  # Return all the public file downloaded at least one time
-  #
-  # Useless method
-  #
+  # Returns all files downloaded at least one time
   def downloaded
     files_list = []
     files = session[:user].x_files.all :downloads.gte => 1
-    files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
-    files.each { |file| files_list.push file }
+    # files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
+    files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
   end
-
 
 end

@@ -8,11 +8,17 @@ title() {
 
 list() {
 	title 'Listing files:'
-	echo_run curl -k -b cookies -c cookies -XGET $base/folders
+	echo_run curl -k -b cookies -c cookies -XGET $base/files
 }
 
+if [ $# == 1 ]
+then
+base={BASE_URL}
+else
 base=https://localhost:3000
-login=logitech
+fi
+
+login=logitzg
 
 title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
@@ -25,24 +31,37 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 
 list 
 
-foldername=folder1
+foldername=folder1/folder2/folder3
 
 title 'Creating folder'
-echo_run curl -k -b cookies -c cookies -XPUT $base/folders/$foldername -d ""
-
-title 'Listing created folder'
-echo_run curl -k -b cookies -c cookies -XGET $base/folders -d "folder=folder1"
-
-title 'set_favorite folder'
-echo_run curl -k -b cookies -c cookies -XPOST $base/folders/favorite -d 'path=folder1&favorite=true'
-
-title 'set_public folder'
-echo_run curl -k -b cookies -c cookies -XPOST $base/folders/public -d 'path=folder1&public=true'
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$foldername&content_hash=&size=&folder=true"
 
 list 
 
+id=
+while [ "$id" == '' ]
+do
+title 'Setting file (input ID):'
+read -r id
+done
+
+title 'Listing created folder'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/$id
+
+
+title 'set_favorite folder'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/favorites/$id -d 'path=$foldername&favorite=true'
+
+title 'set_public folder'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/public/$id -d 'path=$foldername&public=true'
+
+list 
+
+title 'Listing recent files:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
+
 title 'delete folder'
-echo_run curl -k -b cookies -c cookies -XDELETE $base/folders/$foldername
+echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id
 
 list
 

@@ -64,35 +64,26 @@ Server::Application.routes.draw do
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
 
-# Folders Controller
-  match 'folders' => 'folders#list', via: :get, constraints: {filename: /.*/}
-  match 'folders/:path' => 'folders#create', via: :put, constraints: {filename: /.*/}
-  match 'folders/favorite' => 'folders#favorite', via: :post
-  match 'folders/public' => 'folders#public', via: :post
-  match 'folders/:path' => 'folders#delete', via: :delete, constraints: {filename: /.*/}
-
 # Files Controller
   match 'files/recents' => 'files#recents', via: :get
   match 'files/favorites' => 'files#favorites', via: :get
+  match 'files/favorites/:id' => 'files#set_favorite', via: :post
   match 'files/public' => 'files#public', via: :get
-  match 'files/shared' => 'files#shared', via: :get
-  match 'files/favorite/:id' => 'files#set_favorite', via: :post
   match 'files/public/:id' => 'files#set_public', via: :post
-  
-# Useless methods
-  match 'files/downloaded' => 'files#downloaded', via: :get
-  match 'files/downloaded_public' => 'files#downloaded_public', via: :get
-  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
+  match 'files/shared' => 'files#shared', via: :get
+  match 'files/link/:id' => 'files#link', via: :get
+  match 'files/downloaded' => 'files#downloaded', via: :get  
+  match 'files(/:id)' => 'files#list', via: :get
 
 # sync controller
-  match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#delete', via: :delete, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
-  match 'sync_part/:part/:filename' => 'sync#get', via: :get, constraints: {filename: /.*/}
-  match 'sync_part/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
-  match 'sync_success/:filename' => 'sync#upload_success', via: :post, constraints: {filename: /.*/}
-  match 'sync_link/:filename' => 'sync#link', via: :get, constraints: {filename: /.*/}
-  match 'last_update' => 'sync#last_update', via: :get, constraints: {filename: /.*/}
+  match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+  match 'sync/:id' => 'sync#delete', via: :delete
+  match 'sync/:id' => 'sync#change', via: :post
+  match 'sync/:id/:part' => 'sync#upload_part', via: :put
+  match 'sync/:id/:part' => 'sync#get', via: :get
+  match 'sync_success/:id' => 'sync#upload_success', via: :post
+  match 'sync_folder' => 'sync#create_folder', via: :post
+  match 'last_update(/:id)' => 'sync#last_update', via: :get
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

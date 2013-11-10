@@ -21,8 +21,9 @@ class XFile
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
 
-  belongs_to :user, child_key: :user_id, index: true
+  belongs_to :user, index: true, required: true
   belongs_to :x_file, index: true, required: false
+  
   has n, :x_files
   
   def children
@@ -33,14 +34,21 @@ class XFile
     x_files.select { |item| !item.folder }
   end
  
-  def update_and_save
-    self.last_update = Time.now
-    # puts "------------------->  #{self.name} : #{self.last_update}"
-    self.save
-    # puts "-------------------> x_file: #{self.x_file}"
-    if (self.x_file)
-      self.x_file.update_and_save
+  def delete_content
+    if XFile.count(content_hash: self.content) <= 1 then
+      self.content.destroy!
     end
+  end
+
+  def delete
+    self.x_files.each do |item|      
+      if item.x_files then
+        item.delete
+      else
+        item.destroy!
+      end
+    end
+    self.destroy!
   end
 
   def description
@@ -77,43 +85,15 @@ class XFile
     JSON.generate h
   end
 
-  def multiple_accessor acc
-    if send(acc).size == 1 then
-      return send(acc)[0]
-    end
-    nil
-  end
-
-  def multiple_setter acc, arg
-    if send(acc).size == 1 then
-      send(acc)[0] = arg
-    else
-      send(acc) << arg
-    end
-    arg
-  end
-
-  def x_file
-    multiple_accessor :x_files
-  end
-
-  def x_file= arg
-    multiple_setter :x_files, arg
-  end
-
   def content
-    # puts "getting content #{content_hash}"
     return nil if content_hash.nil?
-    # puts content_hash
     Content.first content_hash: content_hash
   end
 
   def content= arg
     if !arg.nil? then
       self.content_hash = arg.content_hash
-      # puts "setting content hash: #{content_hash}"
     else
-      # puts "unsetting content"
       self.content_hash = nil
     end
   end
