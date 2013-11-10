@@ -11,12 +11,10 @@ require 'spec_helper'
 # doit retourner la liste des sous-fichiers uniquement
 # ne doit pas retourner de sous-dossiers
 #
-# # # # delete_content # # # #
-# doit supprimer le content du fichier si et seulement si il n'est plus référencé.
-#
 # # # # delete # # # #
 # doit delete le fichier/dossier courant
-# doit delete tous les sous-dossiers/ficheirs si self est un folder et donc a plusieurs x_files
+# doit delete tous les sous-dossiers/fichiers si self est un folder et donc a plusieurs x_files
+# doit delete tous les content qui ont besoin de l'être (== content plus référencé dans aucun autre fichier)
 #
 # # # # description # # # #
 # si folder doit retourner = { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update }

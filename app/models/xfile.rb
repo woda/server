@@ -33,21 +33,17 @@ class XFile
   def files
     x_files.select { |item| !item.folder }
   end
- 
-  def delete_content
-    if XFile.count(content_hash: self.content) <= 1 then
-      self.content.destroy!
-    end
-  end
 
   def delete
     self.x_files.each do |item|      
       if item.x_files then
         item.delete
-      else
+      else        
+        item.content.delete if item.content
         item.destroy!
       end
-    end
+    end    
+    self.content.delete if self.content
     self.destroy!
   end
 

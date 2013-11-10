@@ -41,9 +41,10 @@ require 'spec_helper'
 # doit fail si le param content_hash est invalide
 # doit fail si le param size est manquant
 # doit fail si le param size est invalide
-# doit retourner { success: true, need_upload: true, file: file.description, part_size: XFile.part_size (5mb) } 
-#
-# -> méthode non 100% terminée. test à faire plus tard
+# 
+# si new file + new content => return { success: true, need_upload: true, file: file.description, part_size: XFile.part_size (5mb) } 
+# si new file + existing content + first_file.uploaded:true => return { success: true, need_upload: false, file: file.description}
+# si new file + existing content + first_file.uploaded:false => { success: true, need_upload: true, file: file.description, part_size: XFile.part_size (5mb) } 
 #
 # # # # upload_part # # # #
 # doit fail si le param id est manquant
@@ -65,11 +66,9 @@ require 'spec_helper'
 # doit fail si le param id est invalide (id: hegfruyegf)
 # doit fail si le param id est invalide (file not found)
 # doit fail si le param id est invalide (file is a folder)
-# doit setter file.uplaoded à true
-# doit mettre à jour le last_update de tout les dossiers parents jusqu'au dossier racine
+# doit setter le booleen uploaded à true pour TOUS les fichiers qui référence ce content
+# doit mettre à jour le last_update de TOUS les dossiers parents de TOUS les fichiers jusqu'au dossier racine
 # doit retourner { success: true }
-#
-# -> methode a compléter
 #
 # # # # change # # # # 
 # doit faire ce que fais delete ET put
