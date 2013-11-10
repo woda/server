@@ -3,14 +3,13 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
-
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
 
-
+@saved_session = nil
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -39,6 +38,7 @@ def create_user(params)
   user =  User.new(params)
   user.set_password pwd
   user.save
+  user.create_root_folder
   session[:user] = user.id
   user
 end
@@ -49,6 +49,47 @@ end
 
 def get_json
   JSON.parse response.body
+end
+
+def generate_files(user)
+  user.create_folder("/Movies/")
+  user.create_folder("/Movies/MKV/English")
+  user.create_folder("/Movies/MKV/French")
+  user.create_folder("/Movies/AVI/English")
+  user.create_folder("/Movies/AVI/French")
+
+  user.create_file("/FileInRoot.txt")
+  user.create_file("/Movies/Youtube_Funny_Jokes.flv")
+  user.create_file("/Movies/Clip_Video_Teletubies.mpeg")
+  user.create_file("/Movies/Power_Rangers.flv.")
+  user.create_file("/Movies/Pokemon.flv")
+
+  user.create_file("/Movies/MKV/English/Avatar_(2010).mkv")
+  user.create_file("/Movies/MKV/English/The_Lord_Of_The_Ring.mkv")
+  user.create_file("/Movies/MKV/English/Inception.mkv")
+  user.create_file("/Movies/MKV/English/Gravity.mkv")
+  user.create_file("/Movies/MKV/French/Asterix_Mission_Cleopatre.mkv")
+  user.create_file("/Movies/MKV/French/Brice_De_Nice.mkv")
+  user.create_file("/Movies/MKV/French/Jeux_Enfant.mkv")
+  user.create_file("/Movies/MKV/French/Asterix_Chez_Les_Bretons.mkv")
+
+  user.create_file("/Movies/AVI/English/Harry_Potter_The_Chamber_Of_Secret.avi")
+  user.create_file("/Movies/AVI/English/Xmen_Origins.avi")
+  user.create_file("/Movies/AVI/English/Gravity.avi")
+  user.create_file("/Movies/AVI/English/Batman_Begins.avi")
+  user.create_file("/Movies/AVI/French/Asterix_Le_Gaulois.avi")
+  user.create_file("/Movies/AVI/French/Qui_A_Tue_Pamela_Rose.avi")
+  user.create_file("/Movies/AVI/French/OSS_117_Le_Caire_Nid_Despion.avi")
+  user.create_file("/Movies/AVI/French/OSS_117_A_Rio.avi")
+end
+
+def save_session
+  @saved_session = session[:user]
+end
+
+def load_session
+  session[:user] = @saved_session
+  @saved_session = nil
 end
 
 RSpec.configure do |config|

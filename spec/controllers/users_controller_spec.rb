@@ -28,7 +28,7 @@ describe UsersController do
       session[:user] = nil
       User.count.should == 0
 
-      put :create, login: "chainlist", password: "toto42", email: "chain@woda-server.com"
+      put :create, login: "chainlist", password: "toto42", email: "chain@woda-server.com", format: :json
 
       json = get_json
       
@@ -43,23 +43,19 @@ describe UsersController do
 
       fs = Folder.first user: session[:user], name: '/'
       fs.name.should match '/'
-      session[:user].x_files.destroy!
-      session[:user].destroy!
     end
 
     it "should not create user when login already taken" do
       u = create_user({login: "failLogin", email: "failLogin@woda-server.com", password: "failer42"})
       user_count = User.count
 
-      put :create, login: "failLogin", password: "loginfailed", email: "loginfailed@woda-server.com"
+      put :create, login: "failLogin", password: "loginfailed", email: "loginfailed@woda-server.com", format: :json
 
       # on vérifie qu'il n'a pas créé l'utilisateur
       User.count.should == user_count
       json = get_json
       json["error"].should match /login_taken/
 
-      u.x_files.destroy!
-      u.destroy!
     end
 
     it "should not create user when email already taken" do
@@ -69,7 +65,7 @@ describe UsersController do
       ##
       # => On créé un utilisateur avec le même email
       ##
-      put :create, login: "emailfailed", password: "emailFail", email: "failEmail@woda-server.com"
+      put :create, login: "emailfailed", password: "emailFail", email: "failEmail@woda-server.com", format: :json
 
       # on vérifie qu'il n'a pas créé l'utilisateur
       User.count.should == user_count
@@ -84,7 +80,7 @@ describe UsersController do
       ##
       # => Sans email
       ##
-      put :create, login: 'test', password: 'fail'
+      put :create, login: 'test', password: 'fail', format: :json
 
       User.count.should == user_count
       json = get_json
@@ -93,7 +89,7 @@ describe UsersController do
       ##
       # => Sans password
       ##
-      put :create, login: 'test', email: 'withoutpassword@woda-server.com'
+      put :create, login: 'test', email: 'withoutpassword@woda-server.com', format: :json
 
       User.count.should == user_count
       json = get_json
@@ -105,12 +101,12 @@ describe UsersController do
     it "should delete user and logged out him" do
       user_count = User.count
 
-      put :create, login: 'deleteuser', password: 'deleted', email: 'deleted@woda-server.com'
+      put :create, login: 'deleteuser', password: 'deleted', email: 'deleted@woda-server.com', format: :json
       User.count.should == user_count + 1
       userId = session[:user]
-      session[:user].should_not be_nil
+      require_login
 
-      delete :delete
+      delete :delete, format: :json
       User.count.should == user_count
       json = get_json
       session[:user].should be_nil
@@ -122,14 +118,14 @@ describe UsersController do
     it "should delete user and ONLY HIM" do
       user_count = User.count
 
-      put :create, login: 'deleteuser', password: 'deleted', email: 'deleted@woda-server.com'
-      put :create, login: 'deleteuser2', password: 'deleted', email: 'deleted2@woda-server.com'
+      put :create, login: 'deleteuser', password: 'deleted', email: 'deleted@woda-server.com', format: :json
+      put :create, login: 'deleteuser2', password: 'deleted', email: 'deleted2@woda-server.com', format: :json
 
       User.count.should == user_count + 2
       userId = session[:user]
-      session[:user].should_not be_nil
+      require_login
 
-      delete :delete
+      delete :delete, format: :json
       User.count.should == user_count + 1
       json = get_json
       json["success"].should be_true
@@ -145,28 +141,28 @@ describe UsersController do
 
     it "should be able to recreate same user after deletion" do
       user_count = User.count
-      put :create, login: 'recreate', password: 'deleted', email: 'recreate@woda-server.com'
+      put :create, login: 'recreate', password: 'deleted', email: 'recreate@woda-server.com', format: :json
       User.count.should == user_count + 1
 
-      delete :delete
+      delete :delete, format: :json
       User.count.should == user_count
 
-      put :create, login: 'recreate', password: 'deleted', email: 'recreate@woda-server.com'
+      put :create, login: 'recreate', password: 'deleted', email: 'recreate@woda-server.com', format: :json
       User.count.should == user_count + 1
-      delete :delete
+      delete :delete, format: :json
     end
 
     it "should not be able de relog after deleting" do
       user_count = User.count
-      put :create, login: 'relog', password: 'deleted', email: 'relog@woda-server.com'
+      put :create, login: 'relog', password: 'deleted', email: 'relog@woda-server.com', format: :json
       User.count.should == user_count + 1
 
-      delete :delete
+      delete :delete, format: :json
       User.count.should == user_count
 
       session[:user].should be_nil
 
-      post :login, login: 'relog', password: 'deleted'
+      post :login, login: 'relog', password: 'deleted', format: :json
       json = get_json
 
       json["success"].should be_false
@@ -174,7 +170,7 @@ describe UsersController do
 
     it "should not delete when not logged" do
       session[:user] = nil
-      delete :delete
+      delete :delete, format: :json
       json = get_json
       json["success"].should be_false
       json["error"].should match /not_logged_in/
@@ -186,12 +182,12 @@ describe UsersController do
 
     it "should describe user" do
       user_count = User.count
-      put :create, login: 'showUser', password: 'deleted', email: 'showUser@woda-server.com'
+      put :create, login: 'showUser', password: 'deleted', email: 'showUser@woda-server.com', format: :json
       User.count.should == user_count + 1        
 
-      session[:user].should_not be_nil
+      require_login
 
-      post :index
+      post :index, format: :json
       json = get_json
 
       json["success"].should be_true
@@ -200,7 +196,7 @@ describe UsersController do
     end
 
     it "shod not describe user when not logged" do
-      post :index
+      post :index, format: :json
       json = get_json
       json["success"].should be_false
       json["error"].should match /not_logged_in/
@@ -213,13 +209,13 @@ describe UsersController do
     it "not need all parameters" do
 
       user_count = User.count
-      put :create, login: "updateUser", password: "toto42", email: "updateUser@woda-server.com"
+      put :create, login: "updateUser", password: "toto42", email: "updateUser@woda-server.com", format: :json
       User.count.should == user_count + 1
 
       ##
       # => Only login
       ##
-      post :update, login: "updatedUser"
+      post :update, login: "updatedUser", format: :json
 
       json = json = get_json
       json["success"].should be_true
@@ -228,18 +224,18 @@ describe UsersController do
       ##
       # => Only password
       ##
-      post :update, password: "toto64"
+      post :update, password: "toto64", format: :json
 
-      post :logout
+      post :logout, format: :json
 
-      post :login, login: "updatedUser", password: "toto64"
+      post :login, login: "updatedUser", password: "toto64", format: :json
       json = json = get_json
       json["success"].should be_true
 
       ##
       # => Only email
       ##
-      post :update, email: "updatedUser@woda-server.com"
+      post :update, email: "updatedUser@woda-server.com", format: :json
       json = json = get_json
       json["success"].should be_true
       json["user"]["email"].should match /updatedUser@woda-server/
@@ -247,11 +243,11 @@ describe UsersController do
       ##
       # => All
       ##
-      post :update, login: "CocaCola", password: "Zero", email: "company@woda-server.com"
+      post :update, login: "CocaCola", password: "Zero", email: "company@woda-server.com", format: :json
       # => On vérifie qu'il n'a pas créé de nouveau utilisateur
       User.count.should == user_count + 1
-      post :logout
-      post :login, login: "CocaCola", password: "Zero"
+      post :logout, format: :json
+      post :login, login: "CocaCola", password: "Zero", format: :json
       json = json = get_json
       json["success"]
       json["user"]["login"].should match /CocaCola/
@@ -260,7 +256,7 @@ describe UsersController do
 
     it "should not update if not logged" do
       session[:user] = nil
-      post :update, login: "NotLogged"
+      post :update, login: "NotLogged", format: :json
       json = get_json
       json["success"].should be_false
       json["error"].should match /not_logged_in/
@@ -273,7 +269,7 @@ describe UsersController do
     it "should log the user in" do
       u = create_user({login: "LogginUser", email: "logginUser@woda-server.com", password: "login"})
 
-      post :login, login: "LogginUser", password: "login"
+      post :login, login: "LogginUser", password: "login", format: :json
       json = get_json
       json["success"].should be_true
       json["user"]["login"].should match /LogginUser/
@@ -281,7 +277,7 @@ describe UsersController do
     end
 
     it "should not log the user if user not found" do
-      post :login, login: "UserNotFound", password: "NotFound"
+      post :login, login: "UserNotFound", password: "NotFound", format: :json
       json = get_json
 
       json["success"].should be_false
@@ -291,7 +287,7 @@ describe UsersController do
     it "should not log the user if password is incorrect" do
       u = create_user({login: "PasswordIncorrect", email: "NotLogged@gmail.com", password: "notLogged"})
 
-      post :login, login: "PasswordIncorrect", password: "IsLogged"
+      post :login, login: "PasswordIncorrect", password: "IsLogged", format: :json
       json = get_json
       json["success"].should be_false
       json["error"].match /bad_password/
@@ -303,17 +299,17 @@ describe UsersController do
 
     it "should logout the user" do
       user_count = User.count
-      put :create, login: 'LoginOut', password: 'deleted', email: 'loginOut@woda-server.com'
+      put :create, login: 'LoginOut', password: 'deleted', email: 'loginOut@woda-server.com', format: :json
       User.count.should == user_count + 1        
 
-      session[:user].should_not be_nil
+      require_login
 
-      post :logout
+      post :logout, format: :json
       json = get_json
       json["success"].should be_true
       session[:user].should be_nil
 
-      post :index
+      post :index, format: :json
       json = get_json 
       json["success"].should be_false
       json["error"].should match /not_logged_in/
