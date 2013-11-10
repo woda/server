@@ -49,14 +49,17 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_param, "Parameter 'size' is not valid") if params[:size].nil? || params[:size].empty?
     
     current_content = Content.first content_hash: params[:content_hash]
+    already_uploaded = (current_content ? current_content.uploaded : false)
     f = session[:user].create_file params[:filename]
-    if current_content
+    if current_content && already_uploaded
       f.uploaded = true
       @result = { success: true, need_upload: false, file: f.description }
     else
-      current_content = Content.new(content_hash: params[:content_hash], size: params[:size].to_i, crypt_key: WodaCrypt.new.random_key.to_hex)
+      if current_content.nil?
+        current_content = Content.new(content_hash: params[:content_hash], size: params[:size].to_i, crypt_key: WodaCrypt.new.random_key.to_hex)
+        current_content.save
+      end
       @result = { success: true, need_upload: true, file: f.description, part_size: XFile.part_size }
-      current_content.save
     end
     f.content = current_content
     update_and_save f
@@ -91,8 +94,11 @@ class SyncController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
-    file.uploaded = true
-    update_and_save file
+    files = XFile.all(content_hash: file.content_hash, uploaded: false)
+    files.each do |item|
+      item.uploaded = true
+      update_and_save item
+    end
     @result = { success: true }
   end
 
@@ -109,7 +115,6 @@ class SyncController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can't delete the root folder") if file == session[:user].x_files.first
-    file.delete_content
     update_and_delete file
     @result = { success: true }
   end

@@ -33,32 +33,28 @@ class XFile
   def files
     x_files.select { |item| !item.folder }
   end
- 
-  def delete_content
-    if XFile.count(content_hash: self.content) <= 1 then
-      self.content.destroy!
-    end
-  end
 
   def delete
     self.x_files.each do |item|      
       if item.x_files then
         item.delete
-      else
+      else        
+        item.content.delete if item.content
         item.destroy!
       end
-    end
+    end    
+    self.content.delete if self.content
     self.destroy!
   end
 
   def description
     if self.folder then
-        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update }
+        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update, folder: self.folder }
       else
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
           size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
-          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite
+          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite, folder: self.folder
         }
       end
   end

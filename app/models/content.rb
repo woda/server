@@ -26,4 +26,14 @@ class Content
 #  property :content_salt, SHA256Salt
 #  property :content_salted_hash, SHA256Hash
 
+  def uploaded
+    XFile.count(content_hash: self.content_hash, uploaded: true) >= 1
+  end
+
+  def delete
+    if XFile.count(content_hash: self.content_hash) <= 1 then
+      self.destroy!
+    end
+  end
+
 end
