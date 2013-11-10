@@ -55,7 +55,7 @@ list
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=SUPERFOLDER"
+echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/folder1/folder2/folder3"
  
 list
 
@@ -92,9 +92,9 @@ echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id/0
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
 # echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
-# title 'Change'
-# # match 'sync/:id' => 'sync#change', via: :post
-# echo_run curl -k -b cookies -c cookies -XPOST $base/sync/$id -d "filename=$filename&content_hash=$sha256&size=$size"
+title 'Change'
+# match 'sync/:id' => 'sync#change', via: :post
+echo_run curl -k -b cookies -c cookies -XPOST $base/sync/$id -d "filename=$filename&content_hash=$sha256&size=$size"
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get

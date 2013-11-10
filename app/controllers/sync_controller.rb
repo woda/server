@@ -90,7 +90,7 @@ class SyncController < ApplicationController
   def upload_success
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_param, "Can't upload data to a folder") if f.folder
+    raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
     file.uploaded = true
     update_and_save file
     @result = { success: true }
