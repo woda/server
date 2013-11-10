@@ -11,12 +11,12 @@ list() {
 	echo_run curl -k -b cookies -c cookies -XGET $base/files
 }
 
-# if [ $# == 1 ]
-# then
-# base=https://woda-server.com:3000
-# else
+if [ $# == 1 ]
+then
+base=https://kobhqlt.fr:3000
+else
 base=https://localhost:3000
-# fi
+fi
 
 # login=suerpcool
 

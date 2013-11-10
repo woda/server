@@ -26,7 +26,7 @@ class UsersController < ApplicationController
     user.create_root_folder
     user.save    
     session[:user] = user
-    @result = { user: user, success: true }
+    @result = { user: user.description, success: true }
   end
     
   ##
@@ -43,13 +43,13 @@ class UsersController < ApplicationController
     session[:user].set_password params[:password] if params[:password]
     set_properties session[:user]
     session[:user].save
-    @result = { user: session[:user], success: true }
+    @result = { user: session[:user].description, success: true }
   end
   
   ##
   # Returns self.
   def index
-    @result = { user: session[:user], success: true }
+    @result = { user: session[:user].description, success: true }
   end
   
   ##
@@ -60,7 +60,7 @@ class UsersController < ApplicationController
     raise RequestError.new(:user_not_found, "User not found") unless user
     raise RequestError.new(:bad_password, "Bad password") unless user.has_password? params[:password]
     session[:user] = user
-    @result = { user: user, success: true }
+    @result = { user: user.description, success: true }
   end
   
   ##
