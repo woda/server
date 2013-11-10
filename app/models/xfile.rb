@@ -53,12 +53,12 @@ class XFile
 
   def description
     if self.folder then
-        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update }
+        { id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update, folder: self.folder }
       else
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
           size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
-          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite
+          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite, folder: self.folder
         }
       end
   end
