@@ -13,7 +13,7 @@ list() {
 
 if [ $# == 1 ]
 then
-base={BASE_URL}
+base=https://kobhqlt.fr:3000
 else
 base=https://localhost:3000
 fi
