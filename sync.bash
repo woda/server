@@ -11,7 +11,13 @@ list() {
 	echo_run curl -k -b cookies -c cookies -XGET $base/files
 }
 
+if [ $# == 1 ]
+then
+base=https://kobhqlt.fr:3000
+else
 base=https://localhost:3000
+fi
+
 login=pljkhhah
 
 
@@ -35,7 +41,7 @@ filename1=file1
 # read -r filename1
 # done
 
-filename2=file2
+# filename2=file2
 # while [ "$filename2" == '' ]
 # do
 # title 'Enter file name 2:'
@@ -50,19 +56,19 @@ filename2=file2
 # done
 
 
-filedata=
-while [ "$filedata" == '' ]
-do
-title 'Enter file data:'
-read -r filedata
-done
+filedata=iuehzfl
+# while [ "$filedata" == '' ]
+# do
+# title 'Enter file data:'
+# read -r filedata
+# done
 
-size=
-while [ "$size" == '' ]
-do
-title 'Enter file data size:'
-read -r size
-done
+size=7
+# while [ "$size" == '' ]
+# do
+# title 'Enter file data size:'
+# read -r size
+# done
 
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
@@ -78,9 +84,9 @@ title 'Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename1&content_hash=$sha256&size=$size"
 
-title 'RE Adding file:'
-# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename2&content_hash=$sha256&size=$size"
+# title 'RE Adding file:'
+# # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+# echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename1&content_hash=$sha256&size=$size"
 
 id1=
 while [ "$id1" == '' ]
@@ -91,17 +97,35 @@ done
 
 title 'Sending part:'
 # match 'sync/:id/:part' => 'sync#upload_part', via: :put
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "$filedata"
+# echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "$filedata"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "iue"
+
+title 'success upload'
+# match 'sync/:id' => 'sync#needed_parts', via: :post
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1 -d ""
+
+title 'Sending part:'
+# match 'sync/:id/:part' => 'sync#upload_part', via: :put
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/1 -d "hzf"
+
+title 'success upload'
+# match 'sync/:id' => 'sync#needed_parts', via: :post
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1 -d ""
+
+title 'Sending part:'
+# match 'sync/:id/:part' => 'sync#upload_part', via: :put
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/2 -d "l"
+
 
 # title 'Sending part:'
 # match 'sync/:id/:part' => 'sync#upload_part', via: :put
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id/0 -d "$filedata"
 
-title 'success upload'
-# match 'sync_success/:id' => 'sync#upload_success', via: :post
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$id1 -d ""
+# title 'success upload'
+# # match 'sync/:id' => 'sync#needed_parts', via: :post
+# echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1 -d ""
 
-list
+# list
 
 # title 'RE Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -127,14 +151,14 @@ list
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
 # echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
-# list 
+list 
 
-id2=
-while [ "$id2" == '' ]
-do
-title 'Setting file (input ID) 2:'
-read -r id2
-done
+# id2=
+# while [ "$id2" == '' ]
+# do
+# title 'Setting file (input ID) 2:'
+# read -r id2
+# done
 
 # id3=
 # while [ "$id3" == '' ]
@@ -147,7 +171,7 @@ done
 title 'Deleting file:'
 # match 'sync/:id' => 'sync#delete', via: :delete
 echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id1
-echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id2
+# echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id2
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id3
 
 # title 'last update'

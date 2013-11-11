@@ -26,6 +26,7 @@ require 'spec_helper'
 #
 # # # # create_file # # # #
 # doit fail si pas de param path 
+# doit fail si le fichier existe deja
 # doit fail si param path invalid (testé avec pleins de valeurs incohérentes pour voir le résultat: special character, multple slash, etc.)
 # doit créer le(s) dossier(s) parents si besoin (params = /folder1/folder2/folder3/file1) (retourne le fichier)
 # doit retourner un fichier
