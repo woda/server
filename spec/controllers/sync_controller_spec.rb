@@ -73,7 +73,7 @@ require 'spec_helper'
 # doit faire tout ce que fait la methode complete_upload
 # doit retourner { success: true }
 #
-# # # # upload_success # # # #
+# # # # needed_parts # # # #
 # doit fail si le param id est manquant
 # doit fail si le param id est invalide (id: hegfruyegf)
 # doit fail si le param id est invalide (file not found)

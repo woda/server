@@ -10,7 +10,7 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :filename }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
-  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :upload_success]
+  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts]
 
   ##
   # Update the given file, save it and update its parent recursively 
@@ -104,8 +104,8 @@ class SyncController < ApplicationController
   end
 
   ##
-  # Method to specify that a file has been fully uploaded
-  def upload_success
+  # Method to get the content parts that still need to be uploaded
+  def needed_parts
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder

@@ -101,16 +101,16 @@ title 'Sending part:'
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "iue"
 
 title 'success upload'
-# match 'sync_success/:id' => 'sync#upload_success', via: :post
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$id1 -d ""
+# match 'sync/:id' => 'sync#needed_parts', via: :post
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1 -d ""
 
 title 'Sending part:'
 # match 'sync/:id/:part' => 'sync#upload_part', via: :put
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/1 -d "hzf"
 
 title 'success upload'
-# match 'sync_success/:id' => 'sync#upload_success', via: :post
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$id1 -d ""
+# match 'sync/:id' => 'sync#needed_parts', via: :post
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1 -d ""
 
 title 'Sending part:'
 # match 'sync/:id/:part' => 'sync#upload_part', via: :put
@@ -122,8 +122,8 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/2 -d "l"
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id/0 -d "$filedata"
 
 # title 'success upload'
-# # match 'sync_success/:id' => 'sync#upload_success', via: :post
-# echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$id1 -d ""
+# # match 'sync/:id' => 'sync#needed_parts', via: :post
+# echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1 -d ""
 
 # list
 
