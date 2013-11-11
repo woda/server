@@ -25,9 +25,6 @@ require 'spec_helper'
 #          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite
 #        }
 #
-# # # # self.part_size # # # #
-# ne doit pas etre testé
-#
 # # # # size # # # #
 # si folder doit retourner la taille du content du premier fichier dans la liste
 # si fichier doit retourner la taille du content

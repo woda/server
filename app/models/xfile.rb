@@ -53,14 +53,10 @@ class XFile
       else
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-          size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
+          size: self.size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
           shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite, folder: self.folder
         }
       end
-  end
-
-  def self.part_size
-    return 5242880 # 5 * 1024 * 1024
   end
 
   def size
@@ -76,8 +72,8 @@ class XFile
   def to_json *args
     json = super
     h = JSON.parse json
-    h['size'] = size
-    h['part_size'] = XFile.part_size
+    h[:size] = size
+    h[:part_size] = PART_SIZE
     JSON.generate h
   end
 
