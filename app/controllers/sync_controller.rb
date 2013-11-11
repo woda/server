@@ -10,7 +10,7 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :filename }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
-  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :upload_success]
+  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts]
 
   ##
   # Update the given file, save it and update its parent recursively 
@@ -32,6 +32,23 @@ class SyncController < ApplicationController
   end
 
   ##
+  # Method to use to complete an upload if all the content parts have been uploaded
+  def complete_upload(content, part)
+    parts = XPart.all(content: content, part_number: part)
+    parts.each { |item| item.destroy! }
+    if XPart.count(content: content) == 0 then
+      files = XFile.all(content_hash: content.content_hash, uploaded: false)
+      files.each do |item|
+        item.uploaded = true
+        update_and_save item
+      end
+      true
+    else
+      false
+    end
+  end
+
+  ##
   # Creates and return a new folder
   def create_folder
     raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
@@ -49,14 +66,14 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_param, "Parameter 'size' is not valid") if params[:size].nil? || params[:size].empty?
     
     current_content = Content.first content_hash: params[:content_hash]
+    already_uploaded = (current_content ? current_content.uploaded : false)
     f = session[:user].create_file params[:filename]
-    if current_content
+    if current_content && already_uploaded
       f.uploaded = true
       @result = { success: true, need_upload: false, file: f.description }
     else
-      current_content = Content.new(content_hash: params[:content_hash], size: params[:size].to_i, crypt_key: WodaCrypt.new.random_key.to_hex)
-      @result = { success: true, need_upload: true, file: f.description, part_size: XFile.part_size }
-      current_content.save
+      current_content = Content.create(params[:content_hash], params[:size].to_i) if current_content.nil?
+      @result = { success: true, need_upload: true, needed_parts: current_content.needed_parts, part_size: PART_SIZE, file: f.description }
     end
     f.content = current_content
     update_and_save f
@@ -72,9 +89,9 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_part, "\"#{params[:part]}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params[:part]
     part = params[:part].to_i
     raise RequestError.new(:bad_part, "Content incorrect") if f.content.nil?
-    raise RequestError.new(:bad_part, "Part number too high") if part > ( f.content.size / XFile.part_size )
+    raise RequestError.new(:bad_part, "Part number too high") if part > ( f.content.size / PART_SIZE )
     data = request.body.read
-    part_size = (part == f.content.size / XFile.part_size ? f.content.size % XFile.part_size : XFile.part_size)
+    part_size = (part == f.content.size / PART_SIZE ? f.content.size % PART_SIZE : PART_SIZE)
     raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == data.length
     cypher = WodaCrypt.new
     cypher.encrypt
@@ -82,18 +99,18 @@ class SyncController < ApplicationController
     cypher.iv = WodaHash.digest(params[:part])
     bucket = Storage['woda-files']
     obj = bucket.create("#{f.content.content_hash}/#{params[:part]}", data: (cypher.update(data) + cypher.final), content_type: 'octet-stream')
-    @result = { success: true }
+    complete_upload(f.content, part)
+    @result = { success: true, needed_parts: f.content.needed_parts, uploaded: f.uploaded }
   end
 
   ##
-  # Method to specify that a file has been fully uploaded
-  def upload_success
+  # Method to get the content parts that still need to be uploaded
+  def needed_parts
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_param, "Can't upload data to a folder") if f.folder
-    file.uploaded = true
-    update_and_save file
-    @result = { success: true }
+    raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
+    raise RequestError.new(:no_content, "File content found") if file.content.nil?
+    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded }
   end
 
   ##
@@ -109,7 +126,6 @@ class SyncController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can't delete the root folder") if file == session[:user].x_files.first
-    file.delete_content
     update_and_delete file
     @result = { success: true }
   end

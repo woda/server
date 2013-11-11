@@ -1,6 +1,36 @@
 require 'spec_helper'
 
-# a vérifier que tout a été fait
+#
+# TODO vérifier ce qui a déjà été fait
+#
+# # # # description # # # #
+# doit retourner { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked }
+#
+# # # # has_password? # # # #
+# doit fail si l'utilisateur n'a pas de password
+#
+# # # # set_password # # # #
+# doit stocker le password encrypté
+#
+# # # # create_root_folder # # # #
+# doit créer le dossier racine de l'utilisateur et le stocker
+# ce dossier doit être le premier des x_files
+# doit retourner le dossier root
+#
+# # # # create_folder # # # #
+# doit fail si pas de param path 
+# doit fail si param path invalid (testé avec pleins de valeurs incohérentes pour voir le résultat: special character, multple slash, etc.)
+# doit créer un dossier
+# doit retourner un dossier
+# doit créer un dossier et si besoin ses dossiers parents (params = /folder1/folder2/folder3) (retourne le dernier dossier)
+#
+# # # # create_file # # # #
+# doit fail si pas de param path 
+# doit fail si le fichier existe deja
+# doit fail si param path invalid (testé avec pleins de valeurs incohérentes pour voir le résultat: special character, multple slash, etc.)
+# doit créer le(s) dossier(s) parents si besoin (params = /folder1/folder2/folder3/file1) (retourne le fichier)
+# doit retourner un fichier
+# doit fail si path = '/'
 
 describe User do
   before do

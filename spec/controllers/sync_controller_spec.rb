@@ -5,6 +5,13 @@ require 'spec_helper'
 # # # # all # # # #
 # login required
 # 
+# # # #  complete_upload # # # #
+# doit supprimer toutes les parties de fichiers correspondant aux paramètres (id fichier + id part)
+# doit setter le booleen uploaded à true pour TOUS les fichiers qui référence ce content
+# doit mettre à jour le last_update de TOUS les dossiers parents de TOUS les fichiers jusqu'au dossier racine
+# retourne true if upload finished
+# retourner false if upload not finished
+#
 # # # # update_and_save # # # #
 # doit prendre en parametre un xfile
 # doit fail si pas de parametre
@@ -41,9 +48,14 @@ require 'spec_helper'
 # doit fail si le param content_hash est invalide
 # doit fail si le param size est manquant
 # doit fail si le param size est invalide
-# doit retourner { success: true, need_upload: true, file: file.description, part_size: XFile.part_size (5mb) } 
+# doit fail si le fichier existe deja
 #
-# -> méthode non 100% terminée. test à faire plus tard
+# si new file + new content then
+### => return { success: true, need_upload: true, file: file.description, needed_parts: [0,1,...], part_size: XFile.part_size (5mb) }
+# si new file + existing content + first_file.uploaded:true then
+### => return { success: true, need_upload: false, file: file.description }
+# si new file + existing content + first_file.uploaded:false then
+### => { success: true, need_upload: true, file: file.description, needed_parts: [0,1,...], part_size: XFile.part_size (5mb) }
 #
 # # # # upload_part # # # #
 # doit fail si le param id est manquant
@@ -58,18 +70,20 @@ require 'spec_helper'
 # doit fail si la partie envoyé est trop courte
 # doit stocker la partie du fichier dans le serveur (je sais pas comment le tester)
 # doit stocker la partie du fichier encryptée (je sais pas comment le tester)
+# doit faire tout ce que fait la methode complete_upload
 # doit retourner { success: true }
 #
-# # # # upload_success # # # #
+# # # # needed_parts # # # #
 # doit fail si le param id est manquant
 # doit fail si le param id est invalide (id: hegfruyegf)
 # doit fail si le param id est invalide (file not found)
 # doit fail si le param id est invalide (file is a folder)
-# doit setter file.uplaoded à true
-# doit mettre à jour le last_update de tout les dossiers parents jusqu'au dossier racine
-# doit retourner { success: true }
-#
-# -> methode a compléter
+# doit fail si le fichier n'a pas de content (File content found)
+# SI et seulement SI toutes las parties du fichier ont été uploader la methode doit:
+### doit retourner { success: true, uploaded: true, needed_parts: [] }
+# SINON 
+## doit retourner la liste des parties manquantes / qui restent à uploaded
+## doit retourner { success: true, uploaded: false, needed_parts: [0, 1, 2, ...] }
 #
 # # # # change # # # # 
 # doit faire ce que fais delete ET put

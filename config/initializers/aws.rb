@@ -1,7 +1,8 @@
-BASE_URL='https://woda-server.com:3000'
+BASE_URL='https://kobhqlt.fr:3000'
+PART_SIZE=5242880 # 5 * 1024 * 1024
 
-Storage::path='./storage'
-Storage::use_aws = false
+# Storage::path='./storage'
+Storage::use_aws = true
 AWS_ACCESS = 'AKIAIGXEIP24RN5TWCXQ'
 AWS_SECRET = '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'
 

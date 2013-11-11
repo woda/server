@@ -79,9 +79,9 @@ Server::Application.routes.draw do
   match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
   match 'sync/:id' => 'sync#delete', via: :delete
   match 'sync/:id' => 'sync#change', via: :post
+  match 'sync/:id' => 'sync#needed_parts', via: :get
   match 'sync/:id/:part' => 'sync#upload_part', via: :put
   match 'sync/:id/:part' => 'sync#get', via: :get
-  match 'sync_success/:id' => 'sync#upload_success', via: :post
   match 'sync_folder' => 'sync#create_folder', via: :post
   match 'last_update(/:id)' => 'sync#last_update', via: :get
 
