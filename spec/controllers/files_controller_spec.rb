@@ -1,17 +1,5 @@
 require 'spec_helper'
 
-# doit être testé:
-#
-# # # all # # # #
-# login required
-#
-# # # # downloaded # # # #
-# doit retourner success: true + files: array of files
-# doit retourner les fichiers et PAS de dossiers
-# doit retourner les fichiers dans un tableau
-# doit retourner les fichiers qui ont été téléchargés au moins 1 fois ou plus.
-# doit retourner un array vide + success:true si pas de fichiers
-
 describe FilesController do
 	render_views
 	DataMapper::Model.raise_on_save_failure = true
@@ -480,45 +468,153 @@ describe FilesController do
 	end
 
 	describe "link and sharing" do
-		# # # # link # # # #
-		# doit fail si pas de param(id)
-		# doit fail si le param id est invalide (id: hegfruyegf)
-		# doit fail si l'id n'existe pas, ou que le fichier n'appartient pas à l'utilisateur
-		# ne doit pas mettre à jour le last_update du dossier racine
-		# doit retourner success:true + file: file.description + link: URL
-		# # # # shared # # # #
-		# doit retourner success: true + array of files
-		# doit retourner les fichiers ET dossiers dont le UUID/DDL link a été généré
-		# doit retourner les fichiers ET dossiers dans un tableau
-		# doit retourner un array vide + success:true si pas de fichiers
 
 		it "should generate link for folder" do
 			folder = Folder.first name: "Movies"
-			get :link, id: folder.id, format: :json
+			post :link, id: folder.id, format: :json
 			json = get_json
-			puts json
 			json["success"].should be_true
 			json["file"].should_not be_nil
 			json["file"]["name"].should match /Movies/
 			json["file"]["folder"].should be_true
 			json["file"]["shared"].should be_true
 			json["link"].should_not be_nil
-			puts json["link"]
 		end
 
 
 		it "should generate link for file" do
 			file = XFile.first name: "Gravity.avi"
-			get :link, id: file.id, format: :json
+			post :link, id: file.id, format: :json
 			json = get_json
-			puts json
 			json["success"].should be_true
 			json["file"].should_not be_nil
 			json["file"]["name"].should match /Gravity.avi/
 			json["file"]["folder"].should be_false
 			json["file"]["shared"].should be_true
 			json["link"].should_not be_nil
-			puts json["link"]
+		end
+
+		it "should faild without param" do
+			lambda {get :link, format: :json}.should raise_error
+		end
+
+		it "should fail with bad id or invalid id" do
+			post :link, id: "asdjawdwa", format: :json
+			json = get_json
+			json["success"].should be_nil
+
+			post :link, id: 4599, format: :json
+			json = get_json
+			json["success"].should be_false
+			json["error"].should match /file_not_found/
+		end
+
+		it "should fail generating link when not logged in" do
+			session[:user] = nil
+			post :link, id: 23, format: :json
+			json = get_json
+			json["success"].should be_false
+			json["error"].should match /not_logged_in/
+		end
+
+		it "should return all shared files" do
+			u = create_user({login: "SharedFile", password: "password", email: "SharedFile@woda-serveur.com"})
+			generate_files u
+			folder = Folder.first name: "AVI", user: u
+			file = XFile.first name: "Gravity.mkv", user: u
+			post :link, id: folder.id, format: :json
+			post :link, id: file.id, format: :json
+
+			get :shared, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["files"].should_not be_nil
+			json["files"].size.should == 2
+			json["files"][0]["name"].should match /AVI/
+			json["files"][0]["shared"].should be_true
+			json["files"][0]["folder"].should be_true
+			json["files"][1]["name"].should match /Gravity.mkv/
+			json["files"][1]["shared"].should be_true
+			json["files"][1]["folder"].should be_false
+		end
+
+		it "should return an empty array" do
+			create_user({login: "NoSharedFile", password: "password", email: "NoSharedFile@woda-serveur.com"})
+
+			get :shared, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["files"].should_not be_nil
+			json["files"].size.should == 0
+		end
+
+		it "should not return all shared files when not logged in" do
+			session[:user] = nil
+			get :shared, format: :json
+			json = get_json
+			json["success"].should be_false
+			json["error"].should match /not_logged_in/
+		end
+
+	end
+
+	describe "downloaded files" do
+		# doit retourner success: true + files: array of files
+		# doit retourner les fichiers et PAS de dossiers
+		# doit retourner les fichiers dans un tableau
+		# doit retourner les fichiers qui ont été téléchargés au moins 1 fois ou plus.
+		# doit retourner un array vide + success:true si pas de fichiers
+
+		it "should return all files downloaded" do
+			folder = Folder.first name: "MKV"
+			folder.downloads = 2
+			folder.save
+
+			file = XFile.first name: "Gravity.mkv"
+			file.downloads = 42
+			file.save
+
+			file = XFile.first name: "Batman_Begins.avi"
+			file.downloads = 1
+			file.save
+
+			get :downloaded, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["files"].should_not be_nil
+			json["files"].size.should == 2
+			json["files"][0]["folder"].should be_false
+			json["files"][0]["downloads"].should >= 1
+			json["files"][1]["folder"].should be_false
+			json["files"][1]["downloads"].should >= 1
+		end
+
+		it "should return an empty array" do
+			folder = Folder.first name: "MKV"
+			folder.downloads = 0
+			folder.save
+
+			file = XFile.first name: "Gravity.mkv"
+			file.downloads = 0
+			file.save
+
+			file = XFile.first name: "Batman_Begins.avi"
+			file.downloads = 0
+			file.save
+
+			get :downloaded, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["files"].should_not be_nil
+			json["files"].size.should == 0	
+		end
+
+		it "should not return all downloaded files when not logged in" do
+			session[:user] = nil
+			get :downloaded, format: :json
+			json = get_json
+			json["success"].should be_false
+			json["error"].should match /not_logged_in/
 		end
 
 	end
