@@ -32,9 +32,10 @@ class UsersController < ApplicationController
   ##
   # Deletes the current user
   def delete
+    session[:user].x_files.destroy
     session[:user].destroy
     session[:user] = nil
-    @result = { success: true }
+    @result = { success: true}
   end
   
   ##
