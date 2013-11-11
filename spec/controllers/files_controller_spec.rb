@@ -4,19 +4,6 @@ require 'spec_helper'
 #
 # # # all # # # #
 # login required
-# 
-# # # # shared # # # #
-# doit retourner success: true + array of files
-# doit retourner les fichiers ET dossiers dont le UUID/DDL link a été généré
-# doit retourner les fichiers ET dossiers dans un tableau
-# doit retourner un array vide + success:true si pas de fichiers
-#
-# # # # link # # # #
-# doit fail si pas de param(id)
-# doit fail si le param id est invalide (id: hegfruyegf)
-# doit fail si l'id n'existe pas, ou que le fichier n'appartient pas à l'utilisateur
-# ne doit pas mettre à jour le last_update du dossier racine
-# doit retourner success:true + file: file.description + link: URL
 #
 # # # # downloaded # # # #
 # doit retourner success: true + files: array of files
@@ -370,21 +357,170 @@ describe FilesController do
 		end
 	end
 
-	# # # # set_public # # # #
-	# doit fail si pas de param(id) || param(public)
-	# doit fail si le param id est invalide (id: hegfruyegf)
-	# doit fail si l'id n'existe pas
-	# doit fail si le fichier n'appartient pas à l'utilisateur
-	# doit fail si le param public n'est pas valide
-	# ne doit pas mettre à jour le last_update du dossier racine
-	# doit retourner success:true + file: file.description
-	# 
-	# # # # public # # # #
-	# doit retourner success: true + array of files
-	# doit retourner les fichiers ET dossiers public
-	# doit retourner les fichiers ET dossiers dans un tableau
-	# doit retourner un array vide + success:true si pas de fichiers
 	describe "public files" do
 		
+		it "should set/unset folder to public" do
+			folder = Folder.first name: "Movies"
+			post :set_public, id: folder.id, public: true, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["file"].should be_true
+			json["file"]["name"].should match /Movies/
+			json["file"]["public"].should be_true
+
+			post :set_public, id: folder.id, public: false, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["file"].should be_true
+			json["file"]["name"].should match /Movies/
+			json["file"]["public"].should be_false
+		end
+
+		it "should set/unset file to public" do
+			file = XFile.first name: "Gravity.mkv"
+			post :set_public, id: file.id, public: true, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["file"].should be_true
+			json["file"]["name"].should match /Gravity.mkv/
+			json["file"]["public"].should be_true
+
+			post :set_public, id: file.id, public: false, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["file"].should be_true
+			json["file"]["name"].should match /Gravity.mkv/
+			json["file"]["public"].should be_false	
+		end
+
+		it "should fail if the user does not own the file/folder" do
+			back = session[:user]
+			u = create_user({login: "Owner", password: "424242", email: "owner@woda-serveur.com"})
+			u.create_folder "MKV"
+			u.create_file "Gravity.mkv"
+			session[:user] = back
+
+			folder = Folder.first name: "MKV", user: u
+			post :set_public, id: folder.id, public: true, format: :json
+			json = get_json
+			json["success"].should be_false
+			json["error"].should match /file_not_found/
+			
+			file = XFile.first name: "Gravity.mkv", user: u
+			post :set_public, id: file.id, public: true, format: :json
+			json = get_json
+			json["success"].should be_false
+			json["error"].should match /file_not_found/
+		end
+
+		it "should not set public if the id does not exist or is invalid" do
+			post :set_public, id: "424242", public: true, format: :json
+			json = get_json
+			json["error"].should match /file_not_found/
+
+			post :set_public, id: "aksjds", public: true, format: :json
+			json = get_json
+			json["success"].should be_false
+		end	
+
+		it "should fail if params is missing" do
+			# => Both
+			lambda {post :set_public, format: :json}.should raise_error
+
+			# => id
+			lambda {post :set_public, favorite: true, format: :json}.should raise_error
+
+			# => favorite
+			post :set_favorite, id: 13, format: :json
+			json = get_json
+			json["error"].should match /missing_params/
+		end
+
+		it "should fail setting favorite if not logged" do
+			back = session[:user]
+			session[:user] = nil
+			post :set_public, id: 13, public: true, format: :json
+			json = get_json
+			json["error"].should match /not_logged_in/
+		end		
+
+		it "should return public list" do
+			folder = Folder.first name: "AVI"
+			post :set_public, id: folder.id, public: true
+
+			file = XFile.first name: "Gravity.avi"
+			post :set_public, id: file.id, public: true
+
+			get :public, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["files"].size.should == 2
+			json["files"][0]["name"].should match /AVI/
+			json["files"][1]["name"].should match /Gravity.avi/
+
+			post :set_public, id: folder.id, public: false
+			post :set_public, id: file.id, public: false
+		end
+
+		it "should return an empty list" do
+			get :public, format: :json
+			json = get_json
+			json["success"].should be_true
+			json["files"].size.should == 0
+		end
+
+		it "should not return public list when not logged" do
+			back = session[:user]
+			session[:user] = nil
+			get :public, format: :json
+			json = get_json
+			json["error"].should match /not_logged_in/
+		end	
+
 	end
+
+	describe "link and sharing" do
+		# # # # link # # # #
+		# doit fail si pas de param(id)
+		# doit fail si le param id est invalide (id: hegfruyegf)
+		# doit fail si l'id n'existe pas, ou que le fichier n'appartient pas à l'utilisateur
+		# ne doit pas mettre à jour le last_update du dossier racine
+		# doit retourner success:true + file: file.description + link: URL
+		# # # # shared # # # #
+		# doit retourner success: true + array of files
+		# doit retourner les fichiers ET dossiers dont le UUID/DDL link a été généré
+		# doit retourner les fichiers ET dossiers dans un tableau
+		# doit retourner un array vide + success:true si pas de fichiers
+
+		it "should generate link for folder" do
+			folder = Folder.first name: "Movies"
+			get :link, id: folder.id, format: :json
+			json = get_json
+			puts json
+			json["success"].should be_true
+			json["file"].should_not be_nil
+			json["file"]["name"].should match /Movies/
+			json["file"]["folder"].should be_true
+			json["file"]["shared"].should be_true
+			json["link"].should_not be_nil
+			puts json["link"]
+		end
+
+
+		it "should generate link for file" do
+			file = XFile.first name: "Gravity.avi"
+			get :link, id: file.id, format: :json
+			json = get_json
+			puts json
+			json["success"].should be_true
+			json["file"].should_not be_nil
+			json["file"]["name"].should match /Gravity.avi/
+			json["file"]["folder"].should be_false
+			json["file"]["shared"].should be_true
+			json["link"].should_not be_nil
+			puts json["link"]
+		end
+
+	end
+
 end
