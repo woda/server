@@ -131,9 +131,9 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/2 -d "l"
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename3&content_hash=$sha256&size=$size"
 
-# title 'Getting part:'
-# # match 'sync/:id/:part' => 'sync#get', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id/0
+title 'Getting part:'
+# match 'sync/:id/:part' => 'sync#get', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1/0
 
 # filedata=rth
 # size=3
