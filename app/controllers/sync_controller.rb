@@ -150,7 +150,7 @@ class SyncController < ApplicationController
     cypher.decrypt
     cypher.key = f.content.crypt_key.from_hex
     cypher.iv = WodaHash.digest(params[:part])
-    @result = { data: cypher.update(file) + cypher.final, success: true }
+    @result = { data: cypher.update(file) + cypher.final, file: f.description, part: params[:part], success: true }
   end
 
   ##
