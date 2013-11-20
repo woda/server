@@ -57,6 +57,7 @@ require 'spec_helper'
 # si new file + existing content + first_file.uploaded:false then
 ### => { success: true, need_upload: true, file: file.description, needed_parts: [0,1,...], part_size: XFile.part_size (5mb) }
 #
+#
 # # # # upload_part # # # #
 # doit fail si le param id est manquant
 # doit fail si le param id est invalide (id: hegfruyegf)
@@ -110,7 +111,7 @@ require 'spec_helper'
 # doit fail si le content du fichier est invalide (je sais pas comment le tester)
 # doit fail le file.uploaded == false
 # if part == 0 then file.downloads += 1
-# doit retourner la data du fichier décrypté : { data: "bonjour", success; "true" }
+# doit retourner UNIQUEMENT la data du fichier décrypté : "bonjour"
 #
 # # # # last_update # # # #
 # ne doit PAS fail si le param id est manquant

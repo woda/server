@@ -70,13 +70,14 @@ class SyncController < ApplicationController
     f = session[:user].create_file params[:filename]
     if current_content && already_uploaded
       f.uploaded = true
-      @result = { success: true, need_upload: false, file: f.description }
+      @result = { success: true, need_upload: false }
     else
       current_content = Content.create(params[:content_hash], params[:size].to_i) if current_content.nil?
-      @result = { success: true, need_upload: true, needed_parts: current_content.needed_parts, part_size: PART_SIZE, file: f.description }
+      @result = { success: true, need_upload: true, needed_parts: current_content.needed_parts, part_size: PART_SIZE }
     end
     f.content = current_content
     update_and_save f
+    @result.merge!({ file: f.description})
     session[:user].save
   end
 
@@ -150,7 +151,8 @@ class SyncController < ApplicationController
     cypher.decrypt
     cypher.key = f.content.crypt_key.from_hex
     cypher.iv = WodaHash.digest(params[:part])
-    @result = { data: cypher.update(file) + cypher.final, file: f.description, part: params[:part], success: true }
+    # @result = { data: cypher.update(file) + cypher.final, file: f.description, part: params[:part], success: true }
+    @result = cypher.update(file) + cypher.final
   end
 
   ##
