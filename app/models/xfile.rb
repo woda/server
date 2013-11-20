@@ -56,20 +56,10 @@ class XFile
       else
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-          size: self.size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
+          size: self.content.size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
           shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite, folder: self.folder
         }
       end
-  end
-
-  def size
-    size = 0
-    if !content.nil? then
-      size = content.size
-    elsif x_files.size > 0 then
-      size = x_files[0].size
-    end
-    size
   end
 
   def to_json *args

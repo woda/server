@@ -21,13 +21,9 @@ require 'spec_helper'
 # si fichier doit retourner = 
 #        { 
 #          id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-#          size: self.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
+#          size: self.content.size, part_size: XFile.part_size, uploaded: self.uploaded, public: self.public, 
 #          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite
 #        }
-#
-# # # # size # # # #
-# si folder doit retourner la taille du content du premier fichier dans la liste
-# si fichier doit retourner la taille du content
 #
 # # # # to_json # # # #
 # doit retourner les params 'size' et 'part_size' dans un JSON
