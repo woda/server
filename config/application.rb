@@ -71,6 +71,6 @@ module Server
     config.assets.version = '1.0'
 
     config.force_ssl = true
-    config.session_store :cookie_store, key: '_server_session', :domain => :all, :httponly => false
+    config.session_store :cookie_store, key: '_server_session', domain: :all, httponly: false
   end
 end
