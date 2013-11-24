@@ -24,14 +24,16 @@ class ApplicationController < ActionController::Base
   before_filter :get_user
   around_filter :transaction
 
-   before_filter :set_access_control_headers
-   def set_access_control_headers
-     headers['Access-Control-Allow-Origin'] = '*'
-     headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
-     headers['Access-Control-Request-Method'] = '*'
-     headers['Access-Control-Allow-Credentials'] = 'true'
-     headers['Access-Control-Allow-Headers'] = 'Origin, X-Prototype-Version, X-Requested-With, Content-Type, Accept, Authorization'
-   end
+  before_filter :set_access_control_headers
+  def set_access_control_headers
+    if request.headers["Origin"]
+      headers['Access-Control-Allow-Origin'] = request.headers["Origin"]
+      headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
+      headers['Access-Control-Request-Method'] = '*'
+      headers['Access-Control-Allow-Credentials'] = 'true'
+      headers['Access-Control-Allow-Headers'] = 'Origin, X-Prototype-Version, X-Requested-With, Content-Type, Accept, Authorization'
+    end
+  end
 
   def transaction
     User.transaction do |t|
