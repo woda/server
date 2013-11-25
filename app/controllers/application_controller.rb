@@ -21,18 +21,25 @@ class ApplicationController < ActionController::Base
   rescue_from RequestError, :with => :rescue_request_error
   rescue_from DataMapper::SaveFailureError, :with => :rescue_db_error
 
+  before_filter :cors
   before_filter :get_user
   around_filter :transaction
 
-  before_filter :set_access_control_headers
-  def set_access_control_headers
-    if request.headers["Origin"]
-      headers['Access-Control-Allow-Origin'] = request.headers["Origin"]
-      headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
-      headers['Access-Control-Request-Method'] = '*'
+
+  def cors
+    hash = {}
+    request.instance_variables.each {|var| hash[var.to_s.delete("@")] = request.instance_variable_get(var) }
+    if (request.headers["Origin"] || request.method == :options)
+      headers["Access-Control-Allow-Origin"]  = request.headers["Origin"]#'http://kobhqlt.fr'
+      headers["Access-Control-Allow-Methods"] = %w{GET POST PUT DELETE OPTIONS}.join(",") #OPTIONS
       headers['Access-Control-Allow-Credentials'] = 'true'
-      headers['Access-Control-Allow-Headers'] = 'Origin, X-Prototype-Version, X-Requested-With, Content-Type, Accept, Authorization'
+      headers['Access-Control-Max-Age'] = '1728000'
+      headers['Access-Control-Request-Method'] = '*'
+      headers["Access-Control-Allow-Headers"] = 'Origin, X-Prototype-Version, X-Requested-With, Content-Type, Accept, Authorization, X-AUTH-TOKEN, X-API-VERSION, X-Custom-Header'
+#%w{Origin Accept Content-Type X-Requested-With X-CSRF-Token}.join(",")
+# 'Origin, X-Prototype-Version, X-Requested-With, Content-Type, Accept, Authorization, X-AUTH-TOKEN, X-API-VERSION'
     end
+    @result = { success: :true } #if request.request_method == "OPTIONS"
   end
 
   def transaction

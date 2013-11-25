@@ -56,6 +56,10 @@ Server::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
 
+# CORS
+#  match '/*path' => 'application#cors_preflight_check', via: :options
+  match "*all" => "application#cors", via: :options
+
 # Users Controller
   match 'users/:login/login' => 'users#login'
   match 'users/logout' => 'users#logout'
@@ -88,5 +92,5 @@ Server::Application.routes.draw do
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
   match '*path' => 'admin#wrong_route'
-  
+
 end
