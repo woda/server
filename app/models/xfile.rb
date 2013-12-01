@@ -54,9 +54,10 @@ class XFile
           folder: self.folder, shared: self.uuid != nil, downloads: self.downloads
         }
       else
+        size = ( self.content.nil? ? 0 : self.content.size )
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-          size: self.content.size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
+          size: size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
           shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite, folder: self.folder
         }
       end
