@@ -21,6 +21,7 @@ class UsersController < ApplicationController
   def create
     raise RequestError.new(:login_taken, "Login already taken") if User.first login: params[:login]
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params[:email]
+    raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
     user = set_properties User.new
     user.set_password params[:password]
     user.create_root_folder
