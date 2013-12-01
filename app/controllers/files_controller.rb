@@ -18,10 +18,17 @@ class FilesController < ApplicationController
   ##
   # Returns the full list of files and folders
   def list
-    xfile = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
+    require_public = ( params[:user].nil? ? false : true )
+    user = ( params[:user].nil? ? session[:user] : User.first(id: params[:user]) )
+    raise RequestError.new(:bad_params, "User does not exist") unless user
+    xfile = ( params[:id].nil? ? user.x_files.first : user.x_files.get(params[:id]) )
     raise RequestError.new(:folder_not_found, "Folder not found") if xfile.nil?
+    if (require_public && params[:id]) then
+      raise RequestError.new(:folder_not_public, "Folder is not public") if xfile.folder == true && xfile.public == false
+      raise RequestError.new(:folder_not_public, "File is not public") if xfile.folder == false && xfile.public == false
+    end
     if xfile.folder then
-      @result =  { folder: crawl_folder(xfile), success: true }
+      @result =  { folder: crawl_folder(xfile, true, require_public), success: true }
     else  
       @result =  { file: xfile.description, success: true }
     end
@@ -29,7 +36,7 @@ class FilesController < ApplicationController
 
   ##
   # Crawl a folder
-  def crawl_folder(folder, recur = true)
+  def crawl_folder(folder, recur = true, only_public = false)
     list = []
     folders = []
     
@@ -38,13 +45,19 @@ class FilesController < ApplicationController
 
     # We recall craw_folder() method recursively for crawling each child folder if recur = true
     if recur then
-      folder.children.each { |child| folders.push(crawl_folder(child)) }
+      folder.children.each do |child|
+        # crawl only into the public sub-folders if required OR all of them
+        folders.push(crawl_folder(child)) if (only_public == true && child.public == true) || only_public == false
+      end
       folder_infos[:folders] = folders
     end
     
     # We get all files from the current folder
     files_list = []
-    folder.files.each { |file| files_list.push file.description }
+    folder.files.each do |file|
+      # describe only the public sub-files if required OR all of them
+      files_list.push file.description if (only_public == true && file.public == true) || only_public == false
+    end
     folder_infos[:files] = files_list
     
     folder_infos

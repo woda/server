@@ -111,7 +111,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
     raise RequestError.new(:no_content, "File content found") if file.content.nil?
-    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded }
+    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded, file: file.description }
   end
 
   ##

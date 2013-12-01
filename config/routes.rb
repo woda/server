@@ -60,9 +60,9 @@ Server::Application.routes.draw do
   match "*all" => "application#cors", via: :options
 
 # Users Controller
-  match 'users/:login/login' => 'users#login'
-  match 'users/logout' => 'users#logout'
-  match 'users' => 'users#index', via: :get
+  match 'users/:login/login' => 'users#login', via: :post
+  match 'users/logout' => 'users#logout', via: :get
+  match 'users(/:id)' => 'users#index', via: :get
   match 'users' => 'users#update', via: :post
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
@@ -75,8 +75,9 @@ Server::Application.routes.draw do
   match 'files/public/:id' => 'files#set_public', via: :post
   match 'files/shared' => 'files#shared', via: :get
   match 'files/link/:id' => 'files#link', via: :get
-  match 'files/downloaded' => 'files#downloaded', via: :get  
+  match 'files/downloaded' => 'files#downloaded', via: :get
   match 'files(/:id)' => 'files#list', via: :get
+  match 'usersfiles/:user(/:id)' => 'files#list', via: :get
 
 # sync controller
   match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
