@@ -57,7 +57,6 @@ Server::Application.routes.draw do
   # match ':controller(/:action(/:id))(.:format)'
 
 # CORS
-#  match '/*path' => 'application#cors_preflight_check', via: :options
   match "*all" => "application#cors", via: :options
 
 # Users Controller
