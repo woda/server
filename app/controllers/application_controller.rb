@@ -27,8 +27,6 @@ class ApplicationController < ActionController::Base
 
 
   def cors
-    hash = {}
-    request.instance_variables.each {|var| hash[var.to_s.delete("@")] = request.instance_variable_get(var) }
     if (request.headers["Origin"] || request.method == :options)
       headers["Access-Control-Allow-Origin"]  = request.headers["Origin"]
       headers["Access-Control-Allow-Methods"] = %w{GET POST PUT DELETE OPTIONS}.join(",")
