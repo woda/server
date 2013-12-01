@@ -48,9 +48,12 @@ class UsersController < ApplicationController
   end
   
   ##
-  # Returns self.
+  # Returns self or another user if required
   def index
-    @result = { user: session[:user].description, success: true }
+    user = session[:user]
+    user = User.first(id: params[:id]) if params[:id]
+    raise RequestError.new(:bad_params, "User does not exist") unless user
+    @result = { user: user.description, success: true }
   end
   
   ##
