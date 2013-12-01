@@ -8,7 +8,8 @@ require 'spec_helper'
 # # # # create # # # #
 # doit fail si login taken
 # doit fail si email taken
-# doit si login || password || email is missing
+# doit retourner une erreur si login || password || email is missing
+# doit retourner une erreur si email invalid
 # doit créer le dossier racine de l'utilisateur
 # doit login l'utilisateur
 # doit retourner { user: user.description, success: true }
@@ -31,6 +32,8 @@ require 'spec_helper'
 #
 # # # # index # # # #
 # doit retourner user.description de l'utilisateur courant (vérifier les valeurs correctement)
+# SSI un id est spécifié en param : doit retourner la description de l'user concerné
+# si un mauvais ID est envoyé : doit retournée une erreur
 #
 # # # # login # # # # 
 # doit fail si user pas créé (user not found)

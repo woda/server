@@ -31,6 +31,7 @@ require 'spec_helper'
 # doit fail si l'id n'existe pas
 # doit fail si le fichier n'appartient pas à l'utilisateur
 # doit fail si le param favorite n'est pas valide
+# doit fail si le dossier ciblé est le dossier racine
 # ne doit pas mettre à jour le last_update du dossier racine
 # doit retourner success:true + file: file.description
 #
@@ -45,6 +46,7 @@ require 'spec_helper'
 # doit fail si le param id est invalide (id: hegfruyegf)
 # doit fail si l'id n'existe pas
 # doit fail si le fichier n'appartient pas à l'utilisateur
+# doit fail si le dossier ciblé est le dossier racine
 # doit fail si le param public n'est pas valide
 # ne doit pas mettre à jour le last_update du dossier racine
 # doit retourner success:true + file: file.description
@@ -65,6 +67,7 @@ require 'spec_helper'
 # doit fail si pas de param(id)
 # doit fail si le param id est invalide (id: hegfruyegf)
 # doit fail si l'id n'existe pas, ou que le fichier n'appartient pas à l'utilisateur
+# doit fail si le dossier ciblé est le dossier racine
 # ne doit pas mettre à jour le last_update du dossier racine
 # doit retourner success:true + file: file.description + link: URL
 #

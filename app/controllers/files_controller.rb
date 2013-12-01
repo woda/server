@@ -77,6 +77,7 @@ class FilesController < ApplicationController
   def set_favorite
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:wrong_params, "Can not set the root folder as favorite") if file == session[:user].x_files.first
     file.favorite = params[:favorite]
     file.save
     @result = { file: file.description, success: true }
@@ -105,6 +106,7 @@ class FilesController < ApplicationController
   def set_public
     file = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:wrong_params, "Can not set the root folder as public") if file == session[:user].x_files.first
     file.public = params[:public]
     file.save
     @result = { file: file.description, success: true }
@@ -124,6 +126,7 @@ class FilesController < ApplicationController
   def link
     file = session[:user].x_files.get params[:id]
     raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:wrong_params, "Can not get the download link of the root folder") if file == session[:user].x_files.first
     file.uuid = SecureRandom::uuid unless file.uuid
     file.save
     @result = { file: file.description, link: "#{BASE_URL}/app_dev.php/fs-file/#{file.uuid}", success: true }
