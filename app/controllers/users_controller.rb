@@ -21,6 +21,7 @@ class UsersController < ApplicationController
   def create
     raise RequestError.new(:login_taken, "Login already taken") if User.first login: params[:login]
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params[:email]
+    raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
     user = set_properties User.new
     user.set_password params[:password]
     user.create_root_folder
@@ -48,9 +49,12 @@ class UsersController < ApplicationController
   end
   
   ##
-  # Returns self.
+  # Returns self or another user if required
   def index
-    @result = { user: session[:user].description, success: true }
+    user = session[:user]
+    user = User.first(id: params[:id]) if params[:id]
+    raise RequestError.new(:bad_params, "User does not exist") unless user
+    @result = { user: user.description, success: true }
   end
   
   ##
