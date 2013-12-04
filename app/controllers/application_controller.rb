@@ -25,7 +25,6 @@ class ApplicationController < ActionController::Base
   before_filter :get_user
   around_filter :transaction
 
-
   def cors
     if (request.headers["Origin"] || request.method == :options)
       headers["Access-Control-Allow-Origin"]  = request.headers["Origin"]
@@ -35,7 +34,7 @@ class ApplicationController < ActionController::Base
       headers['Access-Control-Request-Method'] = '*'
       headers["Access-Control-Allow-Headers"] = 'Origin, X-Prototype-Version, X-Requested-With, Content-Type, Accept, Authorization, X-AUTH-TOKEN, X-API-VERSION, X-Custom-Header'
     end
-    @result = { success: :true } #if request.request_method == "OPTIONS"
+    render :text => '', :content_type => 'text/plain' if request.request_method == "OPTIONS"
   end
 
   def transaction
