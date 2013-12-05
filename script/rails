@@ -16,7 +16,7 @@ module Rails
 				:daemonize => false,
 				:debugger => false,
 				:config => File.expand_path("config.ru"),
-				:SSLEnable => true,
+				:SSLEnable => false,
 				:SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
 				:SSLPrivateKey => OpenSSL::PKey::RSA.new(
 					IO.read(File.expand_path("config/cert/woda.cert.key"))),
