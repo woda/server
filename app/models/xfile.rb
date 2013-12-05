@@ -1,5 +1,7 @@
 require 'data_mapper'
 require 'app/models/base/woda_resource'
+require 'app/helpers/woda_hash'
+require 'app/models/properties/sha256_hash'
 
 ##
 # A model representing a file belonging to a user.
@@ -22,17 +24,13 @@ class XFile
   updatable_property :public, Boolean, default: false
 
   belongs_to :user, index: true, required: true
-  belongs_to :x_file, index: true, required: false
-  
-  has n, :x_files
-  
-  def children
-    x_files.select { |item| item.folder }
-  end
 
-  def files
-    x_files.select { |item| !item.folder }
-  end
+  #belongs_to :x_file, index: true, required: false
+  #has n, :x_files
+  
+  # def files
+  #   x_files.select { |item| !item.folder }
+  # end
 
   def delete
     self.x_files.each do |item|      
@@ -63,13 +61,13 @@ class XFile
       end
   end
 
-  def to_json *args
-    json = super
-    h = JSON.parse json
-    h[:size] = size
-    h[:part_size] = PART_SIZE
-    JSON.generate h
-  end
+  # def to_json *args
+  #   json = super
+  #   h = JSON.parse json
+  #   h[:size] = size
+  #   h[:part_size] = PART_SIZE
+  #   JSON.generate h
+  # end
 
   def content
     return nil if content_hash.nil?

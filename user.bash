@@ -13,9 +13,9 @@ list() {
 
 if [ $# == 1 ]
 then
-base=https://kobhqlt.fr:3000
+base=http://kobhqlt.fr:3000
 else
-base=https://localhost:3000
+base=http://localhost:3000
 fi
 
 # login=suerpcool

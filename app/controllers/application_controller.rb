@@ -25,7 +25,6 @@ class ApplicationController < ActionController::Base
   before_filter :get_user
   around_filter :transaction
 
-
   def cors
     if (request.headers["Origin"] || request.method == :options)
       headers["Access-Control-Allow-Origin"]  = request.headers["Origin"]

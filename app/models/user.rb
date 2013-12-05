@@ -2,6 +2,8 @@ require 'data_mapper'
 require 'app/helpers/woda_hash'
 require 'app/models/properties/sha256_hash'
 require 'app/models/base/woda_resource'
+require 'app/models/file'
+require 'app/models/folder'
 
 ##
 # The User model. represents a user with login, first name, last name, email and password.
@@ -79,7 +81,7 @@ class User
     folder = create_folder(path[0...path.size-1].join('/'))
     file = folder.x_files.first(name: path[-1], folder: false)
     if file.nil? then
-      file = XFile.new(name: path[-1], last_update: DateTime.now, user: self )
+      file = File.new(name: path[-1], last_update: DateTime.now, user: self )
       folder.x_files << file
       folder.save
     end
