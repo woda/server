@@ -25,7 +25,7 @@ class UsersController < ApplicationController
     user = set_properties User.new
     user.set_password params[:password]
     user.create_root_folder
-    user.save    
+    user.save
     session[:user] = user
     @result = { user: user.description, success: true }
   end
@@ -33,7 +33,7 @@ class UsersController < ApplicationController
   ##
   # Deletes the current user
   def delete
-    session[:user].destroy
+    session[:user].destroy!
     session[:user] = nil
     @result = { success: true }
   end
