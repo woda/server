@@ -35,7 +35,7 @@ class UsersController < ApplicationController
   def delete
     session[:user].delete
     session[:user] = nil
-    @result = { success: true }
+    @result = { success: true}
   end
   
   ##

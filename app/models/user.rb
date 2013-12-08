@@ -34,7 +34,6 @@ class User
   # User description
   def description
     { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked }
-
   end
 
   ##
@@ -72,7 +71,6 @@ class User
   # Gets and creates a folder and if it does not exist.
   def create_folder path
     raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
-    
     path = path.split('/')
     folder = self.root_folder
     path.reject! { |c| c.empty? }
