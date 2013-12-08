@@ -47,11 +47,11 @@ class Content
   end
 
   def uploaded
-    XFile.count(content_hash: self.content_hash, uploaded: true) >= 1
+    WFile.count(content_hash: self.content_hash, uploaded: true) >= 1
   end
 
   def delete
-    if XFile.count(content_hash: self.content_hash) <= 1 then
+    if WFile.count(content_hash: self.content_hash) <= 1 then
       self.x_parts.destroy!
       self.destroy!
     end

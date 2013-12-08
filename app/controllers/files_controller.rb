@@ -21,8 +21,9 @@ class FilesController < ApplicationController
     require_public = ( params[:user].nil? ? false : true )
     user = ( params[:user].nil? ? session[:user] : User.first(id: params[:user]) )
     raise RequestError.new(:bad_params, "User does not exist") unless user
-    xfile = ( params[:id].nil? ? user.x_files.first : user.x_files.get(params[:id]) )
-    raise RequestError.new(:folder_not_found, "Folder not found") if xfile.nil?
+    xfile = ( params[:id].nil? ? user.root_folder : WFolder.get(params[:id]) )
+    raise RequestError.new(:internal_error, "No root directory. Please contact your administrator") if xfile.nil? && params[:id].nil?
+    raise RequestError.new(:folder_not_found, "File or folder not found") if xfile.nil?
     if (require_public && params[:id]) then
       raise RequestError.new(:folder_not_public, "Folder is not public") if xfile.folder == true && xfile.public == false
       raise RequestError.new(:folder_not_public, "File is not public") if xfile.folder == false && xfile.public == false
@@ -45,7 +46,7 @@ class FilesController < ApplicationController
 
     # We recall craw_folder() method recursively for crawling each child folder if recur = true
     if recur then
-      folder.children.each do |child|
+      folder.childrens.each do |child|
         # crawl only into the public sub-folders if required OR all of them
         folders.push(crawl_folder(child)) if (only_public == true && child.public == true) || only_public == false
       end
@@ -75,9 +76,10 @@ class FilesController < ApplicationController
   ##
   # Sets the file's favorite status based on parameter "favorite"
   def set_favorite
-    file = session[:user].x_files.get(params[:id])
+    file = XFile.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:wrong_params, "Can not set the root folder as favorite") if file == session[:user].x_files.first
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can not set the root folder as favorite") if file.id == session[:user].root_folder.id
     file.favorite = params[:favorite]
     file.save
     @result = { file: file.description, success: true }
@@ -104,9 +106,10 @@ class FilesController < ApplicationController
   ##
   # Sets/Unsets a public status file
   def set_public
-    file = session[:user].x_files.get params[:id]
+    file = XFile.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:wrong_params, "Can not set the root folder as public") if file == session[:user].x_files.first
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can not set the root folder as public") if file.id == session[:user].root_folder.id
     file.public = params[:public]
     file.save
     @result = { file: file.description, success: true }
@@ -124,9 +127,11 @@ class FilesController < ApplicationController
   ##
   # Returns the Direct Download Link of the given file
   def link
-    file = session[:user].x_files.get params[:id]
+    file = XFile.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:wrong_params, "Can not get the download link of the root folder") if file == session[:user].x_files.first
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can not get the download link of the root folder") if file.id == session[:user].root_folder.id
+
     file.uuid = SecureRandom::uuid unless file.uuid
     file.save
     @result = { file: file.description, link: "#{BASE_URL}/app_dev.php/fs-file/#{file.uuid}", success: true }

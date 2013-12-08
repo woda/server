@@ -51,11 +51,11 @@ require 'spec_helper'
 # doit fail si le fichier existe deja
 #
 # si new file + new content then
-### => return { success: true, need_upload: true, file: file.description, needed_parts: [0,1,...], part_size: XFile.part_size (5mb) }
+### => return { success: true, uploaded: true, file: file.description, needed_parts: [0,1,...], part_size: XFile.part_size (5mb) }
 # si new file + existing content + first_file.uploaded:true then
-### => return { success: true, need_upload: false, file: file.description }
+### => return { success: true, uploaded: false, file: file.description }
 # si new file + existing content + first_file.uploaded:false then
-### => { success: true, need_upload: true, file: file.description, needed_parts: [0,1,...], part_size: XFile.part_size (5mb) }
+### => { success: true, uploaded: true, file: file.description, needed_parts: [0,1,...], part_size: XFile.part_size (5mb) }
 #
 #
 # # # # upload_part # # # #

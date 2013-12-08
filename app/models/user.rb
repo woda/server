@@ -4,6 +4,7 @@ require 'app/models/properties/sha256_hash'
 require 'app/models/base/woda_resource'
 require 'app/models/file'
 require 'app/models/folder'
+require 'app/models/association'
 
 ##
 # The User model. represents a user with login, first name, last name, email and password.
@@ -24,7 +25,10 @@ class User
   updatable_property :login, String, unique: true, unique_index: true, required: true
   updatable_property :email, String, unique: true, unique_index: true, format: :email_address, required: true
 
-  has n, :x_files
+  has 1, :root_folder, WFolder
+
+  has n, :file_user_associations
+  has n, :x_files, XFile, through: :file_user_associations
 
   ##
   # User description
@@ -47,11 +51,21 @@ class User
   end
 
   ##
+  # Destroy a user and all its attributes, files, folders, relationships, etc.
+  def delete
+    self.root_folder.delete
+    FileUserAssociation.all(user_id: self.id).destroy!
+    self.destroy!
+  end
+
+  ##
   # Create the root folder for the current user
   def create_root_folder 
-    folder = Folder.new(name: "/", last_update: DateTime.now, user: self )
+    folder = WFolder.new(name: "/", last_update: DateTime.now)
     self.x_files << folder
+    self.root_folder = folder
     folder.save
+    self.save
   end
 
   ##
@@ -60,17 +74,28 @@ class User
     raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
     
     path = path.split('/')
-    folder = self.x_files.first
+    folder = self.root_folder
     path.reject! { |c| c.empty? }
     path.size.times do |i|
-      folder2 = folder.x_files.first(name: path[i], folder: true)   
-      if folder2.nil? then
-          folder2 = Folder.new( name: path[i], last_update: DateTime.now, user: self )
-          folder.x_files << folder2
+      puts "path: #{path[i]}"
+      child = folder.childrens.first(name: path[i], folder: true)
+      puts "child: #{child.description}" if child
+      puts "child does not exist" if child.nil?
+      if child.nil? then
+          child = WFolder.new(name: path[i], last_update: DateTime.now)
+          self.x_files << child
+          self.save
+          folder.childrens << child
           folder.save
+          child.save
+          puts "new child: #{child.description}"
+          puts "child.parents: #{child.parents.last}"
+          puts "parent.childrens: #{folder.childrens.last}"
+          puts "----------------------------------------------------"
       end
-      folder = folder2
+      folder = child
     end
+    puts "return #{folder.description}"
     folder
   end
 
@@ -79,11 +104,14 @@ class User
   def create_file path
     path = path.split('/')
     folder = create_folder(path[0...path.size-1].join('/'))
-    file = folder.x_files.first(name: path[-1], folder: false)
+    file = folder.files.first(name: path[-1], folder: false)
     if file.nil? then
-      file = File.new(name: path[-1], last_update: DateTime.now, user: self )
-      folder.x_files << file
+      file = WFile.new(name: path[-1], last_update: DateTime.now)
+      self.x_files << file
+      self.save
+      folder.files << file
       folder.save
+      file.save
     end
     file
   end

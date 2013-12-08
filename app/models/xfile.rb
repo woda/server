@@ -23,24 +23,15 @@ class XFile
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
 
-  belongs_to :user, index: true, required: true
+  has n, :file_user_associations
+  has n, :users, through: :file_user_associations
 
-  #belongs_to :x_file, index: true, required: false
-  #has n, :x_files
-  
-  # def files
-  #   x_files.select { |item| !item.folder }
-  # end
+  def initialize *args, &block
+    super *args, &block
+    self.folder = false
+  end
 
   def delete
-    self.x_files.each do |item|      
-      if item.x_files then
-        item.delete
-      else        
-        item.content.delete if item.content
-        item.destroy!
-      end
-    end    
     self.content.delete if self.content
     self.destroy!
   end
@@ -60,14 +51,6 @@ class XFile
         }
       end
   end
-
-  # def to_json *args
-  #   json = super
-  #   h = JSON.parse json
-  #   h[:size] = size
-  #   h[:part_size] = PART_SIZE
-  #   JSON.generate h
-  # end
 
   def content
     return nil if content_hash.nil?

@@ -4,19 +4,27 @@ require 'app/models/xfile'
 require 'app/models/association'
 require 'app/models/folder'
 
-module Woda
-  class File < XFile
-    include DataMapper::Resource
-    include WodaResource
+class WFile < XFile
+  include DataMapper::Resource
+  include WodaResource
 
-    property :id, Serial, key: true
+  storage_names[:default] = "xfile"
 
-    has n, :file_folder_associations
-    has n, :folder, :through => :file_folder_associations
+  property :id, Serial, key: true
 
-	  def initialize *args, &block
-	    super *args, &block
-	    self.folder = false
-	  end
-	end
+  has n, :file_folder_associations, child_key: [:file_id]
+  has n, :parents, 'WFolder', through: :file_folder_associations, via: :parent
+
+  def initialize *args, &block
+    super *args, &block
+    self.folder = false
+  end
+
+  def delete
+    FileUserAssociation.all(x_file_id: self.id).destroy!
+    FileFolderAssociation.all(file_id: self.id).destroy!
+
+    super
+  end
+
 end

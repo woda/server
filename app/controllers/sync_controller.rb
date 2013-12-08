@@ -18,16 +18,19 @@ class SyncController < ApplicationController
     raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
     file.last_update = Time.now
     file.save
-    parent = session[:user].x_files.get file.x_file_id
-    update_and_save parent if parent
+
+    file.parents.each do |parent|
+      update_and_save parent
+    end
   end
 
   ##
   # Update the parent of the given file and remove its children and itself
   def update_and_delete file
     raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
-    parent = session[:user].x_files.get file.x_file_id
-    update_and_save parent if parent
+    file.parents.each do |parent|
+      update_and_save parent
+    end
     file.delete
   end
 
@@ -37,7 +40,7 @@ class SyncController < ApplicationController
     parts = XPart.all(content: content, part_number: part)
     parts.each { |item| item.destroy! }
     if XPart.count(content: content) == 0 then
-      files = XFile.all(content_hash: content.content_hash, uploaded: false)
+      files = WFile.all(content_hash: content.content_hash, uploaded: false)
       files.each do |item|
         item.uploaded = true
         update_and_save item
@@ -67,48 +70,50 @@ class SyncController < ApplicationController
     
     current_content = Content.first content_hash: params[:content_hash]
     already_uploaded = (current_content ? current_content.uploaded : false)
-    f = session[:user].create_file params[:filename]
+    file = session[:user].create_file params[:filename]
     if current_content && already_uploaded
-      f.uploaded = true
-      @result = { success: true, need_upload: false }
+      file.uploaded = true
+      @result = { success: true, uploaded: true }
     else
       current_content = Content.create(params[:content_hash], params[:size].to_i) if current_content.nil?
-      @result = { success: true, need_upload: true, needed_parts: current_content.needed_parts, part_size: PART_SIZE }
+      @result = { success: true, uploaded: false, needed_parts: current_content.needed_parts, part_size: PART_SIZE }
     end
-    f.content = current_content
-    update_and_save f
-    @result.merge!({ file: f.description})
+    file.content = current_content
+    update_and_save file
+    @result.merge!({ file: file.description })
     session[:user].save
   end
 
   ##
   # Method to upload a part of 5mb for a specific file
   def upload_part
-    f = session[:user].x_files.get(params[:id])
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    raise RequestError.new(:bad_param, "Can't upload data to a folder") if f.folder
+    file = XFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
     raise RequestError.new(:bad_part, "\"#{params[:part]}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params[:part]
     part = params[:part].to_i
-    raise RequestError.new(:bad_part, "Content incorrect") if f.content.nil?
-    raise RequestError.new(:bad_part, "Part number too high") if part > ( f.content.size / PART_SIZE )
+    raise RequestError.new(:bad_part, "Content incorrect") if file.content.nil?
+    raise RequestError.new(:bad_part, "Part number too high") if part > ( file.content.size / PART_SIZE )
     data = request.body.read
-    part_size = (part == f.content.size / PART_SIZE ? f.content.size % PART_SIZE : PART_SIZE)
+    part_size = (part == file.content.size / PART_SIZE ? file.content.size % PART_SIZE : PART_SIZE)
     raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == data.length
     cypher = WodaCrypt.new
     cypher.encrypt
-    cypher.key = f.content.crypt_key.from_hex
+    cypher.key = file.content.crypt_key.from_hex
     cypher.iv = WodaHash.digest(params[:part])
     bucket = Storage['woda-files']
-    obj = bucket.create("#{f.content.content_hash}/#{params[:part]}", data: (cypher.update(data) + cypher.final), content_type: 'octet-stream')
-    complete_upload(f.content, part)
-    @result = { success: true, needed_parts: f.content.needed_parts, uploaded: f.uploaded }
+    obj = bucket.create("#{file.content.content_hash}/#{params[:part]}", data: (cypher.update(data) + cypher.final), content_type: 'octet-stream')
+    complete_upload(file.content, part)
+    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded }
   end
 
   ##
   # Method to get the content parts that still need to be uploaded
   def needed_parts
-    file = session[:user].x_files.get(params[:id])
+    file = XFile.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
     raise RequestError.new(:no_content, "File content found") if file.content.nil?
     @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded, file: file.description }
@@ -124,42 +129,45 @@ class SyncController < ApplicationController
   ##
   # Delete a file
   def delete
-    file = session[:user].x_files.get(params[:id])
+    file = WFile.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_param, "Can't delete the root folder") if file == session[:user].x_files.first
-    update_and_delete file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can't delete the root folder") if file.id == session[:user].root_folder.id
+    update_and_delete (file.folder ? WFolder.get(params[:id]) : file)
+
     @result = { success: true }
   end
 
   ##
   # Get the specific file corresponding to the ID given in parameters
   def get
-    f = session[:user].x_files.get(params[:id])
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    raise RequestError.new(:bad_param, "Can't get a folder") if f.folder
-    raise RequestError.new(:bad_part, "Content incorrect") if f.content.nil?
-    raise RequestError.new(:file_not_uploaded, "File not completely uploaded") unless f.uploaded
-    key = "#{f.content.content_hash}/#{params[:part]}"
+    file = XFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can't get a folder") if file.folder
+    raise RequestError.new(:bad_part, "Content incorrect") if file.content.nil?
+    raise RequestError.new(:file_not_uploaded, "File not completely uploaded") unless file.uploaded
+    key = "#{file.content.content_hash}/#{params[:part]}"
     raise RequestError.new(:no_bucket, "Bucket not found") if Storage['woda-files'].nil?
     raise RequestError.new(:no_key, "Key path not found") if (Storage.use_aws ? Storage['woda-files'][key].exists? == false : Storage['woda-files'][key].nil? )
-    file = Storage['woda-files'][key].read()
+    data = Storage['woda-files'][key].read()
     if params[:part].to_i == 0 then
-      f.downloads += 1
-      f.save
+      file.downloads += 1
+      file.save
     end
     cypher = WodaCrypt.new
     cypher.decrypt
-    cypher.key = f.content.crypt_key.from_hex
+    cypher.key = file.content.crypt_key.from_hex
     cypher.iv = WodaHash.digest(params[:part])
-    # @result = { data: cypher.update(file) + cypher.final, file: f.description, part: params[:part], success: true }
-    @result = cypher.update(file) + cypher.final
+    @result = cypher.update(data) + cypher.final
   end
 
   ##
   # Method to get the timestamp of the last modification of the user's file list
   def last_update
-    folder = ( params[:id].nil? ? session[:user].x_files.first : session[:user].x_files.get(params[:id]) )
-    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?    
+    folder = ( params[:id].nil? ? session[:user].root_folder : XFile.get(params[:id]) )
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    raise RequestError.new(:bad_access, "No access") unless folder.users.include? session[:user]   
     @result =  { last_update: folder.last_update, success: true }
   end
 
