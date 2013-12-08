@@ -76,9 +76,8 @@ class FilesController < ApplicationController
   ##
   # Sets the file's favorite status based on parameter "favorite"
   def set_favorite
-    file = XFile.get(params[:id])
+    file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can not set the root folder as favorite") if file.id == session[:user].root_folder.id
     file.favorite = params[:favorite]
     file.save
@@ -106,9 +105,8 @@ class FilesController < ApplicationController
   ##
   # Sets/Unsets a public status file
   def set_public
-    file = XFile.get(params[:id])
+    file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can not set the root folder as public") if file.id == session[:user].root_folder.id
     file.public = params[:public]
     file.save
@@ -127,9 +125,8 @@ class FilesController < ApplicationController
   ##
   # Returns the Direct Download Link of the given file
   def link
-    file = XFile.get(params[:id])
+    file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can not get the download link of the root folder") if file.id == session[:user].root_folder.id
 
     file.uuid = SecureRandom::uuid unless file.uuid
