@@ -30,3 +30,5 @@ flog_temp
 last_pid
 .idea
 /storage
+
+*.DS_Store

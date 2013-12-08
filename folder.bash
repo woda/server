@@ -13,9 +13,9 @@ list() {
 
 if [ $# == 1 ]
 then
-base=https://kobhqlt.fr:3000
+base=http://kobhqlt.fr:3000
 else
-base=https://localhost:3000
+base=http://localhost:3000
 fi
 
 login=logitzg
@@ -34,7 +34,7 @@ list
 foldername=folder1/folder2/folder3
 
 title 'Creating folder'
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$foldername&content_hash=&size=&folder=true"
+echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=$foldername"
 
 list 
 

@@ -13,9 +13,9 @@ list() {
 
 if [ $# == 1 ]
 then
-base=https://kobhqlt.fr:3000
+base=http://kobhqlt.fr:3000
 else
-base=https://localhost:3000
+base=http://localhost:3000
 fi
 
 # login=suerpcool
@@ -61,9 +61,15 @@ list
 title 'delete user:'
 echo_run curl -k -b cookies -c cookies -XDELETE $base/users
 
+title 'Showing self:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users
+
 list
 
 title 'Logging out:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
+
+title 'Logging in:'
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=new_password"
 
 echo

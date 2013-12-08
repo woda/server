@@ -13,9 +13,9 @@ list() {
 
 if [ $# == 1 ]
 then
-base=https://kobhqlt.fr:3000
+base=http://kobhqlt.fr:3000
 else
-base=https://localhost:3000
+base=http://localhost:3000
 fi
 
 login=pljkhhah
@@ -74,19 +74,34 @@ sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 list
 
-# title 'Adding folder:'
+title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+
+
+title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-# echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/folder1/folder2/folder3"
+echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/folder1/folder2/folder3"
  
 # list
 
+title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+
+
 title 'Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename1&content_hash=$sha256&size=$size"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
 
-# title 'RE Adding file:'
-# # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-# echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename1&content_hash=$sha256&size=$size"
+title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+
+
+title 'RE Adding file:'
+# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
 
 id1=
 while [ "$id1" == '' ]
@@ -135,13 +150,17 @@ title 'Getting part:'
 # match 'sync/:id/:part' => 'sync#get', via: :get
 echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id1/0
 
+title 'RE Adding file:'
+# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
+
 # filedata=rth
 # size=3
 # sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
-# title 'last update'
-# # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
 # title 'Change'
 # # match 'sync/:id' => 'sync#change', via: :post
@@ -174,9 +193,9 @@ echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id1
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id2
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id3
 
-# title 'last update'
-# # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+title 'last update'
+# match 'last_update(/:id)' => 'sync#last_update', via: :get
+echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
 list
 

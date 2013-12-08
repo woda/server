@@ -1,3 +1,3 @@
 object @result
 
-attributes :success, :error, :message, :need_upload, :file, :part_size
+attributes :success, :error, :message, :uploaded, :file, :part_size
