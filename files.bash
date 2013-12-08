@@ -13,9 +13,9 @@ list() {
 
 if [ $# == 1 ]
 then
-base=https://kobhqlt.fr:3000
+base=http://kobhqlt.fr:3000
 else
-base=https://localhost:3000
+base=http://localhost:3000
 fi
 
 login=
@@ -58,18 +58,26 @@ done
 sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 title 'Adding file:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$filename -d "content_hash=$sha256&size=$size"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size"
+
+id=
+while [ "$id" == '' ]
+do
+title 'Setting file (input ID):'
+read -r id
+done
+
 
 title 'Sending part:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync_part/0/$filename -d "$filedata"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id/0 -d "$filedata"
 
 title 'success upload'
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_success/$filename -d ""
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id -d ""
 
 list
 
 title 'Getting part:'
-echo_run curl -k -b cookies -c cookies -XGET $base/sync_part/0/$filename
+echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id/0
 
 title 'Downloaded list'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/downloaded
@@ -117,7 +125,7 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
 list
 
 title 'Deleting file:'
-echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$filename
+echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id
 
 list
 
