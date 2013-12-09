@@ -20,11 +20,20 @@ class WFile < XFile
     self.folder = false
   end
 
-  def delete
-    FileUserAssociation.all(x_file_id: self.id).destroy!
-    FileFolderAssociation.all(file_id: self.id).destroy!
+  def delete current_user
+    raise RequestError.new(:internal_error, "Delete: no user specified") if current_user.nil?
 
-    super
+    if current_user.id != self.original_user_id then # if random owner 
+      FileUserAssociation.all(x_file_id: self.id, user_id: current_user.id).destroy!
+      FileFolderAssociation.all(file_id: self.id).each do |asso|
+        asso.destroy! if current_user.x_files.get(asso.parent_id)
+      end
+    else # if true owner 
+      FileUserAssociation.all(x_file_id: self.id).destroy!
+      FileFolderAssociation.all(file_id: self.id).destroy!
+      self.content.delete if self.content
+      self.destroy!
+    end
   end
 
 end

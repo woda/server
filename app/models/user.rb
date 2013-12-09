@@ -26,6 +26,7 @@ class User
   updatable_property :email, String, unique: true, unique_index: true, format: :email_address, required: true
 
   has 1, :root_folder, WFolder
+  has n, :original_files, XFile
 
   has n, :file_user_associations
   has n, :x_files, XFile, through: :file_user_associations
@@ -53,15 +54,15 @@ class User
   ##
   # Destroy a user and all its attributes, files, folders, relationships, etc.
   def delete
-    self.root_folder.delete
-    FileUserAssociation.all(user_id: self.id).destroy!
+    self.root_folder.delete self
+    # FileUserAssociation.all(user_id: self.id).destroy!
     self.destroy!
   end
 
   ##
   # Create the root folder for the current user
   def create_root_folder 
-    folder = WFolder.new(name: "/", last_update: DateTime.now)
+    folder = WFolder.new(name: "/", last_update: DateTime.now, user: self)
     self.x_files << folder
     self.root_folder = folder
     folder.save
@@ -77,25 +78,17 @@ class User
     folder = self.root_folder
     path.reject! { |c| c.empty? }
     path.size.times do |i|
-      puts "path: #{path[i]}"
       child = folder.childrens.first(name: path[i], folder: true)
-      puts "child: #{child.description}" if child
-      puts "child does not exist" if child.nil?
       if child.nil? then
-          child = WFolder.new(name: path[i], last_update: DateTime.now)
+          child = WFolder.new(name: path[i], last_update: DateTime.now, user: self)
           self.x_files << child
           self.save
           folder.childrens << child
           folder.save
           child.save
-          puts "new child: #{child.description}"
-          puts "child.parents: #{child.parents.last}"
-          puts "parent.childrens: #{folder.childrens.last}"
-          puts "----------------------------------------------------"
       end
       folder = child
     end
-    puts "return #{folder.description}"
     folder
   end
 
@@ -106,7 +99,7 @@ class User
     folder = create_folder(path[0...path.size-1].join('/'))
     file = folder.files.first(name: path[-1], folder: false)
     if file.nil? then
-      file = WFile.new(name: path[-1], last_update: DateTime.now)
+      file = WFile.new(name: path[-1], last_update: DateTime.now, user: self)
       self.x_files << file
       self.save
       folder.files << file
@@ -114,6 +107,41 @@ class User
       file.save
     end
     file
+  end
+
+  ##
+  # Create a file from another public file.
+  def create_file_from_origin origin
+    folder = self.root_folder
+    file = folder.files.first(name: origin.name, folder: false)
+    if file.nil? then
+      file = WFile.new(name: origin.name, last_update: DateTime.now, user: self)
+      file.content_hash = origin.content_hash
+      file.uploaded = origin.uploaded
+      file.folder = origin.folder
+      file.public = true
+
+      self.x_files << file
+      self.save
+      folder.files << file
+      folder.save
+      file.save
+    end
+    file
+  end
+
+  ##
+  # Link a file from another public file.
+  def link_file_from_origin origin
+    folder = self.root_folder
+    if origin then
+      self.x_files << origin
+      self.save
+      folder.files << origin
+      folder.save
+      origin.save
+    end
+    origin
   end
 
 end

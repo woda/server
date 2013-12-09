@@ -10,7 +10,7 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :filename }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
-  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts]
+  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts, :synchronize]
 
   ##
   # Update the given file, save it and update its parent recursively 
@@ -31,7 +31,7 @@ class SyncController < ApplicationController
     file.parents.each do |parent|
       update_and_save parent
     end
-    file.delete
+    file.delete session[:user]
   end
 
   ##
@@ -169,6 +169,22 @@ class SyncController < ApplicationController
     raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
     raise RequestError.new(:bad_access, "No access") unless folder.users.include? session[:user]   
     @result =  { last_update: folder.last_update, success: true }
+  end
+
+  ##
+  # Synchronize a public file into the main folder
+  def synchronize
+    file = WFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.public?
+    raise RequestError.new(:bad_param, "Can't synchronize a folder") if file.folder
+    
+    file = session[:user].create_file_from_origin file if (!params[:link])
+    file = session[:user].link_file_from_origin file if (params[:link])
+
+    update_and_save file
+    @result = { success: true, file: file.description }
+    session[:user].save
   end
 
 end

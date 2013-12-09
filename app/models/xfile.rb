@@ -23,17 +23,14 @@ class XFile
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
 
+  belongs_to :user, required: true
+
   has n, :file_user_associations
   has n, :users, through: :file_user_associations
 
   def initialize *args, &block
     super *args, &block
     self.folder = false
-  end
-
-  def delete
-    self.content.delete if self.content
-    self.destroy!
   end
 
   def description

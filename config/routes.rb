@@ -88,6 +88,7 @@ Server::Application.routes.draw do
   match 'sync/:id/:part' => 'sync#get', via: :get
   match 'sync_folder' => 'sync#create_folder', via: :post
   match 'last_update(/:id)' => 'sync#last_update', via: :get
+  match 'sync_public/:id' => 'sync#synchronize', via: :post
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
