@@ -55,7 +55,7 @@ class SyncController < ApplicationController
   # Creates and return a new folder
   def create_folder
     raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
-    folder = session[:user].create_folder( params[:filename] )
+    folder = WFolder.create(session[:user], params[:filename])
     raise RequestError.new(:folder_not_created, "Folder not created") if folder.nil?
     update_and_save folder
     @result = { folder: folder.description, success: true }
@@ -70,7 +70,7 @@ class SyncController < ApplicationController
     
     current_content = Content.first content_hash: params[:content_hash]
     already_uploaded = (current_content ? current_content.uploaded : false)
-    file = session[:user].create_file params[:filename]
+    file = WFile.create(session[:user], params[:filename])
     if current_content && already_uploaded
       file.uploaded = true
       @result = { success: true, uploaded: true }
@@ -179,8 +179,8 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_access, "No access") unless file.public?
     raise RequestError.new(:bad_param, "Can't synchronize a folder") if file.folder
     
-    file = session[:user].create_file_from_origin file if (!params[:link])
-    file = session[:user].link_file_from_origin file if (params[:link])
+    file = WFile.create_from_origin(session[:user], file) if (!params[:link])
+    file = WFile.link_from_origin(session[:user], file) if (params[:link])
 
     update_and_save file
     @result = { success: true, file: file.description }

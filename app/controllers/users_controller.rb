@@ -24,8 +24,8 @@ class UsersController < ApplicationController
     raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
     user = set_properties User.new
     user.set_password params[:password]
-    user.create_root_folder
-    user.save
+    # create_root save the user
+    WFolder.create_root user
     session[:user] = user
     @result = { user: user.description, success: true }
   end

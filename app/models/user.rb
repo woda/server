@@ -54,94 +54,9 @@ class User
   ##
   # Destroy a user and all its attributes, files, folders, relationships, etc.
   def delete
+    # no need to delete all the associations because root_folder.delete does it
     self.root_folder.delete self
-    # FileUserAssociation.all(user_id: self.id).destroy!
     self.destroy!
-  end
-
-  ##
-  # Create the root folder for the current user
-  def create_root_folder 
-    folder = WFolder.new(name: "/", last_update: DateTime.now, user: self)
-    self.x_files << folder
-    self.root_folder = folder
-    folder.save
-    self.save
-  end
-
-  ##
-  # Gets and creates a folder and if it does not exist.
-  def create_folder path
-    raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
-    
-    path = path.split('/')
-    folder = self.root_folder
-    path.reject! { |c| c.empty? }
-    path.size.times do |i|
-      child = folder.childrens.first(name: path[i], folder: true)
-      if child.nil? then
-          child = WFolder.new(name: path[i], last_update: DateTime.now, user: self)
-          self.x_files << child
-          self.save
-          folder.childrens << child
-          folder.save
-          child.save
-      end
-      folder = child
-    end
-    folder
-  end
-
-  ##
-  # Create a file and its parent folders.
-  def create_file path
-    path = path.split('/')
-    folder = create_folder(path[0...path.size-1].join('/'))
-    file = folder.files.first(name: path[-1], folder: false)
-    if file.nil? then
-      file = WFile.new(name: path[-1], last_update: DateTime.now, user: self)
-      self.x_files << file
-      self.save
-      folder.files << file
-      folder.save
-      file.save
-    end
-    file
-  end
-
-  ##
-  # Create a file from another public file.
-  def create_file_from_origin origin
-    folder = self.root_folder
-    file = folder.files.first(name: origin.name, folder: false)
-    if file.nil? then
-      file = WFile.new(name: origin.name, last_update: DateTime.now, user: self)
-      file.content_hash = origin.content_hash
-      file.uploaded = origin.uploaded
-      file.folder = origin.folder
-      file.public = true
-
-      self.x_files << file
-      self.save
-      folder.files << file
-      folder.save
-      file.save
-    end
-    file
-  end
-
-  ##
-  # Link a file from another public file.
-  def link_file_from_origin origin
-    folder = self.root_folder
-    if origin then
-      self.x_files << origin
-      self.save
-      folder.files << origin
-      folder.save
-      origin.save
-    end
-    origin
   end
 
 end
