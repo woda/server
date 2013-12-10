@@ -20,6 +20,8 @@ class WFile < XFile
     self.folder = false
   end
 
+  ##
+  # Delete the current file and all its associations
   def delete current_user
     raise RequestError.new(:internal_error, "Delete: no user specified") if current_user.nil?
 
@@ -45,7 +47,7 @@ class WFile < XFile
     end
   end
 
-    ##
+  ##
   # Create a file and its parent folders.
   def self.create user, path
     path = path.split('/')
@@ -97,5 +99,12 @@ class WFile < XFile
     origin
   end
 
-
+  ##
+  # Move a file into a destination folder
+  def self.move file, source, destination
+    FileFolderAssociation.all(file_id: file.id, parent_id: source.id).each do |asso|
+      asso.parent_id = destination.id
+      asso.save
+    end
+  end
 end

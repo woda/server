@@ -86,10 +86,13 @@ Server::Application.routes.draw do
   match 'sync/:id' => 'sync#needed_parts', via: :get
   match 'sync/:id/:part' => 'sync#upload_part', via: :put
   match 'sync/:id/:part' => 'sync#get', via: :get
-  match 'sync_folder' => 'sync#create_folder', via: :post
-  match 'create_folder' => 'sync#create_folder', via: :post
   match 'last_update(/:id)' => 'sync#last_update', via: :get
   match 'sync_public/:id' => 'sync#synchronize', via: :post
+
+# folder management
+  match 'sync_folder' => 'sync#create_folder', via: :post
+  match 'create_folder' => 'sync#create_folder', via: :post
+  match 'move/:id/from/:source/into/:destination' => 'sync#move', via: :post
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

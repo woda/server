@@ -28,6 +28,8 @@ class WFolder < XFile
     self.folder = true
   end
 
+  ##
+  # Delete the current folder and all its associations
   def delete current_user
     raise RequestError.new(:internal_error, "Delete: no user specified") if current_user.nil?
 
