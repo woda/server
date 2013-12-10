@@ -11,7 +11,6 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
   before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts, :synchronize]
-  before_filter Proc.new { |c| c.check_params :id, :source, :destination}, :only => [:move]
 
   ##
   # Update the given file, save it and update its parent recursively 
@@ -186,28 +185,6 @@ class SyncController < ApplicationController
     update_and_save file
     @result = { success: true, file: file.description }
     session[:user].save
-  end
-
-  ##
-  # move
-  def move
-    file = session[:user].x_files.get(params[:id])
-    raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_param, "Can not move the root folder") if file.id == session[:user].root_folder.id
-    source = session[:user].x_files.get(params[:source])
-    raise RequestError.new(:file_not_found, "Source not found") unless source 
-    raise RequestError.new(:bad_param, "Source is not a folder") unless source.folder
-    destination = session[:user].x_files.get(params[:destination])
-    raise RequestError.new(:file_not_found, "Destination not found") unless destination
-    raise RequestError.new(:bad_param, "Destination is not a folder") unless destination.folder
-    raise RequestError.new(:bad_param, "Destination and Source are identical") if source.id == destination.id
-    raise RequestError.new(:bad_param, "Destination and File are identical") if file.id == destination.id
-    raise RequestError.new(:bad_param, "File and Source are identical") if source.id == file.id
-
-    WFile.move(file, source, destination) unless file.folder
-    WFolder.move(file, source, destination) if file.folder
-
-    @result = { success: true }
   end
 
 end

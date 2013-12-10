@@ -78,6 +78,7 @@ Server::Application.routes.draw do
   match 'files/downloaded' => 'files#downloaded', via: :get
   match 'files(/:id)' => 'files#list', via: :get
   match 'usersfiles/:user(/:id)' => 'files#list', via: :get
+  match 'move/:id/from/:source/into/:destination' => 'files#move', via: :post
 
 # sync controller
   match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -92,7 +93,7 @@ Server::Application.routes.draw do
 # folder management
   match 'sync_folder' => 'sync#create_folder', via: :post
   match 'create_folder' => 'sync#create_folder', via: :post
-  match 'move/:id/from/:source/into/:destination' => 'sync#move', via: :post
+
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

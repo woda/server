@@ -8,6 +8,7 @@ class FilesController < ApplicationController
   
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
+  before_filter Proc.new { |c| c.check_params :id, :source, :destination}, :only => [:move]
 
   ##
   # Returns the model, useful for ApplicationController.
@@ -142,6 +143,28 @@ class FilesController < ApplicationController
     # files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
     files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }
+  end
+
+  ##
+  # Move a file or a folder from a source folder to a new destination folder
+  def move
+    file = session[:user].x_files.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_param, "Can not move the root folder") if file.id == session[:user].root_folder.id
+    source = session[:user].x_files.get(params[:source])
+    raise RequestError.new(:file_not_found, "Source not found") unless source 
+    raise RequestError.new(:bad_param, "Source is not a folder") unless source.folder
+    destination = session[:user].x_files.get(params[:destination])
+    raise RequestError.new(:file_not_found, "Destination not found") unless destination
+    raise RequestError.new(:bad_param, "Destination is not a folder") unless destination.folder
+    raise RequestError.new(:bad_param, "Destination and Source are identical") if source.id == destination.id
+    raise RequestError.new(:bad_param, "Destination and File are identical") if file.id == destination.id
+    raise RequestError.new(:bad_param, "File and Source are identical") if source.id == file.id
+
+    WFile.move(file, source, destination) unless file.folder
+    WFolder.move(file, source, destination) if file.folder
+
+    @result = { success: true }
   end
 
 end

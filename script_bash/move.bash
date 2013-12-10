@@ -24,10 +24,10 @@ title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=azerty"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=azerty42"
 
 title 'Logging in:'
-echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=azerty"
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=azerty42"
 
 
 title 'Adding folder:'
