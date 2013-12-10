@@ -28,6 +28,8 @@ class WFolder < XFile
     self.folder = true
   end
 
+  ##
+  # Delete the current folder and all its associations
   def delete current_user
     raise RequestError.new(:internal_error, "Delete: no user specified") if current_user.nil?
 
@@ -89,6 +91,16 @@ class WFolder < XFile
       folder = child
     end
     folder
+  end
+
+  ##
+  # Move the folder into a destination folder
+  def self.move folder, source, destination
+    FolderFolderAssociation.all(children_id: folder.id, parent_id: source.id).each do |asso|
+      asso.parent_id = destination.id
+      asso.save
+    end
+
   end
 
 end
