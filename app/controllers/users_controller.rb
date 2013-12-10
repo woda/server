@@ -22,6 +22,8 @@ class UsersController < ApplicationController
     raise RequestError.new(:login_taken, "Login already taken") if User.first login: params[:login]
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params[:email]
     raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
+    raise RequestError.new(:wrong_password, "Invalid password: must contains at least 6 letters and 1 number") unless params[:password].match(/^(?=.*[a-zA-Z])(?=.*[0-9]).{7,}$/)
+
     user = set_properties User.new
     user.set_password params[:password]
     # create_root save the user
