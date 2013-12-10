@@ -211,27 +211,3 @@ class SyncController < ApplicationController
   end
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
