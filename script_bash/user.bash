@@ -35,28 +35,28 @@ echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 title 'Creating user:'
 echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.com&password=$password"
 
-# title 'Logging out:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
+title 'Logging out:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
-# title 'Logging out when unlogged:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
+title 'Logging out when unlogged:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
-# title 'Creating user that already exists:'
-# echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=$password"
+title 'Creating user that already exists:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=$password"
 
-# title 'Logging in:'
-# echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=$password"
+title 'Logging in:'
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=$password"
 
-# title 'Showing self:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users
+title 'Showing self:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users
 
-# title 'Changing self:'
-# echo_run curl -k -b cookies -c cookies -XPOST $base/users -d "password=new_password&email=${login}.2@gmail.com"
+title 'Changing self:'
+echo_run curl -k -b cookies -c cookies -XPOST $base/users -d "password=new_password&email=${login}.2@gmail.com"
 
-# title 'Showing self:'
-# echo_run curl -k -b cookies -c cookies -XGET $base/users
+title 'Showing self:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users
 
-# list
+list
 
 title 'delete user:'
 echo_run curl -k -b cookies -c cookies -XDELETE $base/users

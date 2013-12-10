@@ -18,7 +18,7 @@ else
 base=http://localhost:3000
 fi
 
-login=mael
+login=maelert
 
 title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
@@ -32,7 +32,7 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/folder1/folder2/folder3"
+echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/folder1/folder2/folder3"
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -40,7 +40,7 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/fo
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/folder6/folder7"
+echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/folder6/folder7"
 
 
 

@@ -81,7 +81,7 @@ echo_run curl -k -b cookies -c cookies -XGET $base/last_update
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/folder1/folder2/folder3"
+echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/folder1/folder2/folder3"
  
 # list
 
