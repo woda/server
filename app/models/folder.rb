@@ -93,4 +93,14 @@ class WFolder < XFile
     folder
   end
 
+  ##
+  # Move the folder into a destination folder
+  def self.move folder, source, destination
+    FolderFolderAssociation.all(children_id: folder.id, parent_id: source.id).each do |asso|
+      asso.parent_id = destination.id
+      asso.save
+    end
+
+  end
+
 end

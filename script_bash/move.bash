@@ -35,6 +35,11 @@ title 'Adding folder:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/folder1"
 
 
+title 'Adding folder:'
+# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/folder1/folder2"
+
+
 filedata1=iuehzfl
 
 sha2561=`echo -n "$filedata1" | openssl dgst -sha256 | sed 's/(stdin)= //'`
@@ -78,6 +83,13 @@ title 'Setting file (input ID) 3:'
 read -r id3
 done
 
+id4=
+while [ "$id4" == '' ]
+do
+title 'Setting file (input ID) 4:'
+read -r id4
+done
+
 
 title 'Sending part:'
 # match 'sync/:id/:part' => 'sync#upload_part', via: :put
@@ -87,6 +99,11 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "$filedata1"
 title 'move'
 # match 'move/:id/from/:source/into/:destination' => 'sync#move', via: :post
 echo_run curl -k -b cookies -c cookies -XPOST $base/move/$id1/from/$id2/into/$id3 -d ""
+
+title 'move'
+# match 'move/:id/from/:source/into/:destination' => 'sync#move', via: :post
+echo_run curl -k -b cookies -c cookies -XPOST $base/move/$id4/from/$id2/into/$id3 -d ""
+
 
 list
 
