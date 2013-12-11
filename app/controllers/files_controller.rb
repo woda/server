@@ -22,6 +22,8 @@ class FilesController < ApplicationController
     require_public = ( params[:user].nil? ? false : true )
     user = ( params[:user].nil? ? session[:user] : User.first(id: params[:user]) )
     raise RequestError.new(:bad_params, "User does not exist") unless user
+    raise RequestError.new(:bad_params, "Depth not valid") if params[:depth].to_i < 0
+    depth = (params[:depth] ? params[:depth].to_i : -1)
     xfile = ( params[:id].nil? ? user.root_folder : WFolder.get(params[:id]) )
     raise RequestError.new(:internal_error, "No root directory. Please contact your administrator") if xfile.nil? && params[:id].nil?
     raise RequestError.new(:folder_not_found, "File or folder not found") if xfile.nil?
@@ -30,7 +32,7 @@ class FilesController < ApplicationController
       raise RequestError.new(:folder_not_public, "File is not public") if xfile.folder == false && xfile.public == false
     end
     if xfile.folder then
-      @result =  { folder: crawl_folder(xfile, true, require_public), success: true }
+      @result =  { folder: crawl_folder(xfile, require_public, depth), success: true }
     else  
       @result =  { file: xfile.description, success: true }
     end
@@ -38,21 +40,27 @@ class FilesController < ApplicationController
 
   ##
   # Crawl a folder
-  def crawl_folder(folder, recur = true, only_public = false)
+  def crawl_folder(folder, only_public = false, depth = -1)
     list = []
     folders = []
-    
+    depth = -1 if depth < -1
+
     # Folder infos
     folder_infos = folder.description
 
-    # We recall craw_folder() method recursively for crawling each child folder if recur = true
-    if recur then
-      folder.childrens.each do |child|
-        # crawl only into the public sub-folders if required OR all of them
-        folders.push(crawl_folder(child)) if (only_public == true && child.public == true) || only_public == false
+    # We recall craw_folder() method recursively for crawling each child folder
+    folder.childrens.each do |child|
+      if ((only_public == true && child.public == true) || only_public == false) then
+        if (depth == -1 || depth > 0)
+          # crawl only into the public sub-folders if required OR all of them
+          folders.push(crawl_folder(child, only_public, depth - 1))
+        else
+          # do not recurs at all and just print out the child description
+          folders.push(child.description)
+        end
       end
-      folder_infos[:folders] = folders
     end
+    folder_infos[:folders] = folders
     
     # We get all files from the current folder
     files_list = []
@@ -132,7 +140,7 @@ class FilesController < ApplicationController
 
     file.uuid = SecureRandom::uuid unless file.uuid
     file.save
-    @result = { file: file.description, link: "#{BASE_URL}/app_dev.php/fs-file/#{file.uuid}", success: true }
+    @result = { file: file.description, link: "#{BASE_URL}/dl/#{file.uuid}", success: true }
   end
 
   ##

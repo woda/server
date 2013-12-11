@@ -18,16 +18,17 @@ else
 base=http://localhost:3000
 fi
 
-login=maelert
+login=mael
+password=azerty42
 
 title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=azertyzef"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=$password"
 
 title 'Logging in:'
-echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=azertyzef"
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=$password"
 
 
 title 'Adding folder:'
@@ -36,7 +37,7 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/folder4/folder5/"
+echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/folder4/folder5/"
 
 title 'Adding folder:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -54,6 +55,17 @@ sha2563=`echo -n "$filedata3" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 sha2564=`echo -n "$filedata4" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 list
+
+title 'Listing files with depth = 0'
+echo_run curl -k -b cookies -c cookies -XGET $base/files -d "depth=0"
+
+
+title 'Listing files with depth = 1'
+echo_run curl -k -b cookies -c cookies -XGET $base/files -d "depth=1"
+
+title 'Listing files with depth = 2'
+echo_run curl -k -b cookies -c cookies -XGET $base/files -d "depth=2"
+
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
