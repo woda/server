@@ -148,7 +148,7 @@ class FilesController < ApplicationController
   # Returns all files downloaded at least one time
   def downloaded
     files_list = []
-    files = session[:user].x_files.all(:downloads.gte => 1, folder: false)
+    files = session[:user].x_files.all(:downloads.gte => 1)
     # files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
     files.each { |file| files_list.push file.description }
     @result = { files: files_list, success: true }

@@ -150,7 +150,7 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id3/0 -d "$filedata3"
 title 'Sending part:'
 # match 'sync/:id/:part' => 'sync#upload_part', via: :put
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "$filedata"
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id3/0 -d "$filedata4"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id4/0 -d "$filedata4"
 
 # title 'success upload'
 # # match 'sync/:id' => 'sync#needed_parts', via: :post
