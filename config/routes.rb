@@ -76,9 +76,11 @@ Server::Application.routes.draw do
   match 'files/shared' => 'files#shared', via: :get
   match 'files/link/:id' => 'files#link', via: :get
   match 'files/downloaded' => 'files#downloaded', via: :get
+  match 'files/breadcrumb/:id' => 'files#breadcrumb', via: :get
   match 'files(/:id)' => 'files#list', via: :get
   match 'usersfiles/:user(/:id)' => 'files#list', via: :get
   match 'move/:id/from/:source/into/:destination' => 'files#move', via: :post
+
 
 # sync controller
   match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}

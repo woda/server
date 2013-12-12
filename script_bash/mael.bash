@@ -179,6 +179,9 @@ echo_run curl -k -b cookies -c cookies -XGET $base/last_update
 
 list 
 
+title 'Getting link:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/breadcrumb/$id4
+
 # title 'Deleting file:'
 # match 'sync/:id' => 'sync#delete', via: :delete
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id1

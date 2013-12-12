@@ -6,6 +6,7 @@ class FilesController < ApplicationController
 
 	before_filter :require_login
   
+  before_filter Proc.new { |c| c.check_params :id }, :only => [:breadcrumb]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :source, :destination}, :only => [:move]
@@ -173,6 +174,30 @@ class FilesController < ApplicationController
     WFolder.move(file, source, destination) if file.folder
 
     @result = { success: true }
+  end
+
+  ##
+  # Get the path/breadcrum of a file or a folder
+  def breadcrumb
+    file = WFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]   
+
+    path = [].push file.description 
+    folder = file
+
+    while (folder.id != session[:user].root_folder.id)
+      new_parent = nil
+      folder.parents.each do |parent|
+        new_parent = parent if (parent.users.include? session[:user])
+      end
+      raise RequestError.new(:db_error, "This file has no parent directory belonging to the current user") if new_parent.nil?
+      folder = new_parent
+      path.push folder.description if (folder.id != session[:user].root_folder.id)
+    end
+    path.push folder.description
+    path.reverse!
+    @result = { success: true, breadcrumb: path }
   end
 
 end
