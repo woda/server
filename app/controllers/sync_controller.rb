@@ -17,7 +17,7 @@ class SyncController < ApplicationController
   def update_and_save file
     raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
     file.last_update = Time.now
-    file.save
+    file.save!
 
     file.parents.each do |parent|
       update_and_save parent
@@ -104,8 +104,8 @@ class SyncController < ApplicationController
     cypher.iv = WodaHash.digest(params[:part])
     bucket = Storage['woda-files']
     obj = bucket.create("#{file.content.content_hash}/#{params[:part]}", data: (cypher.update(data) + cypher.final), content_type: 'octet-stream')
-    complete_upload(file.content, part)
-    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded }
+    uploaded = complete_upload(file.content, part)
+    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: uploaded }
   end
 
   ##
