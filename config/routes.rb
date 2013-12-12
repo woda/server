@@ -81,7 +81,6 @@ Server::Application.routes.draw do
   match 'usersfiles/:user(/:id)' => 'files#list', via: :get
   match 'move/:id/from/:source/into/:destination' => 'files#move', via: :post
 
-
 # sync controller
   match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
   match 'sync/:id' => 'sync#delete', via: :delete
@@ -96,6 +95,10 @@ Server::Application.routes.draw do
   match 'sync_folder' => 'sync#create_folder', via: :post
   match 'create_folder' => 'sync#create_folder', via: :post
 
+# friend management
+  match 'friends/:id' => 'friends#create', via: :put
+  match 'friends/:id' => 'friends#delete', via: :delete
+  match 'friends' => 'friends#list', via: :get
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'

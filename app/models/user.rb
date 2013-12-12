@@ -5,6 +5,7 @@ require 'app/models/base/woda_resource'
 require 'app/models/file'
 require 'app/models/folder'
 require 'app/models/association'
+require 'app/models/friend'
 
 ##
 # The User model. represents a user with login, first name, last name, email and password.
@@ -31,11 +32,12 @@ class User
   has n, :file_user_associations
   has n, :x_files, XFile, through: :file_user_associations
 
+  has n, :friends, Friend
+
   ##
   # User description
   def description
     { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked }
-
   end
 
   ##
@@ -56,6 +58,7 @@ class User
   def delete
     # no need to delete all the associations because root_folder.delete does it
     self.root_folder.delete self
+    self.friends.each { |friend| friend.delete }
     self.destroy!
   end
 
