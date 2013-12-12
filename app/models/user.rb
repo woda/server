@@ -58,6 +58,7 @@ class User
   def delete
     # no need to delete all the associations because root_folder.delete does it
     self.root_folder.delete self
+    self.friends.each { |friend| friend.delete }
     self.destroy!
   end
 

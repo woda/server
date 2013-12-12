@@ -24,8 +24,8 @@ class Friend
 
   ##
   # Destroy a friend
-  # def delete
-  #   self.destroy!
-  # end
+  def delete
+    self.destroy!
+  end
 
 end
