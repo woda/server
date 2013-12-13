@@ -77,6 +77,7 @@ Server::Application.routes.draw do
   match 'files/link/:id' => 'files#link', via: :get
   match 'files/downloaded' => 'files#downloaded', via: :get
   match 'files/breadcrumb/:id' => 'files#breadcrumb', via: :get
+  match 'files/last_update(/:id)' => 'files#last_update', via: :get
   match 'files(/:id)' => 'files#list', via: :get
   match 'usersfiles/:user(/:id)' => 'files#list', via: :get
   match 'move/:id/from/:source/into/:destination' => 'files#move', via: :post
@@ -88,7 +89,6 @@ Server::Application.routes.draw do
   match 'sync/:id' => 'sync#needed_parts', via: :get
   match 'sync/:id/:part' => 'sync#upload_part', via: :put
   match 'sync/:id/:part' => 'sync#get', via: :get
-  match 'last_update(/:id)' => 'sync#last_update', via: :get
   match 'sync_public/:id' => 'sync#synchronize', via: :post
   match 'dl/:uuid' => 'sync#download', via: :get
 

@@ -35,7 +35,7 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 
 
 filename1=file1
-# while [ "$filename1" == '' ]
+# while [ "$filename1" == '' ]list/
 # do
 # title 'Enter file name 1:'
 # read -r filename1
@@ -76,7 +76,7 @@ list
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'Adding folder:'
@@ -87,7 +87,7 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'Adding file:'
@@ -96,7 +96,7 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/fo
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'RE Adding file:'
@@ -160,7 +160,7 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/fo
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 # title 'Change'
 # # match 'sync/:id' => 'sync#change', via: :post
@@ -168,7 +168,7 @@ echo_run curl -k -b cookies -c cookies -XGET $base/last_update
 
 # title 'last update'
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 list 
 
@@ -198,7 +198,7 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id1
 
 # title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 list
 
