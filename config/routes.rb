@@ -88,9 +88,11 @@ Server::Application.routes.draw do
   match 'sync/:id' => 'sync#change', via: :post
   match 'sync/:id' => 'sync#needed_parts', via: :get
   match 'sync/:id/:part' => 'sync#upload_part', via: :put
-  match 'sync/:id/:part' => 'sync#get', via: :get
   match 'sync_public/:id' => 'sync#synchronize', via: :post
-  match 'dl/:uuid' => 'sync#download', via: :get
+  
+# download
+  match 'sync/:id/:part' => 'download#get', via: :get
+  match 'dl/:uuid' => 'download#ddl', via: :get
 
 # folder management
   match 'sync_folder' => 'sync#create_folder', via: :post
