@@ -19,10 +19,11 @@ class UsersController < ApplicationController
   # Create a new user.
   # params: email, login, password
   def create
+    raise RequestError.new(:wrong_login, "Invalid login") unless params[:email].match(/^(?=.*[a-zA-Z0-9.-_]).{3,}$/)
+    raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
     raise RequestError.new(:login_taken, "Login already taken") if User.first login: params[:login]
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params[:email]
-    raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
-    raise RequestError.new(:wrong_password, "Invalid password: must contains at least 6 letters") unless params[:password].match(/^(?=.*[a-zA-Z0-9&é"'(§è!çà^$€%ù£`):;.,=+-_]).{6,}$/)
+    raise RequestError.new(:wrong_password, "Invalid password: must contains at least 6 letters") unless params[:password].match(/^(?=.*[a-zA-Z0-9&é(§è!çà^$€%ù£):.,=+-_]).{6,}$/)
 
     user = set_properties User.new
     user.set_password params[:password]
