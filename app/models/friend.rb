@@ -1,6 +1,6 @@
 require 'data_mapper'
 require 'app/models/base/woda_resource'
-require 'app/models/User'
+require 'app/models/user'
 
 ##
 # The Friend model represents a friend of a user just with the id it.
