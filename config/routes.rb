@@ -100,6 +100,9 @@ Server::Application.routes.draw do
   match 'friends/:id' => 'friends#delete', via: :delete
   match 'friends' => 'friends#list', via: :get
 
+# search
+  match 'search' => 'search#search', via: :get
+
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
   match '*path' => 'admin#wrong_route'
