@@ -186,16 +186,19 @@ list
 # read -r id3
 # done
 
+title 'Getting link:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id1
 
-title 'Deleting file:'
+
+# title 'Deleting file:'
 # match 'sync/:id' => 'sync#delete', via: :delete
-echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id1
+# echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id1
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id2
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id3
 
-title 'last update'
+# title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
 list
 
