@@ -90,6 +90,7 @@ Server::Application.routes.draw do
   match 'sync/:id/:part' => 'sync#get', via: :get
   match 'last_update(/:id)' => 'sync#last_update', via: :get
   match 'sync_public/:id' => 'sync#synchronize', via: :post
+  match 'dl/:uuid' => 'sync#download', via: :get
 
 # folder management
   match 'sync_folder' => 'sync#create_folder', via: :post

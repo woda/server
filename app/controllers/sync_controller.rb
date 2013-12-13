@@ -5,12 +5,13 @@ require 'digest/sha1'
 require 'tempfile'
 
 class SyncController < ApplicationController
-  before_filter :require_login
+  before_filter :require_login, :only => [:create_folder, :put, :change, :upload_part, :get, :delete, :needed_parts, :synchronize]
 
   before_filter Proc.new { |c| c.check_params :filename }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
   before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts, :synchronize]
+  before_filter Proc.new { |c| c.check_params :uuid}, :only => [:download]
 
   ##
   # Update the given file, save it and update its parent recursively 
@@ -188,4 +189,32 @@ class SyncController < ApplicationController
     session[:user].save
   end
 
+  # match 'dl/:uuid' => 'sync#download', via: :get
+  ##
+  # Download a file from a direct link
+  def download
+    files = WFile.all(uuid: params[:uuid])
+    raise RequestError.new(:internal_error, "Double UUID, please contact your administrator") if files.count > 1
+    file = files.first
+    raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
+
+    filedata = ''
+    parts = (file.content.size / PART_SIZE) + (!!(file.content.size % PART_SIZE) ? 1 : 0)
+    parts.times do |part|
+      key = "#{file.content.content_hash}/#{part}"
+      raise RequestError.new(:no_bucket, "Bucket not found") if Storage['woda-files'].nil?
+      raise RequestError.new(:no_key, "Key path not found") if (Storage.use_aws ? Storage['woda-files'][key].exists? == false : Storage['woda-files'][key].nil? )
+      data = Storage['woda-files'][key].read()
+      if part == 0 then
+        file.downloads += 1
+        file.save
+      end
+      cypher = WodaCrypt.new
+      cypher.decrypt
+      cypher.key = file.content.crypt_key.from_hex
+      cypher.iv = WodaHash.digest(part.to_s)
+      filedata += cypher.update(data) + cypher.final
+    end
+    send_data(filedata, filename: file.name)
+  end
 end
