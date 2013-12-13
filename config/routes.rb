@@ -56,46 +56,52 @@ Server::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
 
-# users controller
-  match 'users/:login/login' => 'users#login'
-  match 'users/logout' => 'users#logout'
-  match 'users/files' => 'users#files', via: :get
-  match 'users/files/:folder' => 'users#files', via: :get, constraints: {folder: /.*/}
-  match 'users/downloaded_public_files' => 'users#downloaded_public_files', via: :get
-  match 'users/files/:id/download' => 'users#download_file', via: :post
-  match 'users/files/downloaded' => 'users#downloaded_files', via: :get
-  match 'users/share/:id' => 'users#share', via: :post
-  match 'users/shared_files' => 'users#shared_files', via: :get
-  match 'users/recents' => 'users#recents', via: :get
-  match 'users/public/:id' => 'users#set_public', via: :post
-  match 'users/public_files' => 'users#public_files', via: :get
-  match 'users/favorites' => 'users#favorites', via: :get
-  match 'users/favorite/:id' => 'users#set_favorite', via: :post
-  match 'users' => 'users#index', via: :get
+# CORS
+  match "*all" => "application#cors", via: :options
+
+# Users Controller
+  match 'users/:login/login' => 'users#login', via: :post
+  match 'users/logout' => 'users#logout', via: :get
+  match 'users(/:id)' => 'users#index', via: :get
   match 'users' => 'users#update', via: :post
   match 'users' => 'users#delete', via: :delete
   match 'users/:login' => 'users#create', via: :put
 
-# Folders
-  match 'users/folder/:path' => 'users#new_folder', via: :put
-  match 'users/folder/favorite/:path' => 'users#folder_favorite', via: :post
-  match 'users/folder/public/:path' => 'users#folder_public', via: :post
+# Files Controller
+  match 'files/recents' => 'files#recents', via: :get
+  match 'files/favorites' => 'files#favorites', via: :get
+  match 'files/favorites/:id' => 'files#set_favorite', via: :post
+  match 'files/public' => 'files#public', via: :get
+  match 'files/public/:id' => 'files#set_public', via: :post
+  match 'files/shared' => 'files#shared', via: :get
+  match 'files/link/:id' => 'files#link', via: :get
+  match 'files/downloaded' => 'files#downloaded', via: :get
+  match 'files/breadcrumb/:id' => 'files#breadcrumb', via: :get
+  match 'files(/:id)' => 'files#list', via: :get
+  match 'usersfiles/:user(/:id)' => 'files#list', via: :get
+  match 'move/:id/from/:source/into/:destination' => 'files#move', via: :post
 
-# files controller
-  match 'files/new_folder' => 'files#create_folder', via: :put
-  match 'files' => 'files#files', via: :get
+# sync controller
+  match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+  match 'sync/:id' => 'sync#delete', via: :delete
+  match 'sync/:id' => 'sync#change', via: :post
+  match 'sync/:id' => 'sync#needed_parts', via: :get
+  match 'sync/:id/:part' => 'sync#upload_part', via: :put
+  match 'sync/:id/:part' => 'sync#get', via: :get
+  match 'last_update(/:id)' => 'sync#last_update', via: :get
+  match 'sync_public/:id' => 'sync#synchronize', via: :post
+
+# folder management
+  match 'sync_folder' => 'sync#create_folder', via: :post
+  match 'create_folder' => 'sync#create_folder', via: :post
+
+# friend management
+  match 'friends/:id' => 'friends#create', via: :put
+  match 'friends/:id' => 'friends#delete', via: :delete
+  match 'friends' => 'friends#list', via: :get
 
 # admin controller
   match 'admin/cleanup' => 'admin#cleanup'
+  match '*path' => 'admin#wrong_route'
 
-# sync controller
-  match 'sync/public/:filename' => 'sync#set_public_status', via: :post, constraints: {filename: /.*/}
-  match 'sync/public/:filename' => 'sync#public_status', via: :get, constraints: {filename: /.*/}
-  match 'sync/foreign_public/:filename' => 'sync#sync_public', via: :put, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#put', via: :put, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#change', via: :post, constraints: {filename: /.*/}
-  match 'successsync/:filename' => 'sync#upload_success', via: :post, constraints: {filename: /.*/}
-  match 'sync/:filename' => 'sync#delete', via: :delete, constraints: {filename: /.*/}
-  match 'partsync/:part/:filename' => 'sync#upload_part', via: :put, constraints: {filename: /.*/}
-  match 'partsync/:part/:filename' => 'sync#get2', via: :get, constraints: {filename: /.*/}
 end

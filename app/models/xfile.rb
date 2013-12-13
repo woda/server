@@ -1,5 +1,7 @@
 require 'data_mapper'
 require 'app/models/base/woda_resource'
+require 'app/helpers/woda_hash'
+require 'app/models/properties/sha256_hash'
 
 ##
 # A model representing a file belonging to a user.
@@ -10,83 +12,53 @@ class XFile
   storage_names[:default] = "xfile"
 
   property :id, Serial, key: true
-  updatable_property :name, String, index: true
-  updatable_property :last_modification_time, DateTime
-  updatable_property :favorite, Boolean, :default => false
-  has n, :access_rights
-  belongs_to :user, :child_key => :user_id, index: true
-  belongs_to :folder, :child_key => :parent_id, index: true
-  belongs_to :x_file, index: true, required: false
- # A file either has a file or a content
-  has n, :x_files
-
   property :content_hash, SHA256Hash, index: true, required: false
+  property :uploaded, Boolean, default: false
+  property :folder, Boolean, default: false
+  property :uuid, String, required: false
 
-  def part_size
-    return 5 * 1024 * 1024
-  end
-  def size
-    if !content.nil? then
-      return content.size
-    end
-    if x_files.size > 0 then
-      return x_files[0].size
-    end
-    0
-  end
+  updatable_property :name, String, index: true
+  updatable_property :last_update, DateTime, default: Time.now
+  updatable_property :favorite, Boolean, default: false
+  updatable_property :downloads, Integer, default: 0
+  updatable_property :public, Boolean, default: false
 
-  def to_json *args
-    json = super
-    h = JSON.parse json
-    h['size'] = size
-    h['part_size'] = part_size
-    JSON.generate h
+  belongs_to :user, required: true
+
+  has n, :file_user_associations
+  has n, :users, through: :file_user_associations
+
+  def initialize *args, &block
+    super *args, &block
+    self.folder = false
   end
 
-  def multiple_accessor acc
-    if send(acc).size == 1 then
-      return send(acc)[0]
-    end
-    nil
-  end
-
-  def multiple_setter acc, arg
-    if send(acc).size == 1 then
-      send(acc)[0] = arg
-    else
-      send(acc) << arg
-    end
-    arg
-  end
-
-  def x_file
-    multiple_accessor :x_files
-  end
-
-  def x_file= arg
-    multiple_setter :x_files, arg
+  def description
+    if self.folder then
+        {
+          id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update,
+          folder: self.folder, shared: self.uuid != nil, downloads: self.downloads
+        }
+      else
+        size = ( self.content.nil? ? 0 : self.content.size )
+        { 
+          id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
+          size: size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
+          shared: self.uuid != nil, downloads: self.downloads, favorite: self.favorite, folder: self.folder
+        }
+      end
   end
 
   def content
-    # puts "getting content #{content_hash}"
     return nil if content_hash.nil?
-    # puts content_hash
     Content.first content_hash: content_hash
   end
 
   def content= arg
     if !arg.nil? then
       self.content_hash = arg.content_hash
-      # puts "setting content hash: #{content_hash}"
     else
-      # puts "unsetting content"
       self.content_hash = nil
     end
   end
-
-  updatable_property :downloads, Integer , :default => 0
-  updatable_property :is_public, Boolean, :default => false
-  updatable_property :shared, Boolean, :default => false
-
-  property :read_only, Boolean, :default => false
 end

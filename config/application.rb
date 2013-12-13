@@ -6,7 +6,6 @@ require File.expand_path('../boot', __FILE__)
 require 'action_controller/railtie'
 require 'dm-rails/railtie'
 require 'sprockets/railtie'
-require 'action_mailer/railtie'
 require 'active_resource/railtie'
 require 'rails/test_unit/railtie'
 
@@ -71,6 +70,7 @@ module Server
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    config.force_ssl = true
+    config.force_ssl = false
+    config.session_store :cookie_store, key: '_server_session', domain: :all, httponly: false
   end
 end

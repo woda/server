@@ -11,6 +11,12 @@
 /db/*.db
 
 # Ignore all logfiles and tempfiles.
+.bash_history
+.cache/
+.gem/
+.gitconfig
+.sudo_as_admin_successful
+log.out
 /log/*.log
 /tmp
 *~
@@ -24,3 +30,5 @@ flog_temp
 last_pid
 .idea
 /storage
+
+*.DS_Store

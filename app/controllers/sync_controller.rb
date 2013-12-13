@@ -1,138 +1,191 @@
+# -*- coding: utf-8 -*-
 require 'time'
 require 'openssl'
 require 'digest/sha1'
 require 'tempfile'
 
-BASE_URL='https://ec2-54-242-98-168.compute-1.amazonaws.com:3000'
-
 class SyncController < ApplicationController
   before_filter :require_login
-  before_filter { |c| c.check_params :filename }
-  before_filter Proc.new { |c| c.check_params :content_hash, :size }, :only => [:put, :change]
-  before_filter Proc.new { |c| c.check_params :part }, :only => [:upload_part]
-  before_filter Proc.new { |c| c.check_params :part }, :only => [:get2]
-  before_filter Proc.new { |c| c.check_params :status }, :only => [:set_public_status]
-  before_filter Proc.new { |c| c.check_params :user, :foreign_filename }, :only => [:sync_public]
 
+  before_filter Proc.new { |c| c.check_params :filename }, :only => [:create_folder]
+  before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
+  before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
+  before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts, :synchronize]
+
+  ##
+  # Update the given file, save it and update its parent recursively 
+  def update_and_save file
+    raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
+    file.last_update = Time.now
+    file.save!
+
+    file.parents.each do |parent|
+      update_and_save parent
+    end
+  end
+
+  ##
+  # Update the parent of the given file and remove its children and itself
+  def update_and_delete file
+    raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
+    file.parents.each do |parent|
+      update_and_save parent
+    end
+    file.delete session[:user]
+  end
+
+  ##
+  # Method to use to complete an upload if all the content parts have been uploaded
+  def complete_upload(content, part)
+    parts = XPart.all(content: content, part_number: part)
+    parts.each { |item| item.destroy! }
+    if XPart.count(content: content) == 0 then
+      files = WFile.all(content_hash: content.content_hash, uploaded: false)
+      files.each do |item|
+        item.uploaded = true
+        update_and_save item
+      end
+      true
+    else
+      false
+    end
+  end
+
+  ##
+  # Creates and return a new folder
+  def create_folder
+    raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
+    folder = WFolder.create(session[:user], params[:filename])
+    raise RequestError.new(:folder_not_created, "Folder not created") if folder.nil?
+    update_and_save folder
+    @result = { folder: folder.description, success: true }
+  end
+
+  ##
+  # Create a file and return it. 
   def put
-    current_content = Content.first content_hash: params['content_hash']
-    f = session[:user].get_file(params['filename'].split('/'), create: true)
-    f.last_modification_time = DateTime.now
-    set_content_files = [f]
-#TODO: this needs to be uncommented
-    # If it took more than 24 hours to upload the file, we just start over
-#    if current_content && current_content.start_upload != 0 && current_content.start_upload < (Time.now.utc.to_i - 24 * 3600) && XFile.find(content: current_content)
-#      set_content_files += XFile.find(content: current_content).to_a
-#      current_content = nil
-#      delete_s3_file params['content_hash']
-#    end
-    if current_content
-      @result = {success: true, need_upload: false, file: f}
+    raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
+    raise RequestError.new(:bad_param, "Parameter 'content_hash' is not valid") if params[:content_hash].nil? || params[:content_hash].empty?
+    raise RequestError.new(:bad_param, "Parameter 'size' is not valid") if params[:size].nil? || params[:size].empty?
+    
+    current_content = Content.first content_hash: params[:content_hash]
+    already_uploaded = (current_content ? current_content.uploaded : false)
+    file = WFile.create(session[:user], params[:filename])
+    if current_content && already_uploaded
+      file.uploaded = true
+      @result = { success: true, uploaded: true }
     else
-      current_content = Content.new(content_hash: params['content_hash'],
-                                    size: params['size'].to_i,
-                                    crypt_key: WodaCrypt.new.random_key.to_hex,
-                                    start_upload: Time.now.utc.to_i, file_type: 'none')
-      # TODO: not hardcode part size
-      @result = {success: true, need_upload: true, file: f, part_size: 5 * 1024 * 1024}
-      current_content.save
+      current_content = Content.create(params[:content_hash], params[:size].to_i) if current_content.nil?
+      @result = { success: true, uploaded: false, needed_parts: current_content.needed_parts, part_size: PART_SIZE }
     end
-    set_content_files.each { |file| file.content = current_content }
+    file.content = current_content
+    update_and_save file
+    @result.merge!({ file: file.description })
     session[:user].save
-    set_content_files.each { |file| file.save }
   end
 
+  ##
+  # Method to upload a part of 5mb for a specific file
   def upload_part
-    f = session[:user].get_file(params['filename'].split('/'), create: false)
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    raise RequestError.new(:bad_part, "\"#{params['part']}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params['part']
-    part = params['part'].to_i
-    raise RequestError.new(:bad_part, "Part number too high") if part > f.content.size / (5*1024*1024)
+    file = XFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
+    raise RequestError.new(:bad_part, "\"#{params[:part]}\" isn't an acceptable part name") unless /^[0-9]+$/ =~ params[:part]
+    part = params[:part].to_i
+    raise RequestError.new(:bad_part, "Content incorrect") if file.content.nil?
+    raise RequestError.new(:bad_part, "Part number too high") if part > ( file.content.size / PART_SIZE )
     data = request.body.read
-    part_size = (part == f.content.size / (5*1024*1024) ? f.content.size % (5*1024*1024) : (5*1024*1024))
+    part_size = (part == file.content.size / PART_SIZE ? file.content.size % PART_SIZE : PART_SIZE)
     raise RequestError.new(:bad_part, "Size of part incorrect") unless part_size == data.length
+    cypher = WodaCrypt.new
+    cypher.encrypt
+    cypher.key = file.content.crypt_key.from_hex
+    cypher.iv = WodaHash.digest(params[:part])
     bucket = Storage['woda-files']
-    obj = bucket.create("#{f.content.content_hash}/#{params['part']}",
-                        :data => data,
-                        :content_type => 'octet-stream')
-    @result = {success:true}
+    obj = bucket.create("#{file.content.content_hash}/#{params[:part]}", data: (cypher.update(data) + cypher.final), content_type: 'octet-stream')
+    uploaded = complete_upload(file.content, part)
+    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: uploaded }
   end
 
-  #TODO Debug
-  # doit setter un flag qui specifie "c'est bon le fichier a été uploadé"
-  # si un mec upload 
-  def upload_success
-    content = Content.first content_hash: params['key']
-    if content
-      content.start_upload = 0
-      content.save
-      @result = {success: true}
-    else
-      @result = {success: false}
-    end
+  ##
+  # Method to get the content parts that still need to be uploaded
+  def needed_parts
+    file = XFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
+    raise RequestError.new(:no_content, "File content found") if file.content.nil?
+    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded, file: file.description }
   end
 
+  ##
+  # Delete and recreate a file with the given parameters
   def change
-    f = session[:user].get_file(params['filename'].split('/'))
-    if f.read_only
-      @result = {success: false}
-      return
-    end
     delete
     put
   end
 
+  ##
+  # Delete a file
   def delete
-    f = session[:user].get_file(params['filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    destroy_content = nil
-#TODO: this needs to be uncommented
-#    if XFile.count(contents: f.contents) <= 1 then
-#      destroy_content = f.content
-#    end
-    f.destroy!
-    destroy_content.destroy! if destroy_content
-    @result = {success: true}
+    file = WFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can't delete the root folder") if file.id == session[:user].root_folder.id
+    update_and_delete (file.folder ? WFolder.get(params[:id]) : file)
+
+    @result = { success: true }
   end
 
-  def set_public_status
-    f = session[:user].get_file(params['filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    f.is_public = params['status']
-    f.save
-    @result = {success: true}
+  ##
+  # Get the specific file corresponding to the ID given in parameters
+  def get
+    file = XFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "Can't get a folder") if file.folder
+    raise RequestError.new(:bad_part, "Content incorrect") if file.content.nil?
+    raise RequestError.new(:file_not_uploaded, "File not completely uploaded") unless file.uploaded
+    key = "#{file.content.content_hash}/#{params[:part]}"
+    raise RequestError.new(:no_bucket, "Bucket not found") if Storage['woda-files'].nil?
+    raise RequestError.new(:no_key, "Key path not found") if (Storage.use_aws ? Storage['woda-files'][key].exists? == false : Storage['woda-files'][key].nil? )
+    data = Storage['woda-files'][key].read()
+    if params[:part].to_i == 0 then
+      file.downloads += 1
+      file.save
+    end
+    cypher = WodaCrypt.new
+    cypher.decrypt
+    cypher.key = file.content.crypt_key.from_hex
+    cypher.iv = WodaHash.digest(params[:part])
+    @result = cypher.update(data) + cypher.final
   end
 
-  def public_status
-    f = session[:user].get_file(params['filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    @result = {success: true, status: f.is_public}
+  ##
+  # Method to get the timestamp of the last modification of the user's file list
+  def last_update
+    folder = ( params[:id].nil? ? session[:user].root_folder : XFile.get(params[:id]) )
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    raise RequestError.new(:bad_access, "No access") unless folder.users.include? session[:user]   
+    @result =  { last_update: folder.last_update, success: true }
   end
 
-  def sync_public
-    u2 = User.first login: params['user']
-    raise RequestError.new(:bad_user, "User not found") unless u2
-    f2 = u2.get_file(params['foreign_filename'].split('/'))
-    raise RequestError.new(:file_not_found, "File not found") unless f2 && f2.is_public
-    f = session[:user].get_file(params['filename'].split('/'), :create => true)
-    f.x_file = f2
-    f.last_modification_time = DateTime.now
+  ##
+  # Synchronize a public file into the main folder
+  def synchronize
+    file = WFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.public?
+    raise RequestError.new(:bad_param, "Can't synchronize a folder") if file.folder
+    raise RequestError.new(:bad_param, "File or folder already synchronized") if session[:user].x_files.get(params[:id])
+    
+    file = WFile.create_from_origin(session[:user], file) if (!params[:link])
+    file = WFile.link_from_origin(session[:user], file) if (params[:link])
+
+    update_and_save file
+    @result = { success: true, file: file.description }
     session[:user].save
-    f.save
-    @result = {success: true}
   end
 
-  def get2
-    f = session[:user].get_file(params['filename'].split('/'))
-    while !f.content do
-      f = f.x_file
-    end
-    raise RequestError.new(:file_not_found, "File not found") unless f
-    file = Storage['woda-files']["#{f.content.content_hash}/#{params['part']}"].read()
-    if params['part'].to_i == 0 then
-      f.downloads += 1
-      f.save
-    end
-    @result = file
-  end
 end

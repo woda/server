@@ -2,13 +2,11 @@ source 'https://rubygems.org'
 
 RAILS_VERSION = '~> 3.2.11'
 DM_VERSION    = '~> 1.2.0'
-gem 'mailfactory'
 
 gem 'minitest', '4.7.5'
 
 gem 'activesupport',  RAILS_VERSION, :require => 'active_support'
 gem 'actionpack',     RAILS_VERSION, :require => 'action_pack'
-gem 'actionmailer',   RAILS_VERSION, :require => 'action_mailer'
 gem 'activeresource', RAILS_VERSION, :require => 'active_resource'
 gem 'railties',       RAILS_VERSION, :require => 'rails'
 gem 'tzinfo',         '~> 0.3.32'
@@ -24,6 +22,9 @@ gem 'simplecov'
 gem 'simplecov-rcov'
 gem 'shoulda-matchers'
 gem 'colorize'
+
+gem 'execjs'
+gem 'therubyracer'
 
 # Static code analysis
 gem 'metric_abc'
