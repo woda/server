@@ -147,8 +147,8 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_param, "Can't synchronize a folder") if file.folder
     raise RequestError.new(:bad_param, "File or folder already synchronized") if session[:user].x_files.get(params[:id])
     
-    file = WFile.create_from_origin(session[:user], file) if (!params[:link])
-    file = WFile.link_from_origin(session[:user], file) if (params[:link])
+    file = WFile.create_from_origin(session[:user], file) if (!params[:link] || params[:link] != "true")
+    file = WFile.link_from_origin(session[:user], file) if (params[:link] && params[:link] == "true")
 
     update_and_save file
     @result = { success: true, file: file.description }
