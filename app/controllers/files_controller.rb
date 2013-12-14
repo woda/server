@@ -137,6 +137,7 @@ class FilesController < ApplicationController
   def link
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
     raise RequestError.new(:bad_param, "Can not get the download link of the root folder") if file.id == session[:user].root_folder.id
 
     file.uuid = SecureRandom::uuid unless file.uuid
@@ -198,6 +199,15 @@ class FilesController < ApplicationController
     path.push folder.description
     path.reverse!
     @result = { success: true, breadcrumb: path }
+  end
+
+  ##
+  # Method to get the timestamp of the last modification of the user's file list
+  def last_update
+    folder = ( params[:id].nil? ? session[:user].root_folder : XFile.get(params[:id]) )
+    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
+    raise RequestError.new(:bad_access, "No access") unless folder.users.include? session[:user]   
+    @result =  { last_update: folder.last_update, success: true }
   end
 
 end

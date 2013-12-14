@@ -34,8 +34,8 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "passw
 # echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
 
 
-filename1=file1
-# while [ "$filename1" == '' ]
+filename1=fi77
+# while [ "$filename1" == '' ]list/
 # do
 # title 'Enter file name 1:'
 # read -r filename1
@@ -56,7 +56,7 @@ filename1=file1
 # done
 
 
-filedata=iuehzfl
+filedata=uhygqsr
 # while [ "$filedata" == '' ]
 # do
 # title 'Enter file data:'
@@ -76,7 +76,7 @@ list
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'Adding folder:'
@@ -87,21 +87,21 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/create_folder -d "filename=/
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
 
-title 'last update'
-# match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# title 'last update'
+# # match 'last_update(/:id)' => 'sync#last_update', via: :get
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
-title 'RE Adding file:'
-# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
+# title 'RE Adding file:'
+# # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+# echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
 
 id1=
 while [ "$id1" == '' ]
@@ -113,7 +113,7 @@ done
 title 'Sending part:'
 # match 'sync/:id/:part' => 'sync#upload_part', via: :put
 # echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "$filedata"
-echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "iuehzfl"
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "$filedata"
 
 title 'success upload'
 # match 'sync/:id' => 'sync#needed_parts', via: :post
@@ -160,7 +160,7 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/fo
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 # title 'Change'
 # # match 'sync/:id' => 'sync#change', via: :post
@@ -168,7 +168,7 @@ echo_run curl -k -b cookies -c cookies -XGET $base/last_update
 
 # title 'last update'
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 list 
 
@@ -186,16 +186,19 @@ list
 # read -r id3
 # done
 
+title 'Getting link:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id1
 
-title 'Deleting file:'
+
+# title 'Deleting file:'
 # match 'sync/:id' => 'sync#delete', via: :delete
-echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id1
+# echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id1
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id2
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/sync/$id3
 
-title 'last update'
+# title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 list
 

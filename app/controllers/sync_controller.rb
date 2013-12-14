@@ -5,12 +5,13 @@ require 'digest/sha1'
 require 'tempfile'
 
 class SyncController < ApplicationController
-  before_filter :require_login
+  before_filter :require_login, :only => [:create_folder, :put, :change, :upload_part, :get, :delete, :needed_parts, :synchronize]
 
   before_filter Proc.new { |c| c.check_params :filename }, :only => [:create_folder]
   before_filter Proc.new { |c| c.check_params :filename, :content_hash, :size }, :only => [:put, :change]
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:upload_part, :get]
   before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :needed_parts, :synchronize]
+  before_filter Proc.new { |c| c.check_params :uuid}, :only => [:download]
 
   ##
   # Update the given file, save it and update its parent recursively 
@@ -134,41 +135,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can't delete the root folder") if file.id == session[:user].root_folder.id
     update_and_delete (file.folder ? WFolder.get(params[:id]) : file)
-
     @result = { success: true }
-  end
-
-  ##
-  # Get the specific file corresponding to the ID given in parameters
-  def get
-    file = XFile.get(params[:id])
-    raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
-    raise RequestError.new(:bad_param, "Can't get a folder") if file.folder
-    raise RequestError.new(:bad_part, "Content incorrect") if file.content.nil?
-    raise RequestError.new(:file_not_uploaded, "File not completely uploaded") unless file.uploaded
-    key = "#{file.content.content_hash}/#{params[:part]}"
-    raise RequestError.new(:no_bucket, "Bucket not found") if Storage['woda-files'].nil?
-    raise RequestError.new(:no_key, "Key path not found") if (Storage.use_aws ? Storage['woda-files'][key].exists? == false : Storage['woda-files'][key].nil? )
-    data = Storage['woda-files'][key].read()
-    if params[:part].to_i == 0 then
-      file.downloads += 1
-      file.save
-    end
-    cypher = WodaCrypt.new
-    cypher.decrypt
-    cypher.key = file.content.crypt_key.from_hex
-    cypher.iv = WodaHash.digest(params[:part])
-    @result = cypher.update(data) + cypher.final
-  end
-
-  ##
-  # Method to get the timestamp of the last modification of the user's file list
-  def last_update
-    folder = ( params[:id].nil? ? session[:user].root_folder : XFile.get(params[:id]) )
-    raise RequestError.new(:file_not_found, "Folder not found") if folder.nil?
-    raise RequestError.new(:bad_access, "No access") unless folder.users.include? session[:user]   
-    @result =  { last_update: folder.last_update, success: true }
   end
 
   ##
@@ -180,8 +147,8 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_param, "Can't synchronize a folder") if file.folder
     raise RequestError.new(:bad_param, "File or folder already synchronized") if session[:user].x_files.get(params[:id])
     
-    file = WFile.create_from_origin(session[:user], file) if (!params[:link])
-    file = WFile.link_from_origin(session[:user], file) if (params[:link])
+    file = WFile.create_from_origin(session[:user], file) if (!params[:link] || params[:link] != "true")
+    file = WFile.link_from_origin(session[:user], file) if (params[:link] && params[:link] == "true")
 
     update_and_save file
     @result = { success: true, file: file.description }
