@@ -61,4 +61,5 @@ class XFile
       self.content_hash = nil
     end
   end
+
 end

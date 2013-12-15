@@ -9,6 +9,7 @@ class FilesController < ApplicationController
   before_filter Proc.new { |c| c.check_params :id }, :only => [:breadcrumb]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
+  before_filter Proc.new { |c| c.check_params :id, :login }, :only => [:share]
   before_filter Proc.new { |c| c.check_params :id, :source, :destination}, :only => [:move]
 
   ##
@@ -89,7 +90,7 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as favorite") if file.id == session[:user].root_folder.id
-    file.favorite = ((!params[:favorite] || params[:favorite] != "true") ? false : true)
+    file.favorite = (params[:favorite] == "true")
     file.save
     @result = { file: file.description, success: true }
   end
@@ -118,9 +119,29 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as public") if file.id == session[:user].root_folder.id
-    file.public = ((!params[:public] || params[:public] != "true") ? false : true)
+    file.public = (params[:public] == "true")
     file.save
     @result = { file: file.description, success: true }
+  end
+
+  ##
+  # Share a file to another user
+  def share
+    login = params[:login]
+    raise RequestError.new(:bad_param, "Wrong login") if login.nil? || login.length == 0
+    user = User.all(login: login).first
+    raise RequestError.new(:bad_param, "User not found") if user.nil?
+    file = WFile.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+    raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
+    raise RequestError.new(:bad_param, "Can not share the root folder") if file.id == session[:user].root_folder.id
+    raise RequestError.new(:bad_part, "Incorrect content") if file.content.nil?
+
+    file = WFile.link_from_origin(user, file)
+    file.update_and_save
+    @result = { success: true, file: file.description }
+    session[:user].save
   end
 
   ##
@@ -139,6 +160,7 @@ class FilesController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
     raise RequestError.new(:bad_param, "Can not get the download link of the root folder") if file.id == session[:user].root_folder.id
+    raise RequestError.new(:bad_param, "Can't get the link of a folder") if file.folder
 
     file.uuid = SecureRandom::uuid unless file.uuid
     file.save

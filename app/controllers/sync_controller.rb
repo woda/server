@@ -14,28 +14,6 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :uuid}, :only => [:download]
 
   ##
-  # Update the given file, save it and update its parent recursively 
-  def update_and_save file
-    raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
-    file.last_update = Time.now
-    file.save!
-
-    file.parents.each do |parent|
-      update_and_save parent
-    end
-  end
-
-  ##
-  # Update the parent of the given file and remove its children and itself
-  def update_and_delete file
-    raise RequestError.new(:internal_error, "Can't update and save a nil file") if file.nil?
-    file.parents.each do |parent|
-      update_and_save parent
-    end
-    file.delete session[:user]
-  end
-
-  ##
   # Method to use to complete an upload if all the content parts have been uploaded
   def complete_upload(content, part)
     parts = XPart.all(content: content, part_number: part)
@@ -44,7 +22,7 @@ class SyncController < ApplicationController
       files = WFile.all(content_hash: content.content_hash, uploaded: false)
       files.each do |item|
         item.uploaded = true
-        update_and_save item
+        item.update_and_save
       end
       true
     else
@@ -58,7 +36,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
     folder = WFolder.create(session[:user], params[:filename])
     raise RequestError.new(:folder_not_created, "Folder not created") if folder.nil?
-    update_and_save folder
+    folder.update_and_save
     @result = { folder: folder.description, success: true }
   end
 
@@ -80,7 +58,7 @@ class SyncController < ApplicationController
       @result = { success: true, uploaded: false, needed_parts: current_content.needed_parts, part_size: PART_SIZE }
     end
     file.content = current_content
-    update_and_save file
+    file.update_and_save
     @result.merge!({ file: file.description })
     session[:user].save
   end
@@ -134,7 +112,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can't delete the root folder") if file.id == session[:user].root_folder.id
-    update_and_delete (file.folder ? WFolder.get(params[:id]) : file)
+    (file.folder ? WFolder.get(params[:id]) : file).update_and_delete session[:user]
     @result = { success: true }
   end
 
@@ -150,7 +128,7 @@ class SyncController < ApplicationController
     file = WFile.create_from_origin(session[:user], file) if (!params[:link] || params[:link] != "true")
     file = WFile.link_from_origin(session[:user], file) if (params[:link] && params[:link] == "true")
 
-    update_and_save file
+    file.update_and_save
     @result = { success: true, file: file.description }
     session[:user].save
   end

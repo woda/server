@@ -70,6 +70,32 @@ echo_run curl -k -b cookies -c cookies -XGET $base/friends/ -d ""
 
 #################################
 
+
+filename1=fi709
+filedata=uhygqsrpl
+size=9
+sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
+
+title 'Adding file:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/$filename1&content_hash=$sha256&size=$size"
+
+id1=
+while [ "$id1" == '' ]
+do
+title 'Setting file (input ID) 1:'
+read -r id1
+done
+
+title 'Sending part:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id1/0 -d "$filedata"
+
+list
+
+title 'sharing file:'
+echo_run curl -k -b cookies -c cookies -XPOST $base/files/share/$id1 -d "login=$login"
+
+#################################
+
 # title 'delete user:'
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/users
 
@@ -78,6 +104,8 @@ echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Logging in:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=$password"
+
+list
 
 # title 'delete user:'
 # echo_run curl -k -b cookies -c cookies -XDELETE $base/users

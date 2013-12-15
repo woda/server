@@ -107,4 +107,25 @@ class WFile < XFile
       asso.save
     end
   end
+
+  ##
+  # Update the given file, save it and update its parent recursively 
+  def update_and_save
+    self.last_update = Time.now
+    self.save!
+
+    self.parents.each do |parent|
+      parent.update_and_save
+    end
+  end
+
+  ##
+  # Update the parent of the given file and remove its children and itself
+  def update_and_delete user
+    self.parents.each do |parent|
+      parent.update_and_save
+    end
+    self.delete user
+  end
+  
 end
