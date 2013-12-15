@@ -89,7 +89,7 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as favorite") if file.id == session[:user].root_folder.id
-    file.favorite = params[:favorite]
+    file.favorite = ((!params[:favorite] || params[:favorite] != "true") ? false : true)
     file.save
     @result = { file: file.description, success: true }
   end
@@ -118,7 +118,7 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as public") if file.id == session[:user].root_folder.id
-    file.public = params[:public]
+    file.public = ((!params[:public] || params[:public] != "true") ? false : true)
     file.save
     @result = { file: file.description, success: true }
   end
