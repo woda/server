@@ -119,6 +119,10 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
 title 'Getting link:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id
 
+title 'my links:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/mylinks
+
+
 title 'list shared files'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
 

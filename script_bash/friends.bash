@@ -94,6 +94,12 @@ list
 title 'sharing file:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/files/share/$id1 -d "login=$login"
 
+title 'shared list:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/shared/
+
+title 'sharing users:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/shared/$id1
+
 #################################
 
 # title 'delete user:'

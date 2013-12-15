@@ -1,3 +1,3 @@
 object @result
 
-attributes :files, :success, :error, :message
+attributes :files, :file, :users, :success, :error, :message

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 require 'json'
-require 'securerandom'
 
 class FilesController < ApplicationController
 
@@ -145,12 +144,22 @@ class FilesController < ApplicationController
   end
 
   ##
-  # Returns the list of all shared-files
+  # Returns the list of all shared-files or if an id is specified the file's description and all its users
   def shared
-    files_list = []
-    files = session[:user].x_files.all(:uuid.not => nil)
-    files.each { |file| files_list.push file.description }
-    @result = { files: files_list, success: true }
+    if !params[:id] then
+      files_list = []
+      files = session[:user].x_files.all(shared: true)
+      files.each { |file| files_list.push file.description }
+      @result = { files: files_list, success: true }
+    else
+      file = WFile.get(params[:id])
+      raise RequestError.new(:file_not_found, "File not found") unless file
+      raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+      
+      users = []
+      file.users.each { |user| users.push user.description }
+      @result = { success: true, file: file.description, users: users }
+    end
   end
 
   ##
@@ -162,9 +171,17 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "Can not get the download link of the root folder") if file.id == session[:user].root_folder.id
     raise RequestError.new(:bad_param, "Can't get the link of a folder") if file.folder
 
-    file.uuid = SecureRandom::uuid unless file.uuid
-    file.save
-    @result = { file: file.description, link: "#{BASE_URL}/dl/#{file.uuid}", success: true }
+    file.generate_link
+    @result = { file: file.description, link: file.link, success: true }
+  end
+
+  ##
+  # Returns the list of the links shared by the user
+  def mylinks
+    files_list = []
+    files = session[:user].x_files.all(:uuid.not => nil)
+    files.each { |file| files_list.push file.description }
+    @result = { files: files_list, success: true }
   end
 
   ##
