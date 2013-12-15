@@ -1,4 +1,4 @@
-BASE_URL='https://kobhqlt.fr:3000'
+BASE_URL='http://kobhqlt.fr:3000'
 PART_SIZE=5242880 # 5 * 1024 * 1024
 
 Storage::path='./storage'
