@@ -57,7 +57,7 @@ class XFile
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
           size: size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
           shared: self.shared, downloads: self.downloads, favorite: self.favorite, folder: self.folder,
-          link: self.link
+          link: self.link, uuid: self.uuid
         }
       end
   end
