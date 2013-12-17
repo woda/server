@@ -219,24 +219,24 @@ class FilesController < ApplicationController
   ##
   # Get the path/breadcrum of a file or a folder
   def breadcrumb
-    file = WFile.get(params[:id])
+    file = WFolder.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]   
 
-    path = [].push file.description 
+    file = WFile.get(params[:id]) unless file.folder?
+
+    path = []
     folder = file
 
     while (folder.id != session[:user].root_folder.id)
-      new_parent = nil
-      folder.parents.each do |parent|
-        new_parent = parent if (parent.users.include? session[:user])
-      end
+      new_parent = folder.parents.first(user: session[:user])
       raise RequestError.new(:db_error, "This file has no parent directory belonging to the current user") if new_parent.nil?
+      path.push new_parent.description if (new_parent.id != session[:user].root_folder.id)
       folder = new_parent
-      path.push folder.description if (folder.id != session[:user].root_folder.id)
     end
     path.push folder.description
     path.reverse!
+    path.push file.description unless path.include? file.description
     @result = { success: true, breadcrumb: path }
   end
 
