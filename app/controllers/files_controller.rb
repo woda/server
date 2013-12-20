@@ -5,7 +5,7 @@ class FilesController < ApplicationController
 
 	before_filter :require_login
   
-  before_filter Proc.new { |c| c.check_params :id }, :only => [:breadcrumb]
+  before_filter Proc.new { |c| c.check_params :id }, :only => [:breadcrumb, :link]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :login }, :only => [:share]
@@ -172,7 +172,7 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "Can't get the link of a folder") if file.folder
 
     file.generate_link
-    @result = { file: file.description, link: file.link, success: true }
+    @result = { link: file.link, uuid: file.uuid, success: true }
   end
 
   ##
