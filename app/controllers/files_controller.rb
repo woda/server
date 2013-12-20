@@ -28,7 +28,7 @@ class FilesController < ApplicationController
     xfile = ( params[:id].nil? ? user.root_folder : WFolder.get(params[:id]) )
     raise RequestError.new(:internal_error, "No root directory. Please contact your administrator") if xfile.nil? && params[:id].nil?
     raise RequestError.new(:folder_not_found, "File or folder not found") if xfile.nil?
-    if (require_public && params[:id]) then
+    if (require_public && params[:id] && session[:user].admin == false) then
       raise RequestError.new(:folder_not_public, "Folder is not public") if xfile.folder == true && xfile.public == false
       raise RequestError.new(:folder_not_public, "File is not public") if xfile.folder == false && xfile.public == false
     end
@@ -51,7 +51,7 @@ class FilesController < ApplicationController
 
     # We recall craw_folder() method recursively for crawling each child folder
     folder.childrens.each do |child|
-      if ((only_public == true && child.public == true) || only_public == false) then
+      if (((only_public == true && child.public == true) || only_public == false) || session[:user].admin) then
         if (depth == -1 || depth > 0)
           # crawl only into the public sub-folders if required OR all of them
           folders.push(crawl_folder(child, only_public, depth - 1))
@@ -67,7 +67,7 @@ class FilesController < ApplicationController
     files_list = []
     folder.files.each do |file|
       # describe only the public sub-files if required OR all of them
-      files_list.push file.description if (only_public == true && file.public == true) || only_public == false
+      files_list.push file.description if (((only_public == true && file.public == true) || only_public == false) || session[:user].admin)
     end
     folder_infos[:files] = files_list
     
