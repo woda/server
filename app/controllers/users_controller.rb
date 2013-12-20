@@ -57,7 +57,9 @@ class UsersController < ApplicationController
     user = session[:user]
     user = User.first(id: params[:id]) if params[:id]
     raise RequestError.new(:bad_params, "User does not exist") unless user
-    @result = { user: ( user.id == session[:user].id ? user.private_description : user.description ), success: true }
+    description = user.description
+    description = user.private_description if (user.id == session[:user].id || session[:user].admin)
+    @result = { user: description, success: true }
   end
   
   ##

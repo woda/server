@@ -32,19 +32,26 @@ class AdminController < ApplicationController
   end
 
   ##
-  # Returns the list of all files
+  # Returns the list of all-or-one file(s)
   def files
-    files = []
-    XFile.all.each { |f| files.push f.description }
-    @result = { success: true, file: files }
+    if params[:id] then
+      file = XFile.get(params[:id])
+      raise RequestError.new(:bad_params, "File does not exist") unless file
+      @result = { success: true, file: file.description }
+    else
+      files = []
+      XFile.all.each { |f| files.push f.description }
+      @result = { success: true, files: files }
+    end
   end
 
   ##
   # Returns the list of all files
   def delete_file
-    file = XFile.get(params[:id])
+    file = WFile.get(params[:id])
     raise RequestError.new(:bad_params, "File does not exist") unless file
-    file.delete
+    raise RequestError.new(:bad_param, "Can't delete a root folder") if file.id == file.user.root_folder.id
+    (file.folder ? WFolder.get(params[:id]) : file).update_and_delete file.user
     @result = { success: true }
   end
 
