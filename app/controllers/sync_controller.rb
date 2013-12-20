@@ -14,6 +14,12 @@ class SyncController < ApplicationController
   before_filter Proc.new { |c| c.check_params :uuid}, :only => [:download]
 
   ##
+  # Returns the model, useful for ApplicationController.
+  def model
+    nil
+  end
+
+  ##
   # Method to use to complete an upload if all the content parts have been uploaded
   def complete_upload(content, part)
     parts = XPart.all(content: content, part_number: part)
