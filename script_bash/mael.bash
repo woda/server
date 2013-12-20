@@ -69,7 +69,7 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files -d "depth=2"
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'Adding file:'
@@ -91,7 +91,7 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/file4&cont
 
 # title 'last update'
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 # title 'RE Adding file:'
 # # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -127,7 +127,7 @@ done
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'Sending part:'
@@ -175,7 +175,7 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id4
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 list 
 

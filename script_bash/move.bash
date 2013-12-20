@@ -46,7 +46,7 @@ sha2561=`echo -n "$filedata1" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 title 'Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -56,7 +56,7 @@ list
 
 # title 'last update'
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 # title 'RE Adding file:'
 # # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}

@@ -29,10 +29,10 @@ title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello899"
 
 title 'Logging in:'
-echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello899"
 
 filename=
 while [ "$filename" == '' ]
@@ -96,10 +96,10 @@ read -r login
 done
 
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello0909"
 
 title 'Logging in:'
-echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello0909"
 
 id=
 while [ "$id" == '' ]

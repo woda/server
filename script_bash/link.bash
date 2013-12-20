@@ -25,13 +25,13 @@ title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=lokifruvrvkuvy"
 
 title 'Logging in:'
-echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=lokifruvrvkuvy"
 
 # title 'last update'
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 filedata1=iuehzfl
 filedata2=lkijpom
@@ -42,7 +42,7 @@ list
 
 title 'last update'
 # match 'last_update(/:id)' => 'sync#last_update', via: :get
-echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 title 'Adding folder:'
@@ -53,7 +53,7 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/sync_folder -d "filename=/fo
 
 # title 'last update'
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 title 'Adding file:'
 # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -65,7 +65,7 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/fo
 
 # title 'last update'
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 # title 'RE Adding file:'
 # # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -119,7 +119,7 @@ title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.com&password=hello"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.com&password=lokifruvrvkuvy"
 
 title 'linking file'
 echo_run curl -k -b cookies -c cookies -XPOST $base/sync_public/$id1 -d ""
@@ -136,7 +136,7 @@ echo_run curl -k -b cookies -c cookies -XPOST $base/sync_public/$id2 -d "link=tr
 
 # title 'last update'
 # # match 'last_update(/:id)' => 'sync#last_update', via: :get
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 list
 

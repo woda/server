@@ -18,7 +18,7 @@ else
 base=http://localhost:3000
 fi
 
-login=pljkhhah
+login=pljkhhahjrzhfuyg
 
 
 title 'Logout:'
@@ -31,7 +31,7 @@ title 'Logging in:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello4679"
 
 # title 'last update'
-# echo_run curl -k -b cookies -c cookies -XGET $base/last_update 
+# echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
 filename1=fi77
@@ -99,9 +99,9 @@ echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/fo
 # echo_run curl -k -b cookies -c cookies -XGET $base/files/last_update 
 
 
-# title 'RE Adding file:'
-# # match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
-# echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
+title 'RE Adding file:'
+# match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=/folder1/folder2/folder3/$filename1&content_hash=$sha256&size=$size"
 
 id1=
 while [ "$id1" == '' ]
