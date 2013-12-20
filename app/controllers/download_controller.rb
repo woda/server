@@ -5,11 +5,17 @@ require 'digest/sha1'
 require 'tempfile'
 
 class DownloadController < ApplicationController
-  
+
   before_filter :require_login, :only => [:get]
 
   before_filter Proc.new { |c| c.check_params :id, :part }, :only => [:get]
   before_filter Proc.new { |c| c.check_params :uuid}, :only => [:download]
+
+  ##
+  # Returns the model, useful for ApplicationController.
+  def model
+    nil
+  end
 
   ##
   # Uncrypt data for a file and a part
