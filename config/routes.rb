@@ -109,7 +109,7 @@ Server::Application.routes.draw do
   match 'search' => 'search#search', via: :get
 
 # admin controller
-  match 'admin/cleanup' => 'admin#cleanup'
+  match 'admin/users' => 'admin#users', via: :get
   match '*path' => 'admin#wrong_route'
 
 end

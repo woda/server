@@ -5,6 +5,7 @@ class UsersController < ApplicationController
   
   before_filter :require_login, :only => [:delete, :update, :index, :logout]
   before_filter :check_create_params, :only => [:create]
+  
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
@@ -30,7 +31,7 @@ class UsersController < ApplicationController
     # create_root save the user
     WFolder.create_root user
     session[:user] = user
-    @result = { user: user.description, success: true }
+    @result = { user: user.private_description, success: true }
   end
     
   ##
@@ -47,7 +48,7 @@ class UsersController < ApplicationController
     session[:user].set_password params[:password] if params[:password]
     set_properties session[:user]
     session[:user].save
-    @result = { user: session[:user].description, success: true }
+    @result = { user: session[:user].private_description, success: true }
   end
   
   ##
@@ -56,7 +57,7 @@ class UsersController < ApplicationController
     user = session[:user]
     user = User.first(id: params[:id]) if params[:id]
     raise RequestError.new(:bad_params, "User does not exist") unless user
-    @result = { user: user.description, success: true }
+    @result = { user: ( user.id == session[:user].id ? user.private_description : user.description ), success: true }
   end
   
   ##
@@ -67,7 +68,7 @@ class UsersController < ApplicationController
     raise RequestError.new(:user_not_found, "User not found") unless user
     raise RequestError.new(:bad_password, "Bad password") unless user.has_password? params[:password]
     session[:user] = user
-    @result = { user: user.description, success: true }
+    @result = { user: user.private_description, success: true }
   end
   
   ##

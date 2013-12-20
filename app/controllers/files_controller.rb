@@ -200,12 +200,16 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not move the root folder") if file.id == session[:user].root_folder.id
-    source = session[:user].x_files.get(params[:source])
-    raise RequestError.new(:file_not_found, "Source not found") unless source 
+    source = WFolder.get(params[:source])
+    raise RequestError.new(:file_not_found, "Source not found") unless source
     raise RequestError.new(:bad_param, "Source is not a folder") unless source.folder
-    destination = session[:user].x_files.get(params[:destination])
+    raise RequestError.new(:bad_access, "No access to the source folder") unless source.users.include? session[:user]   
+    raise RequestError.new(:bad_param, "Source does not contain the file") if source.files.include? file == false && !file.folder
+    raise RequestError.new(:bad_param, "Source does not contain the folder") if source.childrens.include? file && file.folder
+    destination = WFolder.get(params[:destination])
     raise RequestError.new(:file_not_found, "Destination not found") unless destination
     raise RequestError.new(:bad_param, "Destination is not a folder") unless destination.folder
+    raise RequestError.new(:bad_access, "No access to the destination folder") unless destination.users.include? session[:user] 
     raise RequestError.new(:bad_param, "Destination and Source are identical") if source.id == destination.id
     raise RequestError.new(:bad_param, "Destination and File are identical") if file.id == destination.id
     raise RequestError.new(:bad_param, "File and Source are identical") if source.id == file.id

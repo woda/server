@@ -21,7 +21,7 @@ class User
   property :pass_salt, SHA256Salt, required: true
   property :active, Boolean, required: true, default: true
   property :locked, Boolean, required: true, default: false
-  property :roles, Text, required: true, default: 'a:1:{i:0;s:9:"ROLE_USER";}'
+  property :admin, Boolean, required: true, default: false
 
   updatable_property :login, String, unique: true, unique_index: true, required: true
   updatable_property :email, String, unique: true, unique_index: true, format: :email_address, required: true
@@ -35,9 +35,15 @@ class User
   has n, :friends, Friend
 
   ##
-  # User description
+  # User's description
   def description
-    { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked }
+    { id: self.id, login: self.login, email: self.email }
+  end
+
+  ##
+  # User's private description
+  def private_description
+    { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked, admin: self.admin }
   end
 
   ##

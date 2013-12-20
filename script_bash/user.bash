@@ -35,6 +35,12 @@ echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 title 'Creating user:'
 echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.com&password=$password"
 
+title 'Showing self:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users
+
+title 'Showing other:'
+echo_run curl -k -b cookies -c cookies -XGET $base/users/12
+
 title 'Logging out:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
@@ -52,9 +58,6 @@ echo_run curl -k -b cookies -c cookies -XGET $base/users
 
 title 'Changing self:'
 echo_run curl -k -b cookies -c cookies -XPOST $base/users -d "password=new_password&email=${login}.2@gmail.com"
-
-title 'Showing self:'
-echo_run curl -k -b cookies -c cookies -XGET $base/users
 
 list
 

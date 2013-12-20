@@ -3,19 +3,49 @@ require 'json'
 
 class AdminController < ApplicationController
   
-  before_filter Proc.new { |c| raise RequestError.new(:is_production, "Can't use that in production") if Rails.env == 'production' }, only: :cleanup
-  
+  # before_filter :require_login
+  before_filter :require_admin_user, :except => [:wrong_route]
+
+  before_filter Proc.new { |c| c.check_params :id }, :only => [:delete_user, :delete_file]
+
   ##
   # Returns the model, useful for ApplicationController.
   def model
     nil
   end
 
-  def cleanup
-    puts XFile.all.destroy
-    puts Content.all.destroy
-    Storage.clear 'woda-files'
-    @result = {success: true}
+  ##
+  # Returns the list of all users
+  def users
+    users = []
+    User.all.each { |u| users.push u.private_description }
+    @result = { success: true, users: users }
+  end
+
+  ##
+  # Delete a user
+  def delete_user
+    user = User.get(params[:id])
+    raise RequestError.new(:bad_params, "User does not exist") unless user
+    user.delete
+    @result = { success: true }
+  end
+
+  ##
+  # Returns the list of all files
+  def files
+    files = []
+    XFile.all.each { |f| files.push f.description }
+    @result = { success: true, file: files }
+  end
+
+  ##
+  # Returns the list of all files
+  def delete_file
+    file = XFile.get(params[:id])
+    raise RequestError.new(:bad_params, "File does not exist") unless file
+    file.delete
+    @result = { success: true }
   end
 
   def wrong_route
