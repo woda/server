@@ -22,6 +22,8 @@ class User
   property :active, Boolean, required: true, default: true
   property :locked, Boolean, required: true, default: false
   property :admin, Boolean, required: true, default: false
+  property :space, Integer, required: true, default: DEFAULT_SPACE
+  property :used_space, Integer, required: true, default: 0
 
   updatable_property :login, String, unique: true, unique_index: true, required: true
   updatable_property :email, String, unique: true, unique_index: true, format: :email_address, required: true
@@ -43,7 +45,10 @@ class User
   ##
   # User's private description
   def private_description
-    { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked, admin: self.admin }
+    {
+      id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked,
+      admin: self.admin, space: self.space, used_space: self.used_space
+    }
   end
 
   ##
@@ -66,6 +71,19 @@ class User
     self.root_folder.delete self
     self.friends.each { |friend| friend.delete }
     self.destroy!
+  end
+
+  def can_add_file_size size
+    (self.used_space + size) <= self.space
+  end
+
+  def add_file_size size
+    self.used_space += size
+  end
+
+  def remove_file_size size
+    self.used_space -= size
+    self.used_space = 0 if self.used_space < 0
   end
 
 end

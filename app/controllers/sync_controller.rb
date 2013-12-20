@@ -51,8 +51,10 @@ class SyncController < ApplicationController
   def put
     raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
     raise RequestError.new(:bad_param, "Parameter 'content_hash' is not valid") if params[:content_hash].nil? || params[:content_hash].empty?
-    raise RequestError.new(:bad_param, "Parameter 'size' is not valid") if params[:size].nil? || params[:size].empty?
-    
+    raise RequestError.new(:bad_param, "Parameter 'size' is not valid") if params[:size].nil? || params[:size].empty? || params[:size].to_i <= 0
+    raise RequestError.new(:bad_param, "Current account doesn't have enough to space to store this file") unless session[:user].can_add_file_size(params[:size].to_i)
+    raise RequestError.new(:bad_param, "File already exists") unless XFile.all(user: session[:user], name: params[:filename]).empty?
+
     current_content = Content.first content_hash: params[:content_hash]
     already_uploaded = (current_content ? current_content.uploaded : false)
     file = WFile.create(session[:user], params[:filename])
@@ -65,8 +67,9 @@ class SyncController < ApplicationController
     end
     file.content = current_content
     file.update_and_save
-    @result.merge!({ file: file.description })
+    session[:user].add_file_size current_content.size
     session[:user].save
+    @result.merge!({ file: file.description })
   end
 
   ##

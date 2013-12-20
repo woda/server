@@ -111,6 +111,7 @@ Server::Application.routes.draw do
 # admin controller
   match 'admin/users' => 'admin#users', via: :get
   match 'admin/users/:id' => 'admin#delete_user', via: :delete
+  match 'admin/users/:id/update_space/:space' => 'admin#update_user_space', via: :post
   match 'admin/files(/:id)' => 'admin#files', via: :get
   match 'admin/files/:id' => 'admin#delete_file', via: :delete
   match '*path' => 'admin#wrong_route'

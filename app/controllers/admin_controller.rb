@@ -7,6 +7,7 @@ class AdminController < ApplicationController
   before_filter :require_admin_user, :except => [:wrong_route]
 
   before_filter Proc.new { |c| c.check_params :id }, :only => [:delete_user, :delete_file]
+  before_filter Proc.new { |c| c.check_params :id, :space }, :only => [:update_user_space]
 
   ##
   # Returns the model, useful for ApplicationController.
@@ -20,6 +21,17 @@ class AdminController < ApplicationController
     users = []
     User.all.each { |u| users.push u.private_description }
     @result = { success: true, users: users }
+  end
+
+  ##
+  # Update the available space for a specific user
+  def update_user_space
+    user = User.get(params[:id])
+    raise RequestError.new(:bad_params, "User does not exist") unless user
+    raise RequestError.new(:bad_params, "Invalid new available space") if params[:space].to_i <= 0
+    user.space = params[:space].to_i
+    user.save
+    @result = { success: true }
   end
 
   ##

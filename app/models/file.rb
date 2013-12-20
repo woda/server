@@ -40,6 +40,9 @@ class WFile < XFile
       # remove all associations where this file is "inside" a folder for ALL users
       FileFolderAssociation.all(file_id: self.id).destroy!
 
+      # if a content exist and if the user is the original owner, reduce the user's used space
+      current_user.remove_file_size self.content.size if content
+
       # remove the content if and only if the true owner removes the file
       # a hook inside the content.delete method will check it this content is referenced by antoher file.
       self.content.delete if self.content
@@ -129,6 +132,7 @@ class WFile < XFile
       parent.update_and_save
     end
     self.delete user
+    user.save
   end
 
 end
