@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 
 class FriendsController < ApplicationController
+
   before_filter :require_login
 
   before_filter Proc.new { |c| c.check_params :id}, :only => [:delete, :create]
+
+  ##
+  # Returns the model, useful for ApplicationController.
+  def model
+    Friend
+  end
 
   ##
   # Create a friend for the current user
