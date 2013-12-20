@@ -33,3 +33,14 @@ class FileUserAssociation
   belongs_to :user, 'User', key: true
   belongs_to :x_file, 'XFile', key: true
 end
+
+class FavoriteFileAssociation
+  include DataMapper::Resource
+  include WodaResource
+
+  storage_names[:default] = 'FavoriteFileAssociation'
+  
+  belongs_to :favorite_user, 'User', key: true
+  belongs_to :favorite_file, 'XFile', key: true
+end
+

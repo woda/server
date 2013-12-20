@@ -21,7 +21,6 @@ class XFile
 
   updatable_property :name, String, index: true
   updatable_property :last_update, DateTime, default: Time.now
-  updatable_property :favorite, Boolean, default: false
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
 
@@ -29,6 +28,9 @@ class XFile
 
   has n, :file_user_associations
   has n, :users, through: :file_user_associations
+
+  has n, :favorite_file_association, child_key: [:favorite_file_id]
+  has n, :favorite_users, User, through: :favorite_file_association
 
   def initialize *args, &block
     super *args, &block
@@ -45,10 +47,11 @@ class XFile
     "#{BASE_URL}/dl/#{self.uuid}"
   end
 
-  def description
+  def description user=nil
+    favorite = self.favorite_users.include? user if user
     if self.folder then
         {
-          id: self.id, name: self.name, public: self.public, favorite: self.favorite, last_update: self.last_update,
+          id: self.id, name: self.name, public: self.public, last_update: self.last_update, favorite: favorite,
           folder: self.folder, shared: self.shared, downloads: self.downloads
         }
       else
@@ -56,7 +59,7 @@ class XFile
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
           size: size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
-          shared: self.shared, downloads: self.downloads, favorite: self.favorite, folder: self.folder,
+          shared: self.shared, downloads: self.downloads, folder: self.folder, favorite: favorite, 
           link: self.link, uuid: self.uuid
         }
       end

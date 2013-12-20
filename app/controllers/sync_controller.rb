@@ -104,7 +104,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can't upload data to a folder") if file.folder
     raise RequestError.new(:no_content, "File content found") if file.content.nil?
-    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded, file: file.description }
+    @result = { success: true, needed_parts: file.content.needed_parts, uploaded: file.uploaded, file: file.description(session[:user]) }
   end
 
   ##
@@ -138,7 +138,7 @@ class SyncController < ApplicationController
     file = WFile.link_from_origin(session[:user], file) if (params[:link] && params[:link] == "true")
 
     file.update_and_save
-    @result = { success: true, file: file.description }
+    @result = { success: true, file: file.description(session[:user]) }
     session[:user].save
   end
 

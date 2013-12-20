@@ -35,7 +35,7 @@ class FilesController < ApplicationController
     if xfile.folder then
       @result =  { folder: crawl_folder(xfile, require_public, depth), success: true }
     else  
-      @result =  { file: xfile.description, success: true }
+      @result =  { file: xfile.description(session[:user]) , success: true }
     end
   end
 
@@ -47,7 +47,7 @@ class FilesController < ApplicationController
     depth = -1 if depth < -1
 
     # Folder infos
-    folder_infos = folder.description
+    folder_infos = folder.description(session[:user])
 
     # We recall craw_folder() method recursively for crawling each child folder
     folder.childrens.each do |child|
@@ -57,7 +57,7 @@ class FilesController < ApplicationController
           folders.push(crawl_folder(child, only_public, depth - 1))
         else
           # do not recurs at all and just print out the child description
-          folders.push(child.description)
+          folders.push(child.description(session[:user]))
         end
       end
     end
@@ -67,7 +67,9 @@ class FilesController < ApplicationController
     files_list = []
     folder.files.each do |file|
       # describe only the public sub-files if required OR all of them
-      files_list.push file.description if (((only_public == true && file.public == true) || only_public == false) || session[:user].admin)
+      if (((only_public == true && file.public == true) || only_public == false) || session[:user].admin) then
+        files_list.push(file.description(session[:user]))
+      end
     end
     folder_infos[:files] = files_list
     
@@ -79,7 +81,7 @@ class FilesController < ApplicationController
   def recents
     files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), folder: false, limit: 20)
     files_list = []
-    files.each { |file| files_list.push file.description }
+    files.each { |file| files_list.push(file.description(session[:user])) }
     @result = { files: files_list, success: true }
   end
 
@@ -89,18 +91,19 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as favorite") if file.id == session[:user].root_folder.id
-    file.favorite = (params[:favorite] == "true")
     file.save
-    @result = { file: file.description, success: true }
+    file.favorite_users << session[:user]
+    @result = { file: file.description(session[:user]), success: true }
   end
 
   ##
   # Returns all the favorites files
   def favorites
-    files_list = []
-    files = session[:user].x_files.all favorite: true
-    files.each { |file| files_list.push file.description }
-    @result = { files: files_list, success: true }
+    files = []
+    session[:user].favorite_files.each do |file|
+      files.push(file.description(session[:user]))
+    end
+    @result = { files: files, success: true }
   end
 
   ##
@@ -108,7 +111,7 @@ class FilesController < ApplicationController
   def public
     public_files = []
     files = session[:user].x_files.all public: true
-    files.each { |file| public_files.push file.description }
+    files.each { |file| public_files.push(file.description(session[:user])) }
     @result = { files: public_files, success: true }
   end
   
@@ -120,7 +123,7 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "Can not set the root folder as public") if file.id == session[:user].root_folder.id
     file.public = (params[:public] == "true")
     file.save
-    @result = { file: file.description, success: true }
+    @result = { file: file.description(session[:user]), success: true }
   end
 
   ##
@@ -139,7 +142,7 @@ class FilesController < ApplicationController
 
     file = WFile.link_from_origin(user, file)
     file.update_and_save
-    @result = { success: true, file: file.description }
+    @result = { success: true, file: file.description(session[:user]) }
     session[:user].save
   end
 
@@ -149,7 +152,7 @@ class FilesController < ApplicationController
     if !params[:id] then
       files_list = []
       files = session[:user].x_files.all(shared: true)
-      files.each { |file| files_list.push file.description }
+      files.each { |file| files_list.push(file.description(session[:user])) }
       @result = { files: files_list, success: true }
     else
       file = WFile.get(params[:id])
@@ -158,7 +161,7 @@ class FilesController < ApplicationController
       
       users = []
       file.users.each { |user| users.push user.description }
-      @result = { success: true, file: file.description, users: users }
+      @result = { success: true, file: file.description(session[:user]), users: users }
     end
   end
 
@@ -180,7 +183,7 @@ class FilesController < ApplicationController
   def mylinks
     files_list = []
     files = session[:user].x_files.all(:uuid.not => nil)
-    files.each { |file| files_list.push file.description }
+    files.each { |file| files_list.push(file.description(session[:user])) }
     @result = { files: files_list, success: true }
   end
 
@@ -190,7 +193,7 @@ class FilesController < ApplicationController
     files_list = []
     files = session[:user].x_files.all(:downloads.gte => 1)
     # files = (files.all(public: true ) | files.all(:uuid.not => nil)) if params[:particular]
-    files.each { |file| files_list.push file.description }
+    files.each { |file| files_list.push(file.description(session[:user])) }
     @result = { files: files_list, success: true }
   end
 
@@ -235,12 +238,12 @@ class FilesController < ApplicationController
     while (folder.id != session[:user].root_folder.id)
       new_parent = folder.parents.first(user: session[:user])
       raise RequestError.new(:db_error, "This file has no parent directory belonging to the current user") if new_parent.nil?
-      path.push new_parent.description if (new_parent.id != session[:user].root_folder.id)
+      path.push(new_parent.description(session[:user])) if (new_parent.id != session[:user].root_folder.id)
       folder = new_parent
     end
-    path.push folder.description
+    path.push(folder.description(session[:user]))
     path.reverse!
-    path.push file.description unless path.include? file.description
+    path.push(file.description(session[:user])) unless path.include? file.description(session[:user])
     @result = { success: true, breadcrumb: path }
   end
 
