@@ -42,7 +42,7 @@ class User
   ##
   # User's description
   def description
-    { id: self.id, login: self.login, email: self.email }
+    { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked }
   end
 
   ##
@@ -78,6 +78,36 @@ class User
 
   def can_add_file_size size
     (self.used_space + size) <= self.space
+  end
+
+  ##
+  # Gets and creates a folder and if it does not exist.
+  def create_folder path
+    raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
+    path = path.split('/')
+    folder = self.root_folder
+    path.reject! { |c| c.empty? }
+    path.size.times do |i|
+      puts "path: #{path[i]}"
+      child = folder.childrens.first(name: path[i], folder: true)
+      puts "child: #{child.description}" if child
+      puts "child does not exist" if child.nil?
+      if child.nil? then
+          child = WFolder.new(name: path[i], last_update: DateTime.now)
+          self.x_files << child
+          self.save
+          folder.childrens << child
+          folder.save
+          child.save
+          puts "new child: #{child.description}"
+          puts "child.parents: #{child.parents.last}"
+          puts "parent.childrens: #{folder.childrens.last}"
+          puts "----------------------------------------------------"
+      end
+      folder = child
+    end
+    puts "return #{folder.description}"
+    folder
   end
 
   def add_file_size size
