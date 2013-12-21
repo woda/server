@@ -73,11 +73,16 @@ Server::Application.routes.draw do
   match 'files/favorites/:id' => 'files#set_favorite', via: :post
   match 'files/public' => 'files#public', via: :get
   match 'files/public/:id' => 'files#set_public', via: :post
-  match 'files/shared' => 'files#shared', via: :get
+  match 'files/share/:id' => 'files#share', via: :post
+  match 'files/shared(/:id)' => 'files#shared', via: :get
+  match 'files/mylinks' => 'files#mylinks', via: :get
   match 'files/link/:id' => 'files#link', via: :get
   match 'files/downloaded' => 'files#downloaded', via: :get
+  match 'files/breadcrumb/:id' => 'files#breadcrumb', via: :get
+  match 'files/last_update(/:id)' => 'files#last_update', via: :get
   match 'files(/:id)' => 'files#list', via: :get
   match 'usersfiles/:user(/:id)' => 'files#list', via: :get
+  match 'move/:id/from/:source/into/:destination' => 'files#move', via: :post
 
 # sync controller
   match 'sync' => 'sync#put', via: :put, constraints: {filename: /.*/}
@@ -85,12 +90,30 @@ Server::Application.routes.draw do
   match 'sync/:id' => 'sync#change', via: :post
   match 'sync/:id' => 'sync#needed_parts', via: :get
   match 'sync/:id/:part' => 'sync#upload_part', via: :put
-  match 'sync/:id/:part' => 'sync#get', via: :get
+  match 'sync_public/:id' => 'sync#synchronize', via: :post
+  
+# download
+  match 'sync/:id/:part' => 'download#get', via: :get
+  match 'dl/:uuid' => 'download#ddl', via: :get
+
+# folder management
   match 'sync_folder' => 'sync#create_folder', via: :post
-  match 'last_update(/:id)' => 'sync#last_update', via: :get
+  match 'create_folder' => 'sync#create_folder', via: :post
+
+# friend management
+  match 'friends/:id' => 'friends#create', via: :put
+  match 'friends/:id' => 'friends#delete', via: :delete
+  match 'friends' => 'friends#list', via: :get
+
+# search
+  match 'search' => 'search#search', via: :get
 
 # admin controller
-  match 'admin/cleanup' => 'admin#cleanup'
+  match 'admin/users' => 'admin#users', via: :get
+  match 'admin/users/:id' => 'admin#delete_user', via: :delete
+  match 'admin/users/:id/update_space/:space' => 'admin#update_user_space', via: :post
+  match 'admin/files(/:id)' => 'admin#files', via: :get
+  match 'admin/files/:id' => 'admin#delete_file', via: :delete
   match '*path' => 'admin#wrong_route'
 
 end

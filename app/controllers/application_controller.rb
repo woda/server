@@ -126,4 +126,8 @@ class ApplicationController < ActionController::Base
     raise RequestError.new(:not_logged_in, "Not logged in") unless session[:user]
   end
 
+  def require_admin_user
+    raise RequestError.new(:bad_access, "You are not allowed to access this part") unless session[:user].admin
+  end
+
 end

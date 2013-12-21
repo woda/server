@@ -5,6 +5,7 @@ require 'app/models/base/woda_resource'
 require 'app/models/file'
 require 'app/models/folder'
 require 'app/models/association'
+require 'app/models/friend'
 
 ##
 # The User model. represents a user with login, first name, last name, email and password.
@@ -20,20 +21,37 @@ class User
   property :pass_salt, SHA256Salt, required: true
   property :active, Boolean, required: true, default: true
   property :locked, Boolean, required: true, default: false
-  property :roles, Text, required: true, default: 'a:1:{i:0;s:9:"ROLE_USER";}'
+  property :admin, Boolean, required: true, default: false
+  property :space, Integer, required: true, default: DEFAULT_SPACE
+  property :used_space, Integer, required: true, default: 0
 
   updatable_property :login, String, unique: true, unique_index: true, required: true
   updatable_property :email, String, unique: true, unique_index: true, format: :email_address, required: true
 
   has 1, :root_folder, WFolder
+  has n, :original_files, XFile
 
   has n, :file_user_associations
   has n, :x_files, XFile, through: :file_user_associations
 
+  has n, :favorite_file_association, child_key: [:favorite_user_id]
+  has n, :favorite_files, XFile, through: :favorite_file_association
+
+  has n, :friends, Friend
+
   ##
-  # User description
+  # User's description
   def description
     { id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked }
+  end
+
+  ##
+  # User's private description
+  def private_description
+    {
+      id: self.id, login: self.login, email: self.email, active: self.active, locked: self.locked,
+      admin: self.admin, space: self.space, used_space: self.used_space
+    }
   end
 
   ##
@@ -52,19 +70,14 @@ class User
   ##
   # Destroy a user and all its attributes, files, folders, relationships, etc.
   def delete
-    self.root_folder.delete
-    FileUserAssociation.all(user_id: self.id).destroy!
+    # no need to delete all the associations because root_folder.delete does it
+    self.root_folder.delete self
+    self.friends.each { |friend| friend.delete }
     self.destroy!
   end
 
-  ##
-  # Create the root folder for the current user
-  def create_root_folder 
-    folder = WFolder.new(name: "/", last_update: DateTime.now)
-    self.x_files << folder
-    self.root_folder = folder
-    folder.save
-    self.save
+  def can_add_file_size size
+    (self.used_space + size) <= self.space
   end
 
   ##
@@ -97,21 +110,13 @@ class User
     folder
   end
 
-  ##
-  # Create a file and its parent folders.
-  def create_file path
-    path = path.split('/')
-    folder = create_folder(path[0...path.size-1].join('/'))
-    file = folder.files.first(name: path[-1], folder: false)
-    if file.nil? then
-      file = WFile.new(name: path[-1], last_update: DateTime.now)
-      self.x_files << file
-      self.save
-      folder.files << file
-      folder.save
-      file.save
-    end
-    file
+  def add_file_size size
+    self.used_space += size
+  end
+
+  def remove_file_size size
+    self.used_space -= size
+    self.used_space = 0 if self.used_space < 0
   end
 
 end

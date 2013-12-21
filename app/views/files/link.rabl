@@ -1,3 +1,3 @@
 object @result
 
-attributes :link, :file, :success, :error, :message
+attributes :link, :uuid, :success, :error, :message

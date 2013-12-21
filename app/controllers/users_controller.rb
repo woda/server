@@ -5,6 +5,7 @@ class UsersController < ApplicationController
   
   before_filter :require_login, :only => [:delete, :update, :index, :logout]
   before_filter :check_create_params, :only => [:create]
+  
   before_filter Proc.new { |c| c.check_params :password }, :only => [:create]
   before_filter Proc.new { |c| c.check_update_params :password }, :only => [:update]
   before_filter Proc.new { |c| c.check_params :login, :password }, :only => [:login]
@@ -19,15 +20,18 @@ class UsersController < ApplicationController
   # Create a new user.
   # params: email, login, password
   def create
+    raise RequestError.new(:wrong_login, "Invalid login") unless params[:email].match(/^(?=.*[a-zA-Z0-9.-_]).{3,}$/)
+    raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
     raise RequestError.new(:login_taken, "Login already taken") if User.first login: params[:login]
     raise RequestError.new(:email_taken, "Email already taken") if User.first email: params[:email]
-    raise RequestError.new(:wrong_email, "Invalid email") unless params[:email].match(/\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\z/)
+    raise RequestError.new(:wrong_password, "Invalid password: must contains at least 6 letters") unless params[:password].match(/^(?=.*[a-zA-Z0-9&é(§è!çà^$€%ù£):.,=+-_]).{6,}$/)
+
     user = set_properties User.new
     user.set_password params[:password]
-    user.create_root_folder
-    user.save
+    # create_root save the user
+    WFolder.create_root user
     session[:user] = user
-    @result = { user: user.description, success: true }
+    @result = { user: user.private_description, success: true }
   end
     
   ##
@@ -44,7 +48,7 @@ class UsersController < ApplicationController
     session[:user].set_password params[:password] if params[:password]
     set_properties session[:user]
     session[:user].save
-    @result = { user: session[:user].description, success: true }
+    @result = { user: session[:user].private_description, success: true }
   end
   
   ##
@@ -53,7 +57,9 @@ class UsersController < ApplicationController
     user = session[:user]
     user = User.first(id: params[:id]) if params[:id]
     raise RequestError.new(:bad_params, "User does not exist") unless user
-    @result = { user: user.description, success: true }
+    description = user.description
+    description = user.private_description if (user.id == session[:user].id || session[:user].admin)
+    @result = { user: description, success: true }
   end
   
   ##
@@ -64,7 +70,7 @@ class UsersController < ApplicationController
     raise RequestError.new(:user_not_found, "User not found") unless user
     raise RequestError.new(:bad_password, "Bad password") unless user.has_password? params[:password]
     session[:user] = user
-    @result = { user: user.description, success: true }
+    @result = { user: user.private_description, success: true }
   end
   
   ##

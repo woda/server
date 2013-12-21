@@ -29,10 +29,10 @@ title 'Logout:'
 echo_run curl -k -b cookies -c cookies -XGET $base/users/logout
 
 title 'Creating user:'
-echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=hello"
+echo_run curl -k -b cookies -c cookies -XPUT $base/users/$login -d "email=$login@gmail.co&password=helloooo"
 
 title 'Logging in:'
-echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=hello"
+echo_run curl -k -b cookies -c cookies -XPOST $base/users/$login/login -d "password=helloooo"
 
 filename=
 while [ "$filename" == '' ]
@@ -118,6 +118,10 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
 
 title 'Getting link:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/link/$id
+
+title 'my links:'
+echo_run curl -k -b cookies -c cookies -XGET $base/files/mylinks
+
 
 title 'list shared files'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/shared
