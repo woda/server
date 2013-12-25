@@ -89,13 +89,6 @@ echo_run curl -k -b cookies -c cookies -XGET $base/files/recents
 title 'Listing favorite files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/favorites
 
-id=
-while [ "$id" == '' ]
-do
-title 'Setting file (input ID):'
-read -r id
-done
-
 title 'Listing specific files:'
 echo_run curl -k -b cookies -c cookies -XGET $base/files/$id
 

@@ -34,8 +34,8 @@ class User
   has n, :file_user_associations
   has n, :x_files, XFile, through: :file_user_associations
 
-  has n, :favorite_file_association, child_key: [:favorite_user_id]
-  has n, :favorite_files, XFile, through: :favorite_file_association
+  has n, :favorite_file_association, 'FavoriteFileAssociation', child_key: [:user_id]
+  has n, :favorite_files, XFile, through: :favorite_file_association, via: :x_file
 
   has n, :friends, Friend
 

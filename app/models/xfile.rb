@@ -29,8 +29,8 @@ class XFile
   has n, :file_user_associations
   has n, :users, through: :file_user_associations
 
-  has n, :favorite_file_association, child_key: [:favorite_file_id]
-  has n, :favorite_users, User, through: :favorite_file_association
+  has n, :favorite_file_association, 'FavoriteFileAssociation', child_key: [:x_file_id]
+  has n, :favorite_users, User, through: :favorite_file_association, via: :user
 
   def initialize *args, &block
     super *args, &block

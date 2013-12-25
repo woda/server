@@ -91,8 +91,15 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as favorite") if file.id == session[:user].root_folder.id
+
+    if params[:favorite] == "true" then 
+      file.favorite_users << session[:user]
+    else
+      file.favorite_users.delete session[:user]
+    end
+    
     file.save
-    file.favorite_users << session[:user]
+
     @result = { file: file.description(session[:user]), success: true }
   end
 
