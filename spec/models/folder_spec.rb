@@ -1,4 +1,4 @@
 require 'spec_helper'
 
-describe Folder do
+describe WFolder do
 end

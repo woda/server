@@ -54,7 +54,7 @@ describe UsersController do
 
   before do
     db_clear
-    session[:user] = User.new({login: 'lol', last_name: 'Ecoffet', first_name: 'Adrien', email: 'aec@gmail.com'})
+    session[:user] = User.new(login: 'lol', email: 'aec@gmail.com')
     session[:user].set_password 'hello'
     session[:user].save
   end
@@ -70,7 +70,7 @@ describe UsersController do
   it "should create a user" do
     session[:user] = nil    
     session[:user].should be_nil
-    put :create, login: 'lool', last_name: 'Ecoffet', first_name: 'Adrien', email: 'aec@gmal.com', password: 'omg'
+    put :create, login: 'lool', email: 'aec@gmal.com', password: 'omg'
     session[:user].should_not be_nil
     User.first(login: 'lool').should_not be_nil
   end
