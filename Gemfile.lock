@@ -1,7 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    ZenTest (4.9.4)
     actionmailer (3.2.14)
       actionpack (= 3.2.14)
       mail (~> 2.5.4)
@@ -33,8 +32,6 @@ GEM
     ansi (1.4.3)
     arel (3.0.2)
     arrayfields (4.7.4)
-    autotest (4.4.6)
-      ZenTest (>= 4.4.1)
     aws-sdk (1.21.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4, < 1.6.0)
@@ -95,9 +92,6 @@ GEM
       dm-core (~> 1.2.0)
     dm-migrations (1.2.0)
       dm-core (~> 1.2.0)
-    dm-mysql-adapter (1.2.0)
-      dm-do-adapter (~> 1.2.0)
-      do_mysql (~> 0.10.6)
     dm-observer (1.2.0)
       dm-core (~> 1.2.0)
     dm-postgres-adapter (1.2.0)
@@ -131,8 +125,6 @@ GEM
       uuidtools (~> 2.1)
     dm-validations (1.2.0)
       dm-core (~> 1.2.0)
-    do_mysql (0.10.13)
-      data_objects (= 0.10.13)
     do_postgres (0.10.13)
       data_objects (= 0.10.13)
     do_sqlite3 (0.10.13)
@@ -314,12 +306,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  ZenTest (= 4.9.4)
   actionpack (~> 3.2.11)
   activeresource (~> 3.2.11)
   activesupport (~> 3.2.11)
   arrayfields
-  autotest
   aws-sdk
   capistrano (~> 2.11.2)
   capistrano-offroad
@@ -329,7 +319,6 @@ DEPENDENCIES
   dm-aggregates (~> 1.2.0)
   dm-constraints (~> 1.2.0)
   dm-migrations (~> 1.2.0)
-  dm-mysql-adapter (~> 1.2.0)
   dm-observer (~> 1.2.0)
   dm-postgres-adapter (~> 1.2.0)
   dm-rails (~> 1.2.1)
