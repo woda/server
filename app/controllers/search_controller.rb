@@ -16,11 +16,8 @@ class SearchController < ApplicationController
   ##
   # Create a friend for the current user
   def search
-	name = sanitize params[:name]
-	name = name.gsub "\"", "\\\""
-	name = name.gsub "'", "\\'"
-	puts "###################################################################### #{name}"
-  	raise RequestError.new(:bad_params, "Search name invalid") if name.nil? || name.empty?
+    name = sanitize(params[:name]).gsub("\"", "\\\"").gsub("'", "\\'")
+    raise RequestError.new(:bad_params, "Search name invalid") if name.nil? || name.empty?
 
     users = []
     User.all(:login.like => "%#{name}%").each do |user|
