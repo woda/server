@@ -53,19 +53,34 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_param, "Parameter 'content_hash' is not valid") if params[:content_hash].nil? || params[:content_hash].empty?
     raise RequestError.new(:bad_param, "Parameter 'size' is not valid") if params[:size].nil? || params[:size].empty? || params[:size].to_i <= 0
     raise RequestError.new(:bad_param, "Current account doesn't have enough to space to store this file") unless session[:user].can_add_file_size(params[:size].to_i)
-    raise RequestError.new(:bad_param, "File already exists") unless XFile.all(user: session[:user], name: params[:filename]).empty?
+    
+    # if file already exist...
+    XFile.all(user: session[:user], name: params[:filename]).each do |file|
+      # error if already uploaded
+      raise RequestError.new(:bad_param, "File already exists") if file.uploaded
+      # otherwise return needed parts
+      params[:id] = file.id
+      needed_parts
+      return 
+    end
 
+    # find if the content already exist
     current_content = Content.first content_hash: params[:content_hash]
     already_uploaded = (current_content ? current_content.uploaded : false)
+    # create a WFile
     file = WFile.create(session[:user], params[:filename])
+    # if already uploaded do nothing
     if current_content && already_uploaded
       file.uploaded = true
       @result = { success: true, uploaded: true }
+    # otherwise create a content, set the file as non-uploaded and return everything
     else
       current_content = Content.create(params[:content_hash], params[:size].to_i) if current_content.nil?
       @result = { success: true, uploaded: false, needed_parts: current_content.needed_parts, part_size: PART_SIZE }
     end
+    # set the current content to the current file
     file.content = current_content
+    # save the file and its parents
     file.update_and_save
     session[:user].add_file_size current_content.size
     session[:user].save

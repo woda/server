@@ -60,6 +60,9 @@ sha256=`echo -n "$filedata" | openssl dgst -sha256 | sed 's/(stdin)= //'`
 title 'Adding file:'
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size"
 
+title 'Adding file:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size"
+
 id=
 while [ "$id" == '' ]
 do
@@ -70,6 +73,9 @@ done
 
 title 'Sending part:'
 echo_run curl -k -b cookies -c cookies -XPUT $base/sync/$id/0 -d "$filedata"
+
+title 'Adding file:'
+echo_run curl -k -b cookies -c cookies -XPUT $base/sync -d "filename=$filename&content_hash=$sha256&size=$size"
 
 title 'success upload'
 echo_run curl -k -b cookies -c cookies -XGET $base/sync/$id -d ""
@@ -128,6 +134,5 @@ list
 
 title 'delete user:'
 echo_run curl -k -b cookies -c cookies -XDELETE $base/users
-
 
 echo
