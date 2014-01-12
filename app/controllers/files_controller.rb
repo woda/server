@@ -94,7 +94,7 @@ class FilesController < ApplicationController
 
     if params[:favorite] == "true" then 
       file.favorite_users << session[:user]
-    else
+    elsif params[:favorite] == "false" then
       file.favorite_users.delete session[:user]
     end
     
@@ -128,7 +128,8 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as public") if file.id == session[:user].root_folder.id
-    file.public = (params[:public] == "true")
+    file.public = true if params[:public] == "true"
+    file.public = false if params[:public] == "false"
     file.save
     @result = { file: file.description(session[:user]), success: true }
   end
