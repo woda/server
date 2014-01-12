@@ -14,10 +14,8 @@ gem 'tzinfo',         '~> 0.3.32'
 group :development do
   gem 'rspec-rails'
 end
-group :test do
-  gem 'rspec-rails'
-end
-gem 'autotest'
+
+#gem 'autotest'
 gem 'simplecov'
 gem 'simplecov-rcov'
 gem 'shoulda-matchers'
@@ -34,9 +32,6 @@ gem 'fattr'
 gem 'arrayfields'
 gem 'map'
 gem 'dm-rails',               '~> 1.2.1'
-gem 'dm-sqlite-adapter', DM_VERSION
-
-gem 'ZenTest', '4.9.4'
 
 # You can use any of the other available database adapters.
 # This is only a small excerpt of the list of all available adapters
@@ -49,7 +44,6 @@ gem 'ZenTest', '4.9.4'
 
 gem 'dm-sqlite-adapter',    DM_VERSION
 unless /cygwin/ =~ RUBY_PLATFORM then
-  gem 'dm-mysql-adapter',	    DM_VERSION
   gem 'dm-postgres-adapter',  DM_VERSION
 end
 # gem 'dm-oracle-adapter',    DM_VERSION

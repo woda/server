@@ -19,7 +19,7 @@ class XFile
   property :folder, Boolean, default: false
   property :uuid, String, required: false
 
-  updatable_property :name, String, index: true
+  updatable_property :name, String, index: true, :length => 1..2048
   updatable_property :last_update, DateTime, default: Time.now
   updatable_property :downloads, Integer, default: 0
   updatable_property :public, Boolean, default: false
