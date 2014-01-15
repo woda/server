@@ -177,6 +177,8 @@ class FilesController < ApplicationController
   # Returns the Direct Download Link of the given file
   def link
     file = session[:user].x_files.get(params[:id])
+    file = XFile.first(id: params[:id], public: true) unless file
+
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
     raise RequestError.new(:bad_param, "Can not get the download link of the root folder") if file.id == session[:user].root_folder.id
