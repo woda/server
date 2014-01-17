@@ -5,7 +5,7 @@ class FilesController < ApplicationController
 
 	before_filter :require_login
   
-  before_filter Proc.new { |c| c.check_params :id }, :only => [:breadcrumb, :link]
+  before_filter Proc.new { |c| c.check_params :id }, :only => [:breadcrumb, :link, :unshare]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
   before_filter Proc.new { |c| c.check_params :id, :login }, :only => [:share]
@@ -128,6 +128,7 @@ class FilesController < ApplicationController
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_param, "Can not set the root folder as public") if file.id == session[:user].root_folder.id
+    raise RequestError.new(:bad_param, "Can not set a synchronized file as public") if file.user != session[:user]
     file.public = true if params[:public] == "true"
     file.public = false if params[:public] == "false"
     file.save
@@ -148,18 +149,31 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "Can not share the root folder") if file.id == session[:user].root_folder.id
     raise RequestError.new(:bad_part, "Incorrect content") if file.content.nil?
 
-    file = WFile.link_from_origin(user, file)
+    file = WFile.share_to_user(user, file)
     file.update_and_save
-    @result = { success: true, file: file.description(session[:user]) }
+    @result = { success: true, file: file.description(session[:user]), user: user.description }
     session[:user].save
   end
 
   ##
-  # Returns the list of all shared-files or if an id is specified the file's description and all its users
-  def shared
+  # Share a file to another user
+  def unshare
+    file = session[:user].x_files_shared_to_me.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+
+    file = WFile.unshare_to_user(user, file)
+    file.update_and_save
+    @result = { success: true }
+    session[:user].save
+  end
+
+  ##
+  # Returns the list of all files shared BY the user
+  # if an id is specified the file's description and all its users
+  def shared_by_me
     if !params[:id] then
       files_list = []
-      files = session[:user].x_files.all(shared: true)
+      files = session[:user].x_files_shared_by_me.all
       files.each { |file| files_list.push(file.description(session[:user])) }
       @result = { files: files_list, success: true }
     else
@@ -171,6 +185,16 @@ class FilesController < ApplicationController
       file.users.each { |user| users.push user.description }
       @result = { success: true, file: file.description(session[:user]), users: users }
     end
+  end
+
+  ##
+  # Returns the list of all files shared TO the user
+  # if an id is specified the file's description and all its users
+  def shared_to_me
+    files_list = []
+    files = session[:user].x_files_shared_to_me.all
+    files.each { |file| files_list.push( { owner: file.user.description, file: file.description(session[:user]) } ) }
+    @result = { files: files_list, success: true }
   end
 
   ##

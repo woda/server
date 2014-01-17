@@ -34,6 +34,12 @@ class User
   has n, :file_user_associations
   has n, :x_files, XFile, through: :file_user_associations
 
+  has n, :shared_to_me_associations, 'SharedToMeAssociation', child_key: [:user_id]
+  has n, :x_files_shared_to_me, XFile, through: :shared_to_me_associations, via: :x_file
+
+  has n, :shared_by_me_associations, 'SharedByMeAssociation', child_key: [:user_id]
+  has n, :x_files_shared_by_me, XFile, through: :shared_by_me_associations, via: :x_file
+
   has n, :favorite_file_association, 'FavoriteFileAssociation', child_key: [:user_id]
   has n, :favorite_files, XFile, through: :favorite_file_association, via: :x_file
 

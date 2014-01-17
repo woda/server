@@ -15,7 +15,6 @@ class XFile
   property :id, Serial, key: true
   property :content_hash, SHA256Hash, index: true, required: false
   property :uploaded, Boolean, default: false
-  property :shared, Boolean, default: false
   property :folder, Boolean, default: false
   property :uuid, String, required: false
 
@@ -31,6 +30,12 @@ class XFile
 
   has n, :favorite_file_association, 'FavoriteFileAssociation', child_key: [:x_file_id]
   has n, :favorite_users, User, through: :favorite_file_association, via: :user
+
+  has n, :shared_to_me_associations, 'SharedToMeAssociation', child_key: [:x_file_id]
+  has n, :x_files_shared_to_me, User, through: :shared_to_me_associations, via: :user
+
+  has n, :shared_by_me_associations, 'SharedByMeAssociation', child_key: [:x_file_id]
+  has n, :x_files_shared_by_me, User, through: :shared_by_me_associations, via: :user  
 
   def initialize *args, &block
     super *args, &block
@@ -49,18 +54,18 @@ class XFile
 
   def description user=nil
     favorite = self.favorite_users.include? user if user
+    owner = ( (user == self.user || !user) ? nil : user.description)
     if self.folder then
         {
           id: self.id, name: self.name, public: self.public, last_update: self.last_update, favorite: favorite,
-          folder: self.folder, shared: self.shared, downloads: self.downloads
+          folder: self.folder, downloads: self.downloads, owner: owner
         }
       else
         size = ( self.content.nil? ? 0 : self.content.size )
         { 
           id: self.id, name: self.name, last_update: self.last_update, type: File.extname(self.name),
-          size: size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, 
-          shared: self.shared, downloads: self.downloads, folder: self.folder, favorite: favorite, 
-          link: self.link, uuid: self.uuid
+          size: size, part_size: PART_SIZE, uploaded: self.uploaded, public: self.public, owner: owner,
+          downloads: self.downloads, folder: self.folder, favorite: favorite, link: self.link, uuid: self.uuid
         }
       end
   end

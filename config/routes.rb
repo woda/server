@@ -74,7 +74,9 @@ Server::Application.routes.draw do
   match 'files/public' => 'files#public', via: :get
   match 'files/public/:id' => 'files#set_public', via: :post
   match 'files/share/:id' => 'files#share', via: :post
-  match 'files/shared(/:id)' => 'files#shared', via: :get
+  match 'files/unshare/:id' => 'files#unshare', via: :post
+  match 'files/shared_by_me(/:id)' => 'files#shared_by_me', via: :get
+  match 'files/shared_to_me' => 'files#shared_to_me', via: :get
   match 'files/mylinks' => 'files#mylinks', via: :get
   match 'files/link/:id' => 'files#link', via: :get
   match 'files/downloaded' => 'files#downloaded', via: :get

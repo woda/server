@@ -25,6 +25,8 @@ class WFile < XFile
   def delete current_user
     raise RequestError.new(:internal_error, "Delete: no user specified") if current_user.nil?
 
+    #TODO shared_to/by_me_associations
+
     if current_user.id != self.user_id then # if random owner 
       # remove all links between this file and the current user
       FileUserAssociation.all(x_file_id: self.id, user_id: current_user.id).destroy!
@@ -99,10 +101,26 @@ class WFile < XFile
       user.save
       folder.files << origin
       folder.save
-      origin.shared = true 
       origin.save
     end
     origin
+  end
+
+  ##
+  # Share a file to another user.
+  def self.share_to_user user, origin
+    if origin && user then
+      user.x_files_shared_to_me << origin
+      user.save
+      origin.save
+    end
+    origin
+  end
+
+  ##
+  # Unshare a file to another user.
+  def self.unshare_to_user user, origin
+    SharedByMeAssociation.all(x_file_id: origin.id, user_id: user.id).destroy! if origin && user
   end
 
   ##

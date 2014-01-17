@@ -125,6 +125,10 @@ class SyncController < ApplicationController
   ##
   # Delete and recreate a file with the given parameters
   def change
+    #TODO allow write access for shared files
+    file = session[:user].x_files.get(params[:id])
+    raise RequestError.new(:file_not_found, "File not found") unless file
+    raise RequestError.new(:bad_access, "No write access") if file.user != session[:user]
     delete
     put
   end
@@ -132,6 +136,13 @@ class SyncController < ApplicationController
   ##
   # Delete a file
   def delete
+    shared_file = session[:user].x_files_shared_to_me.get(params[:id])
+    if shared_file then
+      SharedToMeAssociation.all(x_file_id: shared_file.id, user_id: session[:user].id).destroy! if shared_file && session[:user]
+      @result = { success: true }
+      return
+    end
+
     file = WFile.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]

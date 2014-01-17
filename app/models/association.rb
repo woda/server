@@ -44,3 +44,22 @@ class FavoriteFileAssociation
   belongs_to :x_file, 'XFile', key: true
 end
 
+class SharedToMeAssociation
+  include DataMapper::Resource
+  include WodaResource
+
+  storage_names[:default] = 'SharedToMeAssociation'
+  
+  belongs_to :user, 'User', key: true
+  belongs_to :x_file, 'XFile', key: true
+end
+
+class SharedByMeAssociation
+  include DataMapper::Resource
+  include WodaResource
+
+  storage_names[:default] = 'SharedByMeAssociation'
+  
+  belongs_to :user, 'User', key: true
+  belongs_to :x_file, 'XFile', key: true
+end
