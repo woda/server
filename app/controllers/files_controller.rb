@@ -149,7 +149,7 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "Can not share the root folder") if file.id == session[:user].root_folder.id
     raise RequestError.new(:bad_part, "Incorrect content") if file.content.nil?
 
-    file = WFile.share_to_user(user, file)
+    file = WFile.share_to_user(session[:user], user, file)
     file.update_and_save
     @result = { success: true, file: file.description(session[:user]), user: user.description }
     session[:user].save
@@ -162,10 +162,10 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "Wrong login") if login.nil? || login.length == 0
     user = User.all(login: login).first
     raise RequestError.new(:bad_param, "User not found") if user.nil?
-    file = session[:user].x_files_shared_to_me.get(params[:id])
+    file = user.x_files_shared_to_me.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
 
-    file = WFile.unshare_to_user(user, file)
+    file = WFile.unshare_to_user(session[:user], user, WFile.get(params[:id]))
     file.update_and_save
     @result = { success: true }
     session[:user].save
