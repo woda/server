@@ -186,7 +186,7 @@ class FilesController < ApplicationController
       raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
       
       users = []
-      file.users.each { |user| users.push user.description }
+      file.x_files_shared_to_me.each { |user| users.push user.description }
       @result = { success: true, file: file.description(session[:user]), users: users }
     end
   end

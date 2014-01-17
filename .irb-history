@@ -1,0 +1,24 @@
+WFile.last
+User.all
+User.get(2)
+User.get(2).x_files
+User.get(2).x_files.all(:user.not => User.get(2))
+User.get(5).favorite_files
+WFile.get(258)
+WFile.get(258).user
+WFile.get(258).user == nil
+WFile.get(258).user == User.get(5)
+WFile.get(258).user == User.get(1)
+User.get(5).x_files_shared_by_me
+User.get(5).x_files
+User.get(5)
+User.get(5).x_files_shared_by_me.all
+WFile.get(252).x_files_shared_to_me.all
+WFile.get(252).x_files_shared_by_me.all
+WFile.get(252)
+WFile.get(252).user
+WFile.get(252).description
+WFile.get(265)
+WFile.get(265).x_files_shared_to_me.all
+WFile.get(265).x_files_shared_by_me.all
+exit
