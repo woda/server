@@ -77,7 +77,6 @@ Server::Application.routes.draw do
   match 'files/unshare/:id' => 'files#unshare', via: :post
   match 'files/shared_by_me(/:id)' => 'files#shared_by_me', via: :get
   match 'files/shared_to_me' => 'files#shared_to_me', via: :get
-  match 'files/mylinks' => 'files#mylinks', via: :get
   match 'files/link/:id' => 'files#link', via: :get
   match 'files/downloaded' => 'files#downloaded', via: :get
   match 'files/breadcrumb/:id' => 'files#breadcrumb', via: :get
