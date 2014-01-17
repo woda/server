@@ -54,7 +54,7 @@ class XFile
 
   def description user=nil
     favorite = self.favorite_users.include? user if user
-    owner = ( (user == self.user || !user) ? nil : user.description)
+    owner = ( (user == self.user || !user) ? nil : self.user.description)
     if self.folder then
         {
           id: self.id, name: self.name, public: self.public, last_update: self.last_update, favorite: favorite,
