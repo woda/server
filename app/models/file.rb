@@ -121,6 +121,7 @@ class WFile < XFile
   # Unshare a file to another user.
   def self.unshare_to_user user, origin
     SharedByMeAssociation.all(x_file_id: origin.id, user_id: user.id).destroy! if origin && user
+    origin
   end
 
   ##

@@ -162,10 +162,10 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "Wrong login") if login.nil? || login.length == 0
     user = User.all(login: login).first
     raise RequestError.new(:bad_param, "User not found") if user.nil?
-    file = session[:user].x_files_shared_to_me.get(params[:id])
+    file = user.x_files_shared_to_me.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
 
-    file = WFile.unshare_to_user(user, file)
+    file = WFile.unshare_to_user(user, WFile.get(params[:id]))
     file.update_and_save
     @result = { success: true }
     session[:user].save
