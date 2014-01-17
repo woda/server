@@ -26,10 +26,10 @@ class SearchController < ApplicationController
     end
 
     private_files = []
-    session[:user].x_files.all(:name.like => "%#{name}%").each { |file| private_files.push( file.description(session[:user]) ) }
+    session[:user].x_files.all(:name.like => "%#{name}%", uploaded: true).each { |file| private_files.push( file.description(session[:user]) ) }
     
     public_files = []
-    XFile.all(public: true, :name.like => "%#{name}%").each { |file| public_files.push( file.description(session[:user]) ) }
+    XFile.all(public: true, :name.like => "%#{name}%", uploaded: true).each { |file| public_files.push( file.description(session[:user]) ) }
 
     @result = { success: true, users: users, private_files: private_files, public_files: public_files }
   end

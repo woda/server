@@ -156,6 +156,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_access, "No access") unless file.public?
     raise RequestError.new(:bad_param, "Can't synchronize a folder") if file.folder
+    raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
     raise RequestError.new(:bad_param, "File or folder already synchronized") if session[:user].x_files.get(params[:id])
     
     file = WFile.create_from_origin(session[:user], file) if (!params[:link] || params[:link] == "false")
