@@ -8,7 +8,7 @@ class FilesController < ApplicationController
   before_filter Proc.new { |c| c.check_params :id }, :only => [:breadcrumb, :link, :unshare]
   before_filter Proc.new { |c| c.check_params :id, :favorite }, :only => [:set_favorite]
   before_filter Proc.new { |c| c.check_params :id, :public }, :only => [:set_public]
-  before_filter Proc.new { |c| c.check_params :id, :login }, :only => [:share]
+  before_filter Proc.new { |c| c.check_params :id, :login }, :only => [:share, :unshare]
   before_filter Proc.new { |c| c.check_params :id, :source, :destination}, :only => [:move]
 
   ##
@@ -158,6 +158,10 @@ class FilesController < ApplicationController
   ##
   # Share a file to another user
   def unshare
+    login = params[:login]
+    raise RequestError.new(:bad_param, "Wrong login") if login.nil? || login.length == 0
+    user = User.all(login: login).first
+    raise RequestError.new(:bad_param, "User not found") if user.nil?
     file = session[:user].x_files_shared_to_me.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
 
