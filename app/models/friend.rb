@@ -12,7 +12,7 @@ class Friend
 
   property :id, Serial, key: true
   
-  property :friend_id, Integer, unique: false, unique_index: true, key: true
+  property :friend_id, Integer, unique: true, unique_index: true, key: true
 
   belongs_to :user
 
