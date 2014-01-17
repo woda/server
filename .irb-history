@@ -1,0 +1,9 @@
+User.get(5).admin = true
+User.get(5).admin
+u = User.get(5).admin
+u = User.get(5)
+u.admin = true
+u
+u.save!
+User.get(5)
+exit
