@@ -32,10 +32,10 @@ class XFile
   has n, :favorite_users, User, through: :favorite_file_association, via: :user
 
   has n, :shared_to_me_associations, 'SharedToMeAssociation', child_key: [:x_file_id]
-  has n, :x_files_shared_to_me, User, through: :shared_to_me_associations, via: :user
+  has n, :users_receiving, User, through: :shared_to_me_associations, via: :user
 
   has n, :shared_by_me_associations, 'SharedByMeAssociation', child_key: [:x_file_id]
-  has n, :x_files_shared_by_me, User, through: :shared_by_me_associations, via: :user  
+  has n, :users_sharing, User, through: :shared_by_me_associations, via: :user  
 
   def initialize *args, &block
     super *args, &block

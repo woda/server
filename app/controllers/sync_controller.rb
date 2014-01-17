@@ -138,16 +138,14 @@ class SyncController < ApplicationController
   def delete
     shared_file = session[:user].x_files_shared_to_me.get(params[:id])
     if shared_file then
-      SharedToMeAssociation.all(x_file_id: shared_file.id, user_id: session[:user].id).destroy! if shared_file && session[:user]
-      @result = { success: true }
-      return
+      SharedToMeAssociation.all(x_file_id: shared_file.id, user_id: session[:user].id).destroy!
+    else
+      file = WFile.get(params[:id])
+      raise RequestError.new(:file_not_found, "File not found") unless file
+      raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
+      raise RequestError.new(:bad_param, "Can't delete the root folder") if file.id == session[:user].root_folder.id
+      (file.folder ? WFolder.get(params[:id]) : file).update_and_delete session[:user]
     end
-
-    file = WFile.get(params[:id])
-    raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
-    raise RequestError.new(:bad_param, "Can't delete the root folder") if file.id == session[:user].root_folder.id
-    (file.folder ? WFolder.get(params[:id]) : file).update_and_delete session[:user]
     @result = { success: true }
   end
 
@@ -160,7 +158,7 @@ class SyncController < ApplicationController
     raise RequestError.new(:bad_param, "Can't synchronize a folder") if file.folder
     raise RequestError.new(:bad_param, "File or folder already synchronized") if session[:user].x_files.get(params[:id])
     
-    file = WFile.create_from_origin(session[:user], file) if (!params[:link] || params[:link] != "true")
+    file = WFile.create_from_origin(session[:user], file) if (!params[:link] || params[:link] == "false")
     file = WFile.link_from_origin(session[:user], file) if (params[:link] && params[:link] == "true")
 
     file.update_and_save
