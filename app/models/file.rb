@@ -108,10 +108,12 @@ class WFile < XFile
 
   ##
   # Share a file to another user.
-  def self.share_to_user user, origin
+  def self.share_to_user current_user, user, origin
     if origin && user then
       user.x_files_shared_to_me << origin
       user.save
+      current_user.x_files_shared_by_me << origin
+      current_user.save
       origin.save
     end
     origin
@@ -121,6 +123,7 @@ class WFile < XFile
   # Unshare a file to another user.
   def self.unshare_to_user user, origin
     SharedByMeAssociation.all(x_file_id: origin.id, user_id: user.id).destroy! if origin && user
+    SharedToMeAssociation.all(x_file_id: origin.id, user_id: current_user.id).destroy! if origin && current_user
     origin
   end
 
