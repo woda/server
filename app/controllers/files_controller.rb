@@ -197,7 +197,7 @@ class FilesController < ApplicationController
   def shared_to_me
     files_list = []
     files = session[:user].x_files_shared_to_me.all
-    files.each { |file| files_list.push( { owner: file.user.description, file: file.description(session[:user]) } ) }
+    files.each { |file| files_list.push( file: file.description(session[:user]) ) }
     @result = { files: files_list, success: true }
   end
 
