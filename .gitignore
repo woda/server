@@ -30,5 +30,6 @@ flog_temp
 last_pid
 .idea
 /storage
+.irb-history
 
 *.DS_Store
