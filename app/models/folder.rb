@@ -71,7 +71,7 @@ class WFolder < XFile
   end
 
   ##
-  # Gets and creates a folder and if it does not exist.
+  # Create a folder if it does not exist.
   def self.create user, path
     raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
     
@@ -87,7 +87,24 @@ class WFolder < XFile
           folder.childrens << child
           folder.save
           child.save
+          return child
       end
+      folder = child
+    end
+    raise RequestError.new(:bad_param, "Folder already exists")
+  end
+
+  ##
+  # Get a folder.
+  def self.get_for_path user, path
+    raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
+
+    path = path.split('/')
+    folder = user.root_folder
+    path.reject! { |c| c.empty? }
+    path.size.times do |i|
+      child = folder.childrens.first(name: path[i], folder: true)
+      raise RequestError.new(:bad_param, "Folder #{path[i]} does not exist") if child.nil?
       folder = child
     end
     folder

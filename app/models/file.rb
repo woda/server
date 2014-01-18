@@ -56,7 +56,7 @@ class WFile < XFile
   # Create a file and its parent folders.
   def self.create user, path
     path = path.split('/')
-    folder = WFolder.create(user, path[0...path.size-1].join('/'))
+    folder = WFolder.get_for_path(user, path[0...path.size-1].join('/'))
     file = folder.files.first(name: path[-1], folder: false)
     if file.nil? then
       file = WFile.new(name: path[-1], last_update: DateTime.now, user: user)
