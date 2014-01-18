@@ -19,7 +19,7 @@ class AdminController < ApplicationController
   # Returns the list of all users
   def users
     users = []
-    User.all.each { |u| users.push u.private_description }
+    User.all(:id.not => session[:id]).each { |u| users.push u.private_description }
     @result = { success: true, users: users }
   end
 
