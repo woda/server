@@ -76,6 +76,7 @@ class WFolder < XFile
     raise RequestError.new(:bad_param, "Path can't be nil") if path.nil?
     
     path = path.split('/')
+    folder_created = false
     folder = user.root_folder
     path.reject! { |c| c.empty? }
     path.size.times do |i|
@@ -87,10 +88,11 @@ class WFolder < XFile
           folder.childrens << child
           folder.save
           child.save
+          folder_created = true
       end
       folder = child
     end
-    folder
+    (folder_created ? folder : nil)
   end
 
   ##

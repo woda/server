@@ -41,7 +41,7 @@ class SyncController < ApplicationController
   def create_folder
     raise RequestError.new(:bad_param, "Parameter 'filename' is not valid") if params[:filename].nil? || params[:filename].empty?
     folder = WFolder.create(session[:user], params[:filename])
-    raise RequestError.new(:folder_not_created, "Folder not created") if folder.nil?
+    raise RequestError.new(:folder_not_created, "Folder already exists") if folder.nil?
     folder.update_and_save
     @result = { folder: folder.description, success: true }
   end
