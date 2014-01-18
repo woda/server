@@ -34,8 +34,6 @@ class WFile < XFile
       FileFolderAssociation.all(file_id: self.id).each do |asso|
         asso.destroy! if current_user.x_files.get(asso.parent_id)
       end
-      # set shared files if there is more users than just the original one accessing it
-      self.shared = !(self.users.count == 1 && self.users.first.id == self.user_id)
     else # if true owner 
       # remove all links between this file and ALL users
       FileUserAssociation.all(x_file_id: self.id).destroy!
