@@ -263,10 +263,13 @@ class FilesController < ApplicationController
   ##
   # Get the path/breadcrum of a file or a folder
   def breadcrumb
-    file = WFolder.get(params[:id])
+    file = XFile.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") if !file.users.include? session[:user] && !file.public
+    if !file.public then
+      raise RequestError.new(:bad_access, "No access") if !file.users.include? session[:user]
+    end
 
+    file = WFolder.get(params[:id]) if file.folder?
     file = WFile.get(params[:id]) unless file.folder?
 
     path = []
