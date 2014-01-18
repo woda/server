@@ -18,11 +18,8 @@ class FriendsController < ApplicationController
     user = User.get(params[:id])
     raise RequestError.new(:user_not_found, "User not found") unless user
     raise RequestError.new(:bad_params, "User already in friend list") if session[:user].friends.include? user
-    
     session[:user].friends << user
     session[:user].save
-    user.friendships << session[:user]
-    user.save
     @result = { success: true, friend: user.description }
   end
 
