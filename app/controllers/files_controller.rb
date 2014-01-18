@@ -213,7 +213,7 @@ class FilesController < ApplicationController
   ##
   # Returns the Direct Download Link of a given file
   def link
-    file = XFile.first(id: params[:id], public: true)
+    file = XFile.first(id: params[:id], uploaded: true)
 
     raise RequestError.new(:file_not_found, "File not found or not public") unless file
     raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
