@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=US-ASCII" http-equiv="Content-Type">
+
+<title>class FilesController - RDoc Documentation</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>app/controllers/files_controller.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="ApplicationController.html">ApplicationController</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-i-breadcrumb">#breadcrumb</a>
+    
+    <li><a href="#method-i-crawl_folder">#crawl_folder</a>
+    
+    <li><a href="#method-i-downloaded">#downloaded</a>
+    
+    <li><a href="#method-i-favorites">#favorites</a>
+    
+    <li><a href="#method-i-last_update">#last_update</a>
+    
+    <li><a href="#method-i-link">#link</a>
+    
+    <li><a href="#method-i-list">#list</a>
+    
+    <li><a href="#method-i-model">#model</a>
+    
+    <li><a href="#method-i-move">#move</a>
+    
+    <li><a href="#method-i-public">#public</a>
+    
+    <li><a href="#method-i-recents">#recents</a>
+    
+    <li><a href="#method-i-set_favorite">#set_favorite</a>
+    
+    <li><a href="#method-i-set_public">#set_public</a>
+    
+    <li><a href="#method-i-share">#share</a>
+    
+    <li><a href="#method-i-shared_by_me">#shared_by_me</a>
+    
+    <li><a href="#method-i-shared_to_me">#shared_to_me</a>
+    
+    <li><a href="#method-i-unshare">#unshare</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./DataMapper.html">DataMapper</a>
+  
+    <li><a href="./DataMapper/Adapters.html">DataMapper::Adapters</a>
+  
+    <li><a href="./DataMapper/Adapters/PostgresAdapter.html">DataMapper::Adapters::PostgresAdapter</a>
+  
+    <li><a href="./DataMapper/Property.html">DataMapper::Property</a>
+  
+    <li><a href="./DataMapper/Property/AES256Key.html">DataMapper::Property::AES256Key</a>
+  
+    <li><a href="./DataMapper/Property/SHA256Hash.html">DataMapper::Property::SHA256Hash</a>
+  
+    <li><a href="./DataMapper/Property/SHA256Salt.html">DataMapper::Property::SHA256Salt</a>
+  
+    <li><a href="./Storage.html">Storage</a>
+  
+    <li><a href="./Storage/FakeObject.html">Storage::FakeObject</a>
+  
+    <li><a href="./Storage/FakeObject/SimulatedFile.html">Storage::FakeObject::SimulatedFile</a>
+  
+    <li><a href="./WodaResource.html">WodaResource</a>
+  
+    <li><a href="./WodaResource/ClassMethods.html">WodaResource::ClassMethods</a>
+  
+    <li><a href="./AdminController.html">AdminController</a>
+  
+    <li><a href="./ApiHelper.html">ApiHelper</a>
+  
+    <li><a href="./ApplicationController.html">ApplicationController</a>
+  
+    <li><a href="./ApplicationHelper.html">ApplicationHelper</a>
+  
+    <li><a href="./Content.html">Content</a>
+  
+    <li><a href="./DownloadController.html">DownloadController</a>
+  
+    <li><a href="./FavoriteFileAssociation.html">FavoriteFileAssociation</a>
+  
+    <li><a href="./FileFolderAssociation.html">FileFolderAssociation</a>
+  
+    <li><a href="./FileUserAssociation.html">FileUserAssociation</a>
+  
+    <li><a href="./FilesController.html">FilesController</a>
+  
+    <li><a href="./FolderFolderAssociation.html">FolderFolderAssociation</a>
+  
+    <li><a href="./FriendsController.html">FriendsController</a>
+  
+    <li><a href="./Friendship.html">Friendship</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./RequestError.html">RequestError</a>
+  
+    <li><a href="./SearchController.html">SearchController</a>
+  
+    <li><a href="./SharedByMeAssociation.html">SharedByMeAssociation</a>
+  
+    <li><a href="./SharedToMeAssociation.html">SharedToMeAssociation</a>
+  
+    <li><a href="./String.html">String</a>
+  
+    <li><a href="./Success.html">Success</a>
+  
+    <li><a href="./SyncController.html">SyncController</a>
+  
+    <li><a href="./User.html">User</a>
+  
+    <li><a href="./WFile.html">WFile</a>
+  
+    <li><a href="./WFolder.html">WFolder</a>
+  
+    <li><a href="./WodaCrypt.html">WodaCrypt</a>
+  
+    <li><a href="./WodaHash.html">WodaHash</a>
+  
+    <li><a href="./XFile.html">XFile</a>
+  
+    <li><a href="./XPart.html">XPart</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class FilesController</h1>
+
+  <div id="description" class="description">
+    
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-breadcrumb" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">breadcrumb</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Get the path/breadcrum of a file or a folder</p>
+          
+
+          
+          <div class="method-source-code" id="breadcrumb-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 268</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">breadcrumb</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-constant">XFile</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">public</span> <span class="ruby-keyword">then</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_access</span>, <span class="ruby-string">&quot;No access&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">users</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">file</span> = <span class="ruby-constant">WFolder</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder?</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-constant">WFile</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder?</span>
+
+  <span class="ruby-identifier">path</span> = []
+  <span class="ruby-identifier">folder</span> = <span class="ruby-identifier">file</span>
+
+  <span class="ruby-keyword">while</span> (<span class="ruby-identifier">folder</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span>.<span class="ruby-identifier">id</span>)
+    <span class="ruby-identifier">new_parent</span> = <span class="ruby-identifier">folder</span>.<span class="ruby-identifier">parents</span>.<span class="ruby-identifier">first</span>(<span class="ruby-identifier">user</span><span class="ruby-operator">:</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:db_error</span>, <span class="ruby-string">&quot;This file has no parent directory belonging to the current user&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">new_parent</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">path</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">new_parent</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])) <span class="ruby-keyword">if</span> (<span class="ruby-identifier">new_parent</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span>.<span class="ruby-identifier">id</span>)
+    <span class="ruby-identifier">folder</span> = <span class="ruby-identifier">new_parent</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">path</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">folder</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]))
+  <span class="ruby-identifier">path</span>.<span class="ruby-identifier">reverse!</span>
+  <span class="ruby-identifier">path</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">path</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>, <span class="ruby-identifier">breadcrumb</span><span class="ruby-operator">:</span> <span class="ruby-identifier">path</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- breadcrumb-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- breadcrumb-method -->
+
+    
+      <div id="method-i-crawl_folder" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">crawl_folder</span><span
+            class="method-args">(folder, only_public = false, depth = -1)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Crawl a folder</p>
+          
+
+          
+          <div class="method-source-code" id="crawl_folder-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 43</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">crawl_folder</span>(<span class="ruby-identifier">folder</span>, <span class="ruby-identifier">only_public</span> = <span class="ruby-keyword">false</span>, <span class="ruby-identifier">depth</span> = <span class="ruby-value">-1</span>)
+  <span class="ruby-identifier">list</span> = []
+  <span class="ruby-identifier">folders</span> = []
+  <span class="ruby-identifier">depth</span> = <span class="ruby-value">-1</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">depth</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">-1</span>
+
+  <span class="ruby-comment"># Folder infos</span>
+  <span class="ruby-identifier">folder_infos</span> = <span class="ruby-identifier">folder</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])
+
+  <span class="ruby-comment"># We recall craw_folder() method recursively for crawling each child folder</span>
+  <span class="ruby-identifier">folder</span>.<span class="ruby-identifier">childrens</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">child</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">if</span> (((<span class="ruby-identifier">only_public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">true</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">child</span>.<span class="ruby-identifier">public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">true</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">only_public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">admin</span>) <span class="ruby-keyword">then</span>
+      <span class="ruby-keyword">if</span> (<span class="ruby-identifier">depth</span> <span class="ruby-operator">==</span> <span class="ruby-value">-1</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">depth</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>)
+        <span class="ruby-comment"># crawl only into the public sub-folders if required OR all of them</span>
+        <span class="ruby-identifier">folders</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">crawl_folder</span>(<span class="ruby-identifier">child</span>, <span class="ruby-identifier">only_public</span>, <span class="ruby-identifier">depth</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>))
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-comment"># do not recurs at all and just print out the child description</span>
+        <span class="ruby-identifier">folders</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">child</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]))
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">folder_infos</span>[<span class="ruby-value">:folders</span>] = <span class="ruby-identifier">folders</span>
+  
+  <span class="ruby-comment"># We get all files from the current folder</span>
+  <span class="ruby-identifier">files_list</span> = []
+  <span class="ruby-identifier">folder</span>.<span class="ruby-identifier">files</span>.<span class="ruby-identifier">all</span>(<span class="ruby-identifier">uploaded</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+    <span class="ruby-comment"># describe only the public sub-files if required OR all of them</span>
+    <span class="ruby-keyword">if</span> (((<span class="ruby-identifier">only_public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">true</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">true</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">only_public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">admin</span>) <span class="ruby-keyword">then</span>
+      <span class="ruby-identifier">files_list</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]))
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">folder_infos</span>[<span class="ruby-value">:files</span>] = <span class="ruby-identifier">files_list</span>
+  
+  <span class="ruby-identifier">folder_infos</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- crawl_folder-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- crawl_folder-method -->
+
+    
+      <div id="method-i-downloaded" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">downloaded</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns all files downloaded at least one time</p>
+          
+
+          
+          <div class="method-source-code" id="downloaded-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 232</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">downloaded</span>
+  <span class="ruby-identifier">files_list</span> = []
+  <span class="ruby-identifier">files</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files</span>.<span class="ruby-identifier">all</span>(<span class="ruby-value">:downloads</span>.<span class="ruby-identifier">gte</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">uploaded</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>)
+  <span class="ruby-identifier">files</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span> <span class="ruby-identifier">files_list</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])) }
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">files</span><span class="ruby-operator">:</span> <span class="ruby-identifier">files_list</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- downloaded-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- downloaded-method -->
+
+    
+      <div id="method-i-favorites" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">favorites</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns all the favorites files</p>
+          
+
+          
+          <div class="method-source-code" id="favorites-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 110</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">favorites</span>
+  <span class="ruby-identifier">files</span> = []
+  <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">favorite_files</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">files</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">||</span> (<span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">files</span><span class="ruby-operator">:</span> <span class="ruby-identifier">files</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- favorites-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- favorites-method -->
+
+    
+      <div id="method-i-last_update" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">last_update</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Method to get the timestamp of the last modification of the user's file
+list</p>
+          
+
+          
+          <div class="method-source-code" id="last_update-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 295</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">last_update</span>
+  <span class="ruby-identifier">folder</span> = ( <span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>].<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span> <span class="ruby-operator">:</span> <span class="ruby-constant">XFile</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]) )
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;Folder not found&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">folder</span>.<span class="ruby-identifier">nil?</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_access</span>, <span class="ruby-string">&quot;No access&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">folder</span>.<span class="ruby-identifier">users</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]   
+  <span class="ruby-ivar">@result</span> =  { <span class="ruby-identifier">last_update</span><span class="ruby-operator">:</span> <span class="ruby-identifier">folder</span>.<span class="ruby-identifier">last_update</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- last_update-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- last_update-method -->
+
+    
+      <div id="method-i-link" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">link</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the Direct Download Link of a given file</p>
+          
+
+          
+          <div class="method-source-code" id="link-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 218</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">link</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-constant">XFile</span>.<span class="ruby-identifier">first</span>(<span class="ruby-identifier">id</span><span class="ruby-operator">:</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>], <span class="ruby-identifier">uploaded</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>)
+
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found or not public&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;File not uploaded&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not get the download link of the root folder&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span>.<span class="ruby-identifier">id</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can't get the link of a folder&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span>
+
+  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">generate_link</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">link</span><span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">link</span>, <span class="ruby-identifier">uuid</span><span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">uuid</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- link-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- link-method -->
+
+    
+      <div id="method-i-list" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">list</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the full list of files and folders</p>
+          
+
+          
+          <div class="method-source-code" id="list-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 21</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">list</span>
+  <span class="ruby-identifier">require_public</span> = ( <span class="ruby-identifier">params</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">false</span> <span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> )
+  <span class="ruby-identifier">user</span> = ( <span class="ruby-identifier">params</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>] <span class="ruby-operator">:</span> <span class="ruby-constant">User</span>.<span class="ruby-identifier">first</span>(<span class="ruby-identifier">id</span><span class="ruby-operator">:</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:user</span>]) )
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_params</span>, <span class="ruby-string">&quot;User does not exist&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">user</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_params</span>, <span class="ruby-string">&quot;Depth not valid&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:depth</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>
+  <span class="ruby-identifier">depth</span> = (<span class="ruby-identifier">params</span>[<span class="ruby-value">:depth</span>] <span class="ruby-operator">?</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:depth</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">:</span> <span class="ruby-value">-1</span>)
+  <span class="ruby-identifier">xfile</span> = ( <span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>].<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">user</span>.<span class="ruby-identifier">root_folder</span> <span class="ruby-operator">:</span> <span class="ruby-constant">WFolder</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]) )
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:internal_error</span>, <span class="ruby-string">&quot;No root directory. Please contact your administrator&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>].<span class="ruby-identifier">nil?</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:folder_not_found</span>, <span class="ruby-string">&quot;File or folder not found&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">nil?</span>
+  <span class="ruby-keyword">if</span> (<span class="ruby-identifier">require_public</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">admin</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span>) <span class="ruby-keyword">then</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:folder_not_public</span>, <span class="ruby-string">&quot;Folder is not public&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">true</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:folder_not_public</span>, <span class="ruby-string">&quot;File is not public&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">public</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">folder</span> <span class="ruby-keyword">then</span>
+    <span class="ruby-ivar">@result</span> =  { <span class="ruby-identifier">folder</span><span class="ruby-operator">:</span> <span class="ruby-identifier">crawl_folder</span>(<span class="ruby-identifier">xfile</span>, <span class="ruby-identifier">require_public</span>, <span class="ruby-identifier">depth</span>), <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+  <span class="ruby-keyword">else</span>  
+    <span class="ruby-ivar">@result</span> =  { <span class="ruby-identifier">file</span><span class="ruby-operator">:</span> <span class="ruby-identifier">xfile</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]) , <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- list-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- list-method -->
+
+    
+      <div id="method-i-model" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">model</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the model, useful for <a
+href="ApplicationController.html">ApplicationController</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="model-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 15</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">model</span>
+  <span class="ruby-constant">XFile</span> 
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- model-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- model-method -->
+
+    
+      <div id="method-i-move" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">move</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Move a file or a folder from a source folder to a new destination folder</p>
+          
+
+          
+          <div class="method-source-code" id="move-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 241</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">move</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;File not uploaded&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not move the root folder&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span>.<span class="ruby-identifier">id</span>
+  <span class="ruby-identifier">source</span> = <span class="ruby-constant">WFolder</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:source</span>])
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;Source not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">source</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Source is not a folder&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">source</span>.<span class="ruby-identifier">folder</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_access</span>, <span class="ruby-string">&quot;No access to the source folder&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">source</span>.<span class="ruby-identifier">users</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]   
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Source does not contain the file&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">source</span>.<span class="ruby-identifier">files</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">file</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Source does not contain the folder&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">source</span>.<span class="ruby-identifier">childrens</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">file</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span>
+  <span class="ruby-identifier">destination</span> = <span class="ruby-constant">WFolder</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:destination</span>])
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;Destination not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">destination</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Destination is not a folder&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">destination</span>.<span class="ruby-identifier">folder</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_access</span>, <span class="ruby-string">&quot;No access to the destination folder&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">destination</span>.<span class="ruby-identifier">users</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>] 
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Destination and Source are identical&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">source</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">destination</span>.<span class="ruby-identifier">id</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Destination and File are identical&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">destination</span>.<span class="ruby-identifier">id</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;File and Source are identical&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">source</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span>
+
+  <span class="ruby-constant">WFile</span>.<span class="ruby-identifier">move</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span>
+  <span class="ruby-constant">WFolder</span>.<span class="ruby-identifier">move</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span>
+
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- move-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- move-method -->
+
+    
+      <div id="method-i-public" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">public</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns user's public files</p>
+          
+
+          
+          <div class="method-source-code" id="public-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 120</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">public</span>
+  <span class="ruby-identifier">public_files</span> = []
+  <span class="ruby-identifier">files</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files</span>.<span class="ruby-identifier">all</span>(<span class="ruby-identifier">public</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>)
+  <span class="ruby-identifier">files</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">public_files</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">||</span> (<span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">files</span><span class="ruby-operator">:</span> <span class="ruby-identifier">public_files</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- public-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- public-method -->
+
+    
+      <div id="method-i-recents" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">recents</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Gets the first 20 last updated files</p>
+          
+
+          
+          <div class="method-source-code" id="recents-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 80</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">recents</span>
+  <span class="ruby-identifier">files</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files</span>.<span class="ruby-identifier">all</span>(<span class="ruby-value">:last_update</span>.<span class="ruby-identifier">gte</span> =<span class="ruby-operator">&gt;</span> (<span class="ruby-constant">DateTime</span>.<span class="ruby-identifier">now</span> <span class="ruby-operator">-</span> <span class="ruby-value">20</span>.<span class="ruby-identifier">days</span>), <span class="ruby-identifier">folder</span><span class="ruby-operator">:</span> <span class="ruby-keyword">false</span>, <span class="ruby-identifier">limit</span><span class="ruby-operator">:</span> <span class="ruby-value">20</span>)
+  <span class="ruby-identifier">files_list</span> = []
+  <span class="ruby-identifier">files</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">files_list</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">||</span> (<span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">files</span><span class="ruby-operator">:</span> <span class="ruby-identifier">files_list</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- recents-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- recents-method -->
+
+    
+      <div id="method-i-set_favorite" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_favorite</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Sets the file's favorite status based on parameter "favorite"</p>
+          
+
+          
+          <div class="method-source-code" id="set_favorite-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 91</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_favorite</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files_shared_to_me</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;File not uploaded&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not set the root folder as favorite&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span>.<span class="ruby-identifier">id</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:favorite</span>] <span class="ruby-operator">==</span> <span class="ruby-string">&quot;true&quot;</span> <span class="ruby-keyword">then</span> 
+    <span class="ruby-identifier">file</span>.<span class="ruby-identifier">favorite_users</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]
+  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:favorite</span>] <span class="ruby-operator">==</span> <span class="ruby-string">&quot;false&quot;</span> <span class="ruby-keyword">then</span>
+    <span class="ruby-identifier">file</span>.<span class="ruby-identifier">favorite_users</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]
+  <span class="ruby-keyword">end</span>
+  
+  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">save</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">file</span><span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]), <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- set_favorite-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- set_favorite-method -->
+
+    
+      <div id="method-i-set_public" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_public</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Sets/Unsets a public status file</p>
+          
+
+          
+          <div class="method-source-code" id="set_public-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 131</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_public</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
+  <span class="ruby-comment"># first check if it exist and if it synchronized then =&gt; error</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not set a synchronized file as public&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">user</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]
+  <span class="ruby-comment"># second if it not exist take a look into the shared_to_me files</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files_shared_to_me</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-comment"># thrid if it still does not exist =&gt; error</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-comment"># fourth check for root folder OR not uploaded</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;File not uploaded&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not set the root folder as public&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span>.<span class="ruby-identifier">id</span>
+
+  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">public</span> = <span class="ruby-keyword">true</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:public</span>] <span class="ruby-operator">==</span> <span class="ruby-string">&quot;true&quot;</span>
+  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">public</span> = <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:public</span>] <span class="ruby-operator">==</span> <span class="ruby-string">&quot;false&quot;</span>
+  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">save</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">file</span><span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]), <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- set_public-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- set_public-method -->
+
+    
+      <div id="method-i-share" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">share</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Share a file to another user</p>
+          
+
+          
+          <div class="method-source-code" id="share-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 151</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">share</span>
+  <span class="ruby-identifier">login</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:login</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Wrong login&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">login</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">login</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+  <span class="ruby-identifier">user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">all</span>(<span class="ruby-identifier">login</span><span class="ruby-operator">:</span> <span class="ruby-identifier">login</span>).<span class="ruby-identifier">first</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;User not found&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">user</span>.<span class="ruby-identifier">nil?</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not share this file. You are not its owner&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">user</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;File not uploaded&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">uploaded</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not share the root folder&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">root_folder</span>.<span class="ruby-identifier">id</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Can not share a folder&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">folder</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_part</span>, <span class="ruby-string">&quot;Incorrect content&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">content</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">file</span> = <span class="ruby-constant">WFile</span>.<span class="ruby-identifier">share_to_user</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>], <span class="ruby-identifier">user</span>, <span class="ruby-constant">WFile</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">id</span>))
+  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">update_and_save</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>, <span class="ruby-identifier">file</span><span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]), <span class="ruby-identifier">user</span><span class="ruby-operator">:</span> <span class="ruby-identifier">user</span>.<span class="ruby-identifier">description</span> }
+  <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">save</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- share-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- share-method -->
+
+    
+      <div id="method-i-shared_by_me" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">shared_by_me</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the list of all files shared BY the user if an id is specified the
+file's description and all its users</p>
+          
+
+          
+          <div class="method-source-code" id="shared_by_me-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 189</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">shared_by_me</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>] <span class="ruby-keyword">then</span>
+    <span class="ruby-identifier">files_list</span> = []
+    <span class="ruby-identifier">files</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files_shared_by_me</span>.<span class="ruby-identifier">all</span>(<span class="ruby-identifier">uploaded</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>)
+    <span class="ruby-identifier">files</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span> <span class="ruby-identifier">files_list</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>])) }
+    <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">files</span><span class="ruby-operator">:</span> <span class="ruby-identifier">files_list</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">file</span> = <span class="ruby-constant">WFile</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_access</span>, <span class="ruby-string">&quot;No access&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">users</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]
+    
+    <span class="ruby-identifier">users</span> = []
+    <span class="ruby-identifier">file</span>.<span class="ruby-identifier">users_receiving</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">user</span><span class="ruby-operator">|</span> <span class="ruby-identifier">users</span>.<span class="ruby-identifier">push</span> <span class="ruby-identifier">user</span>.<span class="ruby-identifier">description</span> }
+    <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>, <span class="ruby-identifier">file</span><span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]), <span class="ruby-identifier">users</span><span class="ruby-operator">:</span> <span class="ruby-identifier">users</span> }
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- shared_by_me-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- shared_by_me-method -->
+
+    
+      <div id="method-i-shared_to_me" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">shared_to_me</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the list of all files shared TO the user if an id is specified the
+file's description and all its users</p>
+          
+
+          
+          <div class="method-source-code" id="shared_to_me-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 209</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">shared_to_me</span>
+  <span class="ruby-identifier">files_list</span> = []
+  <span class="ruby-identifier">files</span> = <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">x_files_shared_to_me</span>.<span class="ruby-identifier">all</span>(<span class="ruby-identifier">uploaded</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span>)
+  <span class="ruby-identifier">files</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span> <span class="ruby-identifier">files_list</span>.<span class="ruby-identifier">push</span>( <span class="ruby-identifier">file</span><span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">description</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>]) ) }
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">files</span><span class="ruby-operator">:</span> <span class="ruby-identifier">files_list</span>, <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- shared_to_me-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- shared_to_me-method -->
+
+    
+      <div id="method-i-unshare" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">unshare</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Share a file to another user</p>
+          
+
+          
+          <div class="method-source-code" id="unshare-source">
+            <pre><span class="ruby-comment"># File app/controllers/files_controller.rb, line 172</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">unshare</span>
+  <span class="ruby-identifier">login</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:login</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;Wrong login&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">login</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">login</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+  <span class="ruby-identifier">user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">all</span>(<span class="ruby-identifier">login</span><span class="ruby-operator">:</span> <span class="ruby-identifier">login</span>).<span class="ruby-identifier">first</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:bad_param</span>, <span class="ruby-string">&quot;User not found&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">user</span>.<span class="ruby-identifier">nil?</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">user</span>.<span class="ruby-identifier">x_files_shared_to_me</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">RequestError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:file_not_found</span>, <span class="ruby-string">&quot;File not found&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file</span>
+
+  <span class="ruby-identifier">file</span> = <span class="ruby-constant">WFile</span>.<span class="ruby-identifier">unshare_to_user</span>(<span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>], <span class="ruby-identifier">user</span>, <span class="ruby-constant">WFile</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]))
+  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">update_and_save</span>
+  <span class="ruby-ivar">@result</span> = { <span class="ruby-identifier">success</span><span class="ruby-operator">:</span> <span class="ruby-keyword">true</span> }
+  <span class="ruby-identifier">session</span>[<span class="ruby-value">:user</span>].<span class="ruby-identifier">save</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- unshare-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- unshare-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.2.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+
