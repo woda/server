@@ -31,5 +31,6 @@ last_pid
 .idea
 /storage
 .irb-history
+/public/*
 
 *.DS_Store
