@@ -65,7 +65,7 @@ class FilesController < ApplicationController
     
     # We get all files from the current folder
     files_list = []
-    folder.files.each do |file|
+    folder.files.all(uploaded: true).each do |file|
       # describe only the public sub-files if required OR all of them
       if (((only_public == true && file.public == true) || only_public == false) || session[:user].admin) then
         files_list.push(file.description(session[:user]))
