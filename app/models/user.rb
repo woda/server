@@ -86,7 +86,7 @@ class User
     # remove all associations where this user receives a file >BY< another user
     SharedToMeAssociation.all(user_id: self.id).destroy!
     # remove all associations where this user shared a file >TO< another user
-    SharedByMeAssociation.all(user_id: current_user.id).destroy!      
+    SharedByMeAssociation.all(user_id: self.id).destroy!
 
     self.destroy!
   end
