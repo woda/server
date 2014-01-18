@@ -5,7 +5,6 @@ require 'app/models/base/woda_resource'
 require 'app/models/file'
 require 'app/models/folder'
 require 'app/models/association'
-require 'app/models/friend'
 
 ##
 # The User model. represents a user with login, first name, last name, email and password.
@@ -43,7 +42,8 @@ class User
   has n, :favorite_file_association, 'FavoriteFileAssociation', child_key: [:user_id]
   has n, :favorite_files, XFile, through: :favorite_file_association, via: :x_file
 
-  has n, :friends, Friend
+  has n, :friendships, :child_key => [:source_id]
+  has n, :friends, self, :through => :friendships, :via => :target
 
   ##
   # User's description

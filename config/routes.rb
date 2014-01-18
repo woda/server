@@ -105,6 +105,7 @@ Server::Application.routes.draw do
   match 'friends/:id' => 'friends#create', via: :put
   match 'friends/:id' => 'friends#delete', via: :delete
   match 'friends' => 'friends#list', via: :get
+  match 'friendships' => 'friends#list_friendships', via: :get
 
 # search
   match 'search' => 'search#search', via: :get

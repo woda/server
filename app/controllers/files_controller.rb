@@ -154,7 +154,7 @@ class FilesController < ApplicationController
     raise RequestError.new(:file_not_found, "File not found") unless file
     raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
     raise RequestError.new(:bad_param, "Can not share a synchronized file") if file.user != session[:user]
-    raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
+    raise RequestError.new(:bad_param, "File not uploaded") if !file.folder && !file.uploaded
     raise RequestError.new(:bad_param, "Can not share the root folder") if file.id == session[:user].root_folder.id
     raise RequestError.new(:bad_part, "Incorrect content") if file.content.nil?
 
@@ -216,7 +216,7 @@ class FilesController < ApplicationController
     file = XFile.first(id: params[:id], uploaded: true)
 
     raise RequestError.new(:file_not_found, "File not found or not public") unless file
-    raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
+    raise RequestError.new(:bad_param, "File not uploaded") if !file.folder && !file.uploaded
     raise RequestError.new(:bad_param, "Can not get the download link of the root folder") if file.id == session[:user].root_folder.id
     raise RequestError.new(:bad_param, "Can't get the link of a folder") if file.folder
 
@@ -238,7 +238,7 @@ class FilesController < ApplicationController
   def move
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_param, "File not uploaded") unless file.uploaded
+    raise RequestError.new(:bad_param, "File not uploaded") if !file.folder && !file.uploaded
     raise RequestError.new(:bad_param, "Can not move the root folder") if file.id == session[:user].root_folder.id
     source = WFolder.get(params[:source])
     raise RequestError.new(:file_not_found, "Source not found") unless source
@@ -265,7 +265,7 @@ class FilesController < ApplicationController
   def breadcrumb
     file = WFolder.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]   
+    raise RequestError.new(:bad_access, "No access") if !file.users.include? session[:user] && !file.public
 
     file = WFile.get(params[:id]) unless file.folder?
 

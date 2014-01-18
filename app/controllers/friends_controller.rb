@@ -17,11 +17,12 @@ class FriendsController < ApplicationController
   def create
     user = User.get(params[:id])
     raise RequestError.new(:user_not_found, "User not found") unless user
-    session[:user].friends.each do |f|
-    	raise RequestError.new(:bad_params, "User already in friend list") if f.friend_id == user.id
-    end
-    friend = Friend.new(user: session[:user], friend_id: user.id)
-    friend.save
+    raise RequestError.new(:bad_params, "User already in friend list") if session[:user].friends.include? user
+    
+    session[:user].friends << user
+    session[:user].save
+    user.friendships << session[:user]
+    user.save
     @result = { success: true, friend: user.description }
   end
 
@@ -30,7 +31,17 @@ class FriendsController < ApplicationController
   def list
     friends = []
     session[:user].friends.each do |friend|
-    	friends.push User.get(friend.friend_id).description
+    	friends.push friend.description
+    end
+    @result = { success: true, friends: friends }
+  end
+
+  ##
+  # List all the friendships
+  def list_friendships
+    friends = []
+    session[:user].friendships.each do |friend|
+      friends.push friend.description
     end
     @result = { success: true, friends: friends }
   end
@@ -40,14 +51,8 @@ class FriendsController < ApplicationController
   def delete
     user = User.get(params[:id])
     raise RequestError.new(:user_not_found, "User not found") unless user
-    delete = false
-		session[:user].friends.each do |f|
-			if f.friend_id == user.id then
-				f.destroy! 
-				delete = true
-			end
-  	end
-  	raise RequestError.new(:bad_params, "User is not in friend list") unless delete
+    raise RequestError.new(:bad_params, "User is not in friend list") unless session[:user].friends.include? user
+    Friendship.all(source_id: session[:user].id, target_id: user.id).destroy!
     @result = { success: true }
   end
 

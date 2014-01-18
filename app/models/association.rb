@@ -63,3 +63,13 @@ class SharedByMeAssociation
   belongs_to :user, 'User', key: true
   belongs_to :x_file, 'XFile', key: true
 end
+
+class Friendship
+  include DataMapper::Resource
+  include WodaResource
+ 
+  storage_names[:default] = 'Friendship'
+
+  belongs_to :source, 'User', :key => true
+  belongs_to :target, 'User', :key => true
+end
