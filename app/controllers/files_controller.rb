@@ -79,9 +79,11 @@ class FilesController < ApplicationController
   ##
   # Gets the first 20 last updated files
   def recents
-    files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), folder: false, limit: 20, uploaded: true)
+    files = session[:user].x_files.all(:last_update.gte => (DateTime.now - 20.days), folder: false, limit: 20)
     files_list = []
-    files.each { |file| files_list.push(file.description(session[:user])) }
+    files.each do |file|
+      files_list.push(file.description(session[:user])) if file.folder || (!file.folder && file.uploaded)
+    end
     @result = { files: files_list, success: true }
   end
 
@@ -108,8 +110,8 @@ class FilesController < ApplicationController
   # Returns all the favorites files
   def favorites
     files = []
-    session[:user].favorite_files.all(uploaded: true).each do |file|
-      files.push(file.description(session[:user]))
+    session[:user].favorite_files.each do |file|
+      files.push(file.description(session[:user])) if file.folder || (!file.folder && file.uploaded)
     end
     @result = { files: files, success: true }
   end
@@ -118,8 +120,10 @@ class FilesController < ApplicationController
   # Returns user's public files
   def public
     public_files = []
-    files = session[:user].x_files.all(public: true, uploaded: true)
-    files.each { |file| public_files.push(file.description(session[:user])) }
+    files = session[:user].x_files.all(public: true)
+    files.each do |file|
+      public_files.push(file.description(session[:user])) if file.folder || (!file.folder && file.uploaded)
+    end
     @result = { files: public_files, success: true }
   end
   
