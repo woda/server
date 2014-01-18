@@ -45,13 +45,18 @@ class WFolder < XFile
       FolderFolderAssociation.all(children_id: self.id).each do |asso|
         asso.destroy! if current_user.x_files.get(asso.parent_id)
       end
+      # No sharing for folders: no SharedToMeAssociations
+
     else # if true owner 
       # remove all links between this folder and ALL users
       FileUserAssociation.all(x_file_id: self.id).destroy!
       # remove all associations where this folder is a children of a folder belonging ALL users
       FolderFolderAssociation.all(children_id: self.id).destroy!
+      # No sharing for folders: no SharedByMeAssociations
 
-      # there is no need to remove the association where this folder is a parent (of a file or folder) because of the children have already been removed
+      # No need to remove the association where this folder is a parent (of a file or folder)
+      # because the children have already been removed and all theirs associations
+      #
       # FolderFolderAssociation.all(parent_id: self.id).destroy!
       # FileFolderAssociation.all(parent_id: self.id).destroy!
       

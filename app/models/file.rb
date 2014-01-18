@@ -25,8 +25,6 @@ class WFile < XFile
   def delete current_user
     raise RequestError.new(:internal_error, "Delete: no user specified") if current_user.nil?
 
-    #TODO shared_to/by_me_associations
-
     if current_user.id != self.user_id then # if random owner 
       # remove all links between this file and the current user
       FileUserAssociation.all(x_file_id: self.id, user_id: current_user.id).destroy!
@@ -34,11 +32,16 @@ class WFile < XFile
       FileFolderAssociation.all(file_id: self.id).each do |asso|
         asso.destroy! if current_user.x_files.get(asso.parent_id)
       end
+      # remove all associations where this file is shared >TO< another user
+      SharedToMeAssociation.all(x_file_id: self.id, user_id: current_user.id).destroy!
+
     else # if true owner 
       # remove all links between this file and ALL users
       FileUserAssociation.all(x_file_id: self.id).destroy!
       # remove all associations where this file is "inside" a folder for ALL users
       FileFolderAssociation.all(file_id: self.id).destroy!
+      # remove all associations where this file is shared >BY< the current user
+      SharedByMeAssociation.all(x_file_id: self.id, user_id: current_user.id).destroy!      
 
       # if a content exist and if the user is the original owner, reduce the user's used space
       current_user.remove_file_size self.content.size if content

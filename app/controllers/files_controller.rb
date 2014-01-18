@@ -156,10 +156,10 @@ class FilesController < ApplicationController
     raise RequestError.new(:bad_param, "User not found") if user.nil?
     file = session[:user].x_files.get(params[:id])
     raise RequestError.new(:file_not_found, "File not found") unless file
-    raise RequestError.new(:bad_access, "No access") unless file.users.include? session[:user]
-    raise RequestError.new(:bad_param, "Can not share a synchronized file") if file.user != session[:user]
+    raise RequestError.new(:bad_param, "Can not share this file. You are not its owner") if file.user != session[:user]
     raise RequestError.new(:bad_param, "File not uploaded") if !file.folder && !file.uploaded
     raise RequestError.new(:bad_param, "Can not share the root folder") if file.id == session[:user].root_folder.id
+    raise RequestError.new(:bad_param, "Can not share a folder") if file.folder
     raise RequestError.new(:bad_part, "Incorrect content") if file.content.nil?
 
     file = WFile.share_to_user(session[:user], user, WFile.get(file.id))

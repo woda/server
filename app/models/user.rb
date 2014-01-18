@@ -78,7 +78,16 @@ class User
   def delete
     # no need to delete all the associations because root_folder.delete does it
     self.root_folder.delete self
-    self.friends.each { |friend| friend.delete }
+    # remove all friendships where the user is the source
+    Friendship.all(source_id: self.id).destroy!
+    # remove all friendships where the user is the target
+    Friendship.all(target_id: self.id).destroy!
+
+    # remove all associations where this user receives a file >BY< another user
+    SharedToMeAssociation.all(user_id: self.id).destroy!
+    # remove all associations where this user shared a file >TO< another user
+    SharedByMeAssociation.all(user_id: current_user.id).destroy!      
+
     self.destroy!
   end
 
