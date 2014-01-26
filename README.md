@@ -1,8 +1,8 @@
-== Woda
+# Woda
 
 Woda is a free service offering unlimited space to store and share one’s personal files. Once online, the files will be accessed securely from any internet-connected device. Synchronizing entire folders, your vacation photos or your own videos has never been easier!
 
-== Documentation
+## Documentation
 
 First read the ["Installation" guide](https://github.com/woda/server/wiki/Installation) to install everything you might need and then the ["Getting started" page](https://github.com/woda/server/wiki/Getting-Started) to understand how to launch the server.
 
