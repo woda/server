@@ -1,83 +1,20 @@
-== Woda - Server
+== Woda
 
-== Required installations
+Woda is a free service offering unlimited space to store and share one’s personal files. Once online, the files will be accessed securely from any internet-connected device. Synchronizing entire folders, your vacation photos or your own videos has never been easier!
 
-First thing first: what is rvm (https://rvm.io/).
+== Documentation
 
-The simplest way to install rvm is with:
-       curl -L https://get.rvm.io | bash -s stable
+First read the ["Installation" guide](https://github.com/woda/server/wiki/Installation) to install everything you might need and then the ["Getting started" page](https://github.com/woda/server/wiki/Getting-Started) to understand how to launch the server.
 
-If you use something other than bash as your shell, put this in your *.$(your_shell)rc*  (checked on zsh):
-       [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+After what, take a look on the Webservice pages :
 
-Then install any ruby using this (1.9.3 is the ruby version of this project):
-       rvm install 1.9.3
+- [General Information](https://github.com/woda/server/wiki/WS-General-Information)
+- [Files / Folders](https://github.com/woda/server/wiki/WS-Files-Folders-Management)
+- [User Accounts](https://github.com/woda/server/wiki/WS-User-Accounts-Management)
+- [Upload / Download](https://github.com/woda/server/wiki/WS-Upload-Download)
+- [Friends](https://github.com/woda/server/wiki/WS-Friends)
+- [Search](https://github.com/woda/server/wiki/WS-Search)
+- [Share](https://github.com/woda/server/wiki/WS-Share)
+- [Admin](https://github.com/woda/server/wiki/WS-Admin)
 
-Then to use the ruby version you've installed, run: 
-       rvm use --default $ruby_version
-
-== Required libraries
-
-Before running _bundle install_ command, please make sure you have these libraries installed.
-* libxml2-dev
-* libxslt1-dev
-* libmysqlclient-dev
-* libpq-dev
-
-or simply run the following command :  
-       sudo apt-get install libxml2-dev libxslt1-dev libmysqlclient-dev libpq-dev
-
-== Gems
-
-Gems are little ruby packages. Mostly they are libs but they can sometimes be small utilities (such as the 'bundler' gem)
-
-There is a file called 'Gemfile' in the base directory. This is to be used with the gem 'bundler'.
-To install the gems required by the program, just type before launching:
-       bundle install
-
-This command line doesn't update gems, it just installs them. To update your gems use:
-       bundle update
-
-You should avoid installing gems with anything else than the previous lines, and always add the new gems you use to the Gemfile.
-
-== Launching the server
-
-First of all run:
-       bundle install
-
-This will do a bunch of things and then possibly crash on you. If so, it's because you don't have the necessary packages, use @sudo aptitude install@ or something to get them.
-You need gcc, make & cie., as well as libpq-dev, libmysqlclient-dev and possibly others. Just try to understand the error messages.
-
-Then prepare the db with: 
-       bundle exec rake db:migrate
-
-And finally launch the server (on http://127.0.0.1:3000) with:
-       bundle exec rails s
-
-You can perform some actions to this server using the webservices with a curl command: 
-       curl -k cookies.txt -c cookies.txt -b https://127.0.0.1/ -X [REST Methods] -d "argument1=value1&arguement2=value2"
-
-And that's how it's done. The default db is sqlite, so don't worry about having a mysql server or whatever. Not necessary.
-
-If you really want to change the db, look at the @config/database.yml@ file, and use https://github.com/datamapper/dm-rails#sample-databaseyml-files to understand how to modify it.
-
-== Deployment
-
-To deploy the server, install everything and then run:
-
-       /script/start_server
-       /script/stop_server
-
-== Unit tests
-
-The testing framework we use for unit testing is *rspec*. Launch the tests using:
-       bundle exec rspec
-
-You can use continuous testing with:
-       bundle exec autotest -q
-
-If you want to write your own tests (and you *should*), look up the files in the *spec* directory. The file must have the same path and name as the file you're testing and end in *_spec.rb*.
-
-Launch the *script/setup_project* to install stuff that everyone of you should use. In particular, this will install git hooks that will launch the tests at every commit, and prevent the commit if a test fails or if the test coverage is less than 95%.
-
-*Try to keep the test coverage at 100% !*
+You can find more information about the database on its [dedicated page](https://github.com/woda/server/wiki/Database)
